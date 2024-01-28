@@ -1,0 +1,27 @@
+<%= form_with(model: boat_class) do |form| %>
+  <% if boat_class.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(boat_class.errors.count, "error") %> prohibited this boat_class from being saved:</h2>
+
+      <ul>
+        <% boat_class.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :name, style: "display: block" %>
+    <%= form.text_field :name %>
+  </div>
+
+  <div>
+    <%= form.label :is_one_design, style: "display: block" %>
+    <%= form.check_box :is_one_design %>
+  </div>
+
+  <div>
+    <%= form.submit %>
+  </div>
+<% end %>

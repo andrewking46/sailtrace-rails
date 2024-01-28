@@ -1,0 +1,34 @@
+<%= form_with(model: recording, local: true, data: { geolocation_target: "form" }) do |form| %>
+  <% if recording.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(recording.errors.count, "error") %> prohibited this recording from being saved:</h2>
+
+      <ul>
+        <% recording.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <%= form.hidden_field :time_zone, data: { geolocation_target: 'timeZoneInput' } %>
+
+  <div>
+    <%= form.label :is_race, style: "display: block" %>
+    <%= form.check_box :is_race %>
+  </div>
+
+  <div>
+    <%= form.label :boat_id, style: "display: block" %>
+    <%= form.collection_select :boat_id, Boat.all, :id, :name %>
+  </div>
+
+  <div>
+    <%= form.label :user_id, style: "display: block" %>
+    <%= form.collection_select :user_id, User.all, :id, :username %>
+  </div>
+
+  <div>
+    <%= form.submit "Start recording", data: { action: "click->geolocation#validateForm" }, disabled: true, class: "start-button", data: { geolocation_target: "startButton" } %>
+  </div>
+<% end %>

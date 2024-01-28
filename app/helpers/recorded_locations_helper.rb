@@ -1,0 +1,2 @@
+module RecordedLocationsHelper
+end

@@ -1,0 +1,10 @@
+<p style="color: green"><%= notice %></p>
+
+<%= render @boat_class %>
+
+<div>
+  <%= link_to "Edit this boat class", edit_boat_class_path(@boat_class) %> |
+  <%= link_to "Back to boat classes", boat_classes_path %>
+
+  <%= button_to "Destroy this boat class", @boat_class, method: :delete %>
+</div>

@@ -1,0 +1,14 @@
+<p style="color: green"><%= notice %></p>
+
+<h1>Boat classes</h1>
+
+<div id="boat_classes">
+  <% @boat_classes.each do |boat_class| %>
+    <%= render boat_class %>
+    <p>
+      <%= link_to "Show this boat class", boat_class %>
+    </p>
+  <% end %>
+</div>
+
+<%= link_to "New boat class", new_boat_class_path %>

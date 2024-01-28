@@ -96,6 +96,10 @@ GEM
       xpath (~> 3.2)
     concurrent-ruby (1.2.2)
     connection_pool (2.4.1)
+    countries (5.7.1)
+      unaccent (~> 0.3)
+    country_select (8.0.3)
+      countries (~> 5.0)
     crass (1.0.6)
     date (3.3.4)
     debug (1.9.1)
@@ -230,6 +234,7 @@ GEM
       railties (>= 6.0.0)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
+    unaccent (0.4.0)
     web-console (4.2.1)
       actionview (>= 6.0.0)
       activemodel (>= 6.0.0)
@@ -256,6 +261,7 @@ DEPENDENCIES
   bootsnap
   brakeman
   capybara
+  country_select (~> 8.0)
   debug
   faker
   importmap-rails

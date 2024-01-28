@@ -1,0 +1,15 @@
+<div id="<%= dom_id recording %>">
+  <div>
+    <h3>Recording</h3>
+    <p><%= recording.created_at.strftime("%A, %b %d %Y %l:%M%p") %></p>
+    <p>Boat: <%= recording.boat.name %></p>
+    <p>Sail number: <%= recording.boat.sail_number %></p>
+    <p>Distance: <%= number_with_precision(recording.distance, precision: 2) %> nm</p>
+    <p>Time: <%= recording.duration %></p>
+    <p>Average Speed: <%= recording.average_speed %> knots</p>
+  </div>
+
+  <div>
+    <%= link_to 'View', recording %>
+  </div>
+</div>

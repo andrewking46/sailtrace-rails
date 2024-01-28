@@ -1,0 +1,14 @@
+<div data-controller="geolocation">
+  <h1>New recording</h1>
+
+  <div data-geolocation-target="locationWarning" class="location-warning" style="display: none;">
+    <p>Location tracking is off. You need to turn it on for the app to work properly.</p>
+    <button data-action="click->geolocation#requestLocation">Turn location tracking on</button>
+  </div>
+
+  <%= render "form", recording: @recording %>
+
+  <div class="navigation-links">
+    <%= link_to "Back to recordings", recordings_path %>
+  </div>
+</div>

@@ -1,0 +1,11 @@
+<%= render 'shared/tab_bar' %>
+
+<p style="color: green"><%= notice %></p>
+
+<h1>Recordings</h1>
+
+<div id="recordings">
+  <%= render partial: 'recording', collection: @recordings, as: :recording %>
+</div>
+
+<%= link_to "New recording", new_recording_path %>
