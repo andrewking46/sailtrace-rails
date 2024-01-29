@@ -37,7 +37,7 @@ export default class extends Controller {
   }
 
   drawColoredPath(map, locations) {
-    const simplifiedLocations = this.simplifyPath(locations, 10);
+    const simplifiedLocations = this.simplifyPath(locations, 4);
 
     for (let i = 1; i < simplifiedLocations.length; i++) {
       const prevLocation = simplifiedLocations[i - 1];
@@ -81,38 +81,47 @@ export default class extends Controller {
   }
 
   perpendicularDistance(point, lineStart, lineEnd) {
-    const lat1 = lineStart.latitude;
-    const lon1 = lineStart.longitude;
-    const lat2 = lineEnd.latitude;
-    const lon2 = lineEnd.longitude;
-    const lat = point.latitude;
-    const lon = point.longitude;
+    // Convert points to radians
+    const lat1 = this.degreesToRadians(lineStart.latitude);
+    const lon1 = this.degreesToRadians(lineStart.longitude);
+    const lat2 = this.degreesToRadians(lineEnd.latitude);
+    const lon2 = this.degreesToRadians(lineEnd.longitude);
+    const lat3 = this.degreesToRadians(point.latitude);
+    const lon3 = this.degreesToRadians(point.longitude);
 
-    const dlat = lat2 - lat1;
-    const dlon = lon2 - lon1;
+    // Calculate the distances from point to line start/end
+    const distStartToPoint = this.haversineDistance(lat1, lon1, lat3, lon3);
+    const distEndPointToPoint = this.haversineDistance(lat2, lon2, lat3, lon3);
 
-    const num = Math.abs(dlat * lon - dlon * lat + lat2 * lon1 - lon2 * lat1);
-    const den = Math.sqrt(dlat * dlat + dlon * dlon);
+    // Calculate the distance from line start to end
+    const distStartToEnd = this.haversineDistance(lat1, lon1, lat2, lon2);
 
-    return num / den;
+    // Calculate the area of the triangle formed by the three points
+    const semiPerimeter = (distStartToPoint + distEndPointToPoint + distStartToEnd) / 2;
+    const area = Math.sqrt(semiPerimeter * (semiPerimeter - distStartToPoint) * (semiPerimeter - distEndPointToPoint) * (semiPerimeter - distStartToEnd));
+
+    // Calculate the distance from the point to the line (perpendicular)
+    return (2 * area) / distStartToEnd;
   }
 
-  // drawColoredPath(map, locations) {
-  //   locations.forEach((location, index) => {
-  //     if (index === 0) return;
-  //     const prevLocation = locations[index - 1];
-  //     const color = this.getSegmentColor(prevLocation, location);
+  haversineDistance(lat1, lon1, lat2, lon2) {
+    const R = 6371e3; // meters
+    const φ1 = lat1;
+    const φ2 = lat2;
+    const Δφ = lat2 - lat1;
+    const Δλ = lon2 - lon1;
 
-  //     L.polyline([
-  //       [prevLocation.latitude, prevLocation.longitude],
-  //       [location.latitude, location.longitude]
-  //     ], { color, weight: 3 }).addTo(map);
-  //   });
+    const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+              Math.cos(φ1) * Math.cos(φ2) *
+              Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
-  //   if (locations.length > 0) {
-  //     map.fitBounds(L.polyline(locations.map(loc => [loc.latitude, loc.longitude])).getBounds());
-  //   }
-  // }
+    return R * c; // Distance in meters
+  }
+
+  degreesToRadians(degrees) {
+    return degrees * (Math.PI / 180);
+  }
 
   getSegmentColor(prevLocation, location) {
     const speed = this.calculateSpeed(prevLocation, location);
@@ -148,7 +157,7 @@ export default class extends Controller {
               Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
-    return R * c; // in meters
+    return R * c;
   }
 
   goToReplay(event) {
