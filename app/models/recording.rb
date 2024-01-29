@@ -34,10 +34,10 @@ class Recording < ApplicationRecord
 
   def distance
     total_distance = 0
-    recorded_locations.each_cons(2) do |loc1, loc2|
+    recorded_locations.order(created_at: :asc).each_cons(2) do |loc1, loc2|
       total_distance += distance_between(loc1, loc2)
     end
-    total_distance.round(2)
+    total_distance.round(5)
   end
 
   def duration
