@@ -37,7 +37,7 @@ export default class extends Controller {
   }
 
   drawColoredPath(map, locations) {
-    const simplifiedLocations = this.simplifyPath(locations, 3);
+    const simplifiedLocations = this.simplifyPath(locations, 2);
 
     for (let i = 1; i < simplifiedLocations.length; i++) {
       const prevLocation = simplifiedLocations[i - 1];

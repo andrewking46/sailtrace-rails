@@ -33,7 +33,7 @@ export default class extends Controller {
     fetch(`/recordings/${this.recordingIdValue}/recorded_locations.json`)
       .then(response => response.json())
       .then(data => {
-        this.locations = this.simplifyPath(data, 3);
+        this.locations = this.simplifyPath(data, 2);
         this.updateSliderRange();
         this.drawPathUpToPoint(this.locations.length - 1);
       })
