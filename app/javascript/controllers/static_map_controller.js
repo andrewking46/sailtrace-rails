@@ -59,7 +59,7 @@ export default class extends Controller {
   simplifyPath(points, tolerance) {
     if (points.length < 3) return points;
 
-    const dmax = 0;
+    let dmax = 0;
     let index = 0;
     const end = points.length - 1;
     for (let i = 1; i < end; i++) {
