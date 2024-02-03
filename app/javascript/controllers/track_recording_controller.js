@@ -3,21 +3,23 @@ import { Controller } from "@hotwired/stimulus"
 export default class extends Controller {
   static targets = ["pauseButton", "beacon", "gpsWarning", "consoleLog"]
   static values = { recordingId: Number }
+  static ACCEPTABLE_ACCURACY_THRESHOLD = 10;
 
   connect() {
-    this.isRecording = false;
-    this.toggleRecording(true);
+    this.isRecording = true;
     this.startLocationTracking();
     this.initializeWakeLock();
+    this.toggleRecording(this.isRecording);
   }
 
   startLocationTracking() {
-    this.watchId = navigator.geolocation.watchPosition(
-      position => this.handleSuccess(position),
-      error => this.handleError(error),
-      { enableHighAccuracy: true, maximumAge: 5000, timeout: 10000 }
-    );
-    this.isRecording = true;
+    if (!this.watchId) {
+      this.watchId = navigator.geolocation.watchPosition(
+        position => this.handleSuccess(position),
+        error => this.handleError(error),
+        { enableHighAccuracy: true, maximumAge: 5000, timeout: 10000 }
+      );
+    }
   }
 
   initializeWakeLock() {
@@ -40,12 +42,13 @@ export default class extends Controller {
     this.updateGPSWarning(coords.accuracy);
     this.printLog(`Location recorded with accuracy: ${coords.accuracy}m`);
 
-    if (coords.accuracy > 10) return;
-    this.postLocationData(coords);
+    if (this.isRecording && coords.accuracy <= this.constructor.ACCEPTABLE_ACCURACY_THRESHOLD) {
+      this.postLocationData(coords);
+    }
   }
 
   updateGPSWarning(accuracy) {
-    this.gpsWarningTarget.hidden = accuracy <= 10;
+    this.gpsWarningTarget.hidden = accuracy <= this.constructor.ACCEPTABLE_ACCURACY_THRESHOLD;
   }
 
   postLocationData({ latitude, longitude, speed: velocity, heading }) {
@@ -57,9 +60,9 @@ export default class extends Controller {
       },
       body: JSON.stringify({ recorded_location: { latitude, longitude, velocity, heading } })
     })
-    .then(this.checkResponse)
+    .then(response => this.checkResponse(response))
     .then(data => this.printLog('Location recorded:', data))
-    .catch(this.logError);
+    .catch(error => this.logError(error));
   }
 
   handleError(error) {
@@ -77,18 +80,20 @@ export default class extends Controller {
   }
 
   toggleRecording(isRecording) {
-    this.isRecording = isRecording;
-    this.beaconTarget.classList.toggle('is-recording', isRecording);
     this.pauseButtonTarget.textContent = isRecording ? 'Pause recording' : 'Resume recording';
+    this.beaconTarget.classList.toggle('is-recording', isRecording);
   }
 
   toggleRecordingAction() {
-    if (this.isRecording) {
+    this.isRecording = !this.isRecording;
+    this.toggleRecording(this.isRecording);
+  }
+
+  clearWatch() {
+    if (this.watchId) {
       navigator.geolocation.clearWatch(this.watchId);
-    } else {
-      this.startLocationTracking();
+      this.watchId = null;
     }
-    this.toggleRecording(!this.isRecording);
   }
 
   confirmEndRecording() {
@@ -105,13 +110,16 @@ export default class extends Controller {
         'Content-Type': 'application/json'
       }
     })
-    .then(this.checkResponse)
-    .then(() => window.location.href = `/recordings/${this.recordingIdValue}`)
-    .catch(this.logError);
+    .then(response => this.checkResponse(response))
+    .then(() => {
+      this.clearWatch();
+      window.location.href = `/recordings/${this.recordingIdValue}`;
+    })
+    .catch(error => this.logError(error));
   }
 
   disconnect() {
-    if (this.watchId) navigator.geolocation.clearWatch(this.watchId);
+    this.clearWatch();
     if (this.wakeLock) {
       this.wakeLock.release().catch(this.logError);
       this.wakeLock = null;
