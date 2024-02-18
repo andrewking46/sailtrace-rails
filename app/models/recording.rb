@@ -22,6 +22,8 @@ class Recording < ApplicationRecord
   end
 
   def just_ended?
+    puts saved_change_to_ended_at?
+    puts ended?
     saved_change_to_ended_at? && ended?
   end
 
@@ -91,16 +93,19 @@ class Recording < ApplicationRecord
   end
 
   def after_ending_actions
+    puts "after_ending_actions called"
     set_start_location_values
     associate_with_race
   end
 
   def set_start_location_values
+    puts "set_start_location_values called"
     return if start_latitude.present? || start_longitude.present?
     first_recorded_location = recorded_locations.order(created_at: :asc).first
     self.start_latitude = first_recorded_location.latitude
     self.start_longitude = first_recorded_location.longitude
     save
+    puts "set_start_location_values saved"
   end
 
   def end_after_start
@@ -108,6 +113,7 @@ class Recording < ApplicationRecord
   end
 
   def associate_with_race
+    puts "associate_with_race called"
     return unless is_race?
 
     time_window = 5.minutes
@@ -125,6 +131,7 @@ class Recording < ApplicationRecord
 
     save
     race.after_ending_actions
+    puts "associate_with_race saved"
   end
 
   def destroy_race_if_no_recordings

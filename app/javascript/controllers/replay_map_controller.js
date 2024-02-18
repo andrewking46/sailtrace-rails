@@ -128,19 +128,26 @@ export default class extends Controller {
     return R * c; // in meters
   }
 
-  getSegmentColor(previousLocation, currentLocation) {
+  getSegmentColor(previousLocation, location) {
+    const speed = this.calculateSpeed(previousLocation, location);
+
+    if (speed > 1.5) return 'green';
+    if (speed > 1.25) return 'limegreen';
+    if (speed > 1) return 'yellowgreen';
+    if (speed > 0.75) return 'yellow';
+    if (speed > 0.5) return 'gold';
+    if (speed > 0.25) return 'orange';
+    return 'red';
+  }
+
+  calculateSpeed(previousLocation, location) {
     const distance = this.calculateDistance(
       previousLocation.latitude, previousLocation.longitude,
-      currentLocation.latitude, currentLocation.longitude
-    ); // Distance in meters
+      location.latitude, location.longitude
+    );
+    const timeElapsed = (new Date(location.created_at) - new Date(previousLocation.created_at)) / 1000;
 
-    const timeElapsed = (new Date(currentLocation.created_at) - new Date(previousLocation.created_at)) / 1000; // Time in seconds
-
-    const speed = distance / timeElapsed; // Speed in meters per second
-
-    if (speed > 1) return 'green'; // Adjust these thresholds as needed
-    if (speed > 0.5) return 'yellow';
-    return 'orange';
+    return distance / timeElapsed;
   }
 
   updateTimeDisplay(time) {
