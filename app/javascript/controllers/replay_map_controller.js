@@ -59,6 +59,12 @@ export default class extends Controller {
 
   // Draw paths for the recording(s)
   drawPaths(time) {
+    this.map.eachLayer(layer => {
+      if (!(layer instanceof L.TileLayer)) {
+        this.map.removeLayer(layer);
+      }
+    });
+
     this.recordings.forEach(recording => {
       this.drawPathUpToTime(recording, time);
     });
@@ -73,12 +79,6 @@ export default class extends Controller {
   }
 
   drawPathUpToTime(recording, time) {
-    this.map.eachLayer(layer => {
-      if (!(layer instanceof L.TileLayer)) {
-        this.map.removeLayer(layer);
-      }
-    });
-
     const validLocations = recording.simplifiedPathLocations.filter((location) => new Date(location.created_at) >= new Date(this.recordingStartedAtValue) && new Date(location.created_at) <= time)
 
     for (let i = 1; i <= validLocations.length - 1; i++) {
