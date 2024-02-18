@@ -2,15 +2,16 @@ import { Controller } from "@hotwired/stimulus";
 import L from "leaflet";
 
 export default class extends Controller {
-  static targets = ["slider", "timeDisplay"];
-  static values = { recordingId: Number, startTime: String, boatColor: String };
+  static targets = ["slider", "timeDisplay", "map"];
+  static values = { recordingId: Number, raceId: Number, recordingStartedAt: Number, recordingEndedAt: Number };
 
   connect() {
-    this.initializeReplayMap();
+    this.initializeMap();
+    this.fetchRecordingData();
   }
 
-  initializeReplayMap() {
-    this.map = L.map(this.element, {
+  initializeMap() {
+    this.map = L.map(this.mapTarget, {
       center: [0, 0],
       zoom: 13,
       zoomControl: true,
@@ -25,38 +26,65 @@ export default class extends Controller {
       attribution: '&copy; OpenStreetMap contributors',
       noWrap: true
     }).addTo(this.map);
-
-    this.fetchAndDisplayPath();
   }
 
-  fetchAndDisplayPath() {
-    fetch(`/recordings/${this.recordingIdValue}/recorded_locations.json`)
-      .then(response => response.json())
-      .then(data => {
-        this.locations = this.simplifyPath(data, 2);
-        this.updateSliderRange();
-        this.drawPathUpToPoint(this.locations.length - 1);
-      })
-      .catch(error => console.log(error));
+  async fetchRecordingData() {
+    this.recordings = []
+
+    try {
+      if (Number.isFinite(this.raceIdValue) && this.raceIdValue > 0) {
+        const response = await fetch(`/races/${this.raceIdValue}/recordings.json`);
+        const recordings = await response.json();
+        this.recordings.push(...recordings);
+      } else {
+        const response = await fetch(`/recordings/${this.recordingIdValue}.json`);
+        const recording = await response.json();
+        this.recordings.push(recording);
+      }
+      this.simplifyPaths();
+      this.drawPaths(parseInt(this.sliderTarget.value, 10));
+      this.centerMap();
+    } catch (error) {
+      console.error(error);
+    }
   }
 
-  updateSliderRange() {
-    this.sliderTarget.max = this.locations.length - 1;
-    this.sliderTarget.value = this.sliderTarget.max;
-    this.sliderTarget.disabled = false;
+  simplifyPaths() {
+    this.recordings.forEach(recording => {
+      const simplifiedPathLocations = this.simplifyPath(recording.recorded_locations, 2);
+
+      recording.simplifiedPathLocations = simplifiedPathLocations;
+    })
   }
 
-  drawPathUpToPoint(index) {
+  // Draw paths for the recording(s)
+  drawPaths(time) {
+    this.recordings.forEach(recording => {
+      this.drawPathUpToTime(recording, time);
+    });
+  }
+
+  resizeMap() {
+    this.map.fitBounds(L.polyline(this.recordings.find((recording) => recording.id = this.recordingIdValue).simplifiedPathLocations.map(positions => [positions.latitude, positions.longitude])).getBounds());
+  }
+
+  centerMap() {
+    this.map.fitBounds(L.polyline(this.recordings.find((recording) => recording.id = this.recordingIdValue).simplifiedPathLocations.slice(0,4).map(positions => [positions.latitude, positions.longitude])).getBounds());
+  }
+
+  drawPathUpToTime(recording, time) {
     this.map.eachLayer(layer => {
       if (!(layer instanceof L.TileLayer)) {
         this.map.removeLayer(layer);
       }
     });
 
-    for (let i = 1; i <= index; i++) {
-      const previousLocation = this.locations[i - 1];
-      const currentLocation = this.locations[i];
-      const color = this.getSegmentColor(previousLocation, currentLocation);
+    const validLocations = recording.simplifiedPathLocations.filter((location) => new Date(location.created_at) >= new Date(this.recordingStartedAtValue) && new Date(location.created_at) <= time)
+
+    for (let i = 1; i <= validLocations.length - 1; i++) {
+      const previousLocation = validLocations[i - 1];
+      const currentLocation = validLocations[i];
+      const color = recording.id === this.recordingIdValue ? this.getSegmentColor(previousLocation, currentLocation) : 'white';
 
       L.polyline([
         [previousLocation.latitude, previousLocation.longitude],
@@ -64,15 +92,25 @@ export default class extends Controller {
       ], { color, weight: 3 }).addTo(this.map);
     }
 
-    const currentPosition = this.locations[index];
-    L.circleMarker([currentPosition.latitude, currentPosition.longitude], {
-      radius: 4,
-      color: this.boatColorValue
-    }).addTo(this.map);
+    if (validLocations.length > 0) {
+      this.addBoatMarker(validLocations.at(-1), recording.boat.sail_number, recording.boat.hull_color);
+    }
+  }
 
-    this.map.fitBounds(L.polyline(this.locations.map(loc => [loc.latitude, loc.longitude])).getBounds());
+  addBoatMarker(position, sailNumber, color) {
+    // Create a custom icon for the boat marker
+    const boatIcon = L.divIcon({
+      className: 'boat-marker',
+      html: `<div style="background-color: ${color};">${sailNumber}</div>`
+    });
 
-    this.updateTimeDisplay(index);
+    // Add the marker to the map at the given position
+    L.marker([position.latitude, position.longitude], { icon: boatIcon }).addTo(this.map);
+
+    // L.circleMarker([currentPosition.latitude, currentPosition.longitude], {
+    //   radius: 4,
+    //   color: this.boatColorValue
+    // }).addTo(this.map);
   }
 
   calculateDistance(lat1, lon1, lat2, lon2) {
@@ -105,10 +143,9 @@ export default class extends Controller {
     return 'orange';
   }
 
-  updateTimeDisplay(index) {
-    const startTime = new Date(this.startTimeValue);
-    const currentPosition = this.locations[index];
-    const currentTime = new Date(currentPosition.created_at);
+  updateTimeDisplay(time) {
+    const startTime = new Date(this.recordingStartedAtValue);
+    const currentTime = new Date(time);
     this.timeDisplayTarget.textContent = this.formatTime(currentTime - startTime);
   }
 
@@ -123,8 +160,9 @@ export default class extends Controller {
   }
 
   sliderValueChanged(event) {
-    const index = parseInt(event.target.value, 10);
-    this.drawPathUpToPoint(index);
+    const time = parseInt(event.target.value, 10);
+    this.updateTimeDisplay(time);
+    this.drawPaths(time);
   }
 
   // Ramer-Douglas-Peucker Algorithm

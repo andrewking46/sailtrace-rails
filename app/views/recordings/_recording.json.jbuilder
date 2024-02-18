@@ -1,2 +1,11 @@
-json.extract! recording, :id, :name, :started_at, :ended_at, :time_zone, :is_race, :boat_id, :user_id, :created_at, :updated_at
+json.extract! recording, :id, :started_at, :ended_at, :time_zone, :is_race, :created_at
+
+json.boat do
+  json.extract! recording.boat, :name, :registration_country, :sail_number, :hull_color
+end
+
+json.recorded_locations recording.recorded_locations.order(:created_at) do |recorded_location|
+  json.extract! recorded_location, :id, :latitude, :longitude, :created_at
+end
+
 json.url recording_url(recording, format: :json)

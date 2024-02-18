@@ -1,27 +1,28 @@
 <%# views/recordings/replay.html.erb %>
 
-<div class="recording-replay-container">
-  <div id="replay-map-container" data-controller="replay-map"
+<div class="recording-replay-container" data-controller="replay-map"
        data-replay-map-recording-id-value="<%= @recording.id %>"
-       data-replay-map-boat-color-value="<%= @recording.boat.hull_color %>"
-       data-replay-map-start-time-value="<%= @recording.started_at.iso8601 %>">
+       data-replay-map-race-id-value="<%= @recording.race_id %>"
+       data-replay-map-recording-started-at-value="<%= @recording.started_at.to_i * 1000 %>"
+       data-replay-map-recording-ended-at-value="<%= @recording.ended_at.to_i * 1000 %>">
+  <div id="replay-map-container">
 
     <!-- Time Display -->
     <div id="time-display" data-replay-map-target="timeDisplay">
       00:00:00
     </div>
 
-    <!-- Slider for scrubbing through the recorded locations -->
-    <div class="slider-wrapper">
-      <input type="range" data-action="input->replay-map#sliderValueChanged"
-             data-replay-map-target="slider" min="0" max="0" value="0" step="1"
-             class="slider" id="replay-slider">
-    </div>
-
     <!-- Interactive Map -->
     <div id="replay-map" data-replay-map-target="map" style="height: 100vh;">
       <!-- Map will be initialized here by the replay-map Stimulus controller -->
     </div>
+  </div>
+
+  <!-- Slider for scrubbing through the recorded locations -->
+  <div class="slider-wrapper">
+    <input type="range" data-action="input->replay-map#sliderValueChanged"
+           data-replay-map-target="slider" min="<%= @recording.started_at.to_i * 1000 %>" max="<%= @recording.ended_at.to_i * 1000 %>" value="<%= @recording.started_at.to_i * 1000 %>" step="5000"
+           class="slider" id="replay-slider">
   </div>
 
   <!-- Links for navigation -->
@@ -35,6 +36,10 @@
 <style>
   .recording-replay-container {
     position: relative;
+  }
+
+  #replay-map {
+    height: 100%;
   }
 
   #time-display {
@@ -72,6 +77,11 @@
     transform: translateX(-50%);
     z-index: 1000;
     text-align: center;
+  }
+
+  .boat-marker {
+    border-radius: 2px;
+    width: auto;
   }
 
   .btn {

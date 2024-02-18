@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_01_14_061126) do
+ActiveRecord::Schema[7.1].define(version: 2024_02_07_062004) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -35,6 +35,17 @@ ActiveRecord::Schema[7.1].define(version: 2024_01_14_061126) do
     t.index ["user_id"], name: "index_boats_on_user_id"
   end
 
+  create_table "races", force: :cascade do |t|
+    t.string "name"
+    t.datetime "started_at", null: false
+    t.decimal "start_latitude", precision: 10, scale: 6, null: false
+    t.decimal "start_longitude", precision: 10, scale: 6, null: false
+    t.bigint "boat_class_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["boat_class_id"], name: "index_races_on_boat_class_id"
+  end
+
   create_table "recorded_locations", force: :cascade do |t|
     t.decimal "latitude", precision: 10, scale: 6, null: false
     t.decimal "longitude", precision: 10, scale: 6, null: false
@@ -56,7 +67,12 @@ ActiveRecord::Schema[7.1].define(version: 2024_01_14_061126) do
     t.bigint "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "race_id"
+    t.decimal "start_latitude", precision: 10, scale: 6
+    t.decimal "start_longitude", precision: 10, scale: 6
     t.index ["boat_id"], name: "index_recordings_on_boat_id"
+    t.index ["race_id"], name: "index_recordings_on_race_id"
+    t.index ["start_latitude", "start_longitude"], name: "index_recordings_on_start_latitude_and_start_longitude"
     t.index ["user_id"], name: "index_recordings_on_user_id"
   end
 
@@ -79,7 +95,9 @@ ActiveRecord::Schema[7.1].define(version: 2024_01_14_061126) do
 
   add_foreign_key "boats", "boat_classes"
   add_foreign_key "boats", "users"
+  add_foreign_key "races", "boat_classes"
   add_foreign_key "recorded_locations", "recordings"
   add_foreign_key "recordings", "boats"
+  add_foreign_key "recordings", "races"
   add_foreign_key "recordings", "users"
 end

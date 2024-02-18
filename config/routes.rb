@@ -9,6 +9,12 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :races, only: [] do
+    scope module: "races" do
+      resources :recordings, only: [:index]
+    end
+  end
+
   resources :boats
   resources :users
   resources :boat_classes

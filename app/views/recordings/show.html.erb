@@ -4,6 +4,7 @@
   <div>
     <h3>Recording</h3>
     <p><%= @recording.created_at.in_time_zone(@recording.time_zone).strftime("%A, %b %d %Y %l:%M%p") %></p>
+    <p>Race: #<%= @recording.race&.id %></p>
     <p>Boat: <%= @recording.boat.name %></p>
     <p>Sail number: <%= @recording.boat.sail_number %></p>
     <p>Distance: <%= number_with_precision(@recording.distance, precision: 2) %> nm</p>

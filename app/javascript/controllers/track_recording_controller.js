@@ -3,7 +3,7 @@ import { Controller } from "@hotwired/stimulus"
 export default class extends Controller {
   static targets = ["pauseButton", "beacon", "gpsWarning", "consoleLog"]
   static values = { recordingId: Number }
-  static ACCEPTABLE_ACCURACY_THRESHOLD = 10;
+  static ACCEPTABLE_ACCURACY_THRESHOLD = 50;
 
   connect() {
     this.isRecording = true;
