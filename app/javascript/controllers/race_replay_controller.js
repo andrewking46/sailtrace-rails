@@ -38,7 +38,7 @@ export default class extends Controller {
       const recordings = await response.json();
       this.recordings.push(...recordings);
 
-      this.simplifyPaths();
+      // this.simplifyPaths();
       this.drawPaths(parseInt(this.sliderTarget.value, 10));
       this.centerMap();
     } catch (error) {
@@ -46,13 +46,13 @@ export default class extends Controller {
     }
   }
 
-  simplifyPaths() {
-    this.recordings.forEach(recording => {
-      const simplifiedPathLocations = this.simplifyPath(recording.recorded_locations, 2);
+  // simplifyPaths() {
+  //   this.recordings.forEach(recording => {
+  //     const simplifiedPathLocations = this.simplifyPath(recording.recorded_locations, 2);
 
-      recording.simplifiedPathLocations = simplifiedPathLocations;
-    })
-  }
+  //     recording.simplifiedPathLocations = simplifiedPathLocations;
+  //   })
+  // }
 
   // Draw paths for the recording(s)
   drawPaths(time) {
@@ -68,15 +68,15 @@ export default class extends Controller {
   }
 
   resizeMap() {
-    this.map.fitBounds(L.polyline(this.recordings.find((recording) => recording.id = this.userRecordingIdValue).simplifiedPathLocations.map(positions => [positions.latitude, positions.longitude])).getBounds());
+    this.map.fitBounds(L.polyline(this.recordings.find((recording) => recording.id = this.userRecordingIdValue).recorded_locations.map(positions => [positions.latitude, positions.longitude])).getBounds());
   }
 
   centerMap() {
-    this.map.fitBounds(L.polyline(this.recordings.find((recording) => recording.id = this.userRecordingIdValue).simplifiedPathLocations.slice(0,4).map(positions => [positions.latitude, positions.longitude])).getBounds());
+    this.map.fitBounds(L.polyline(this.recordings.find((recording) => recording.id = this.userRecordingIdValue).recorded_locations.slice(0,4).map(positions => [positions.latitude, positions.longitude])).getBounds());
   }
 
   drawPathUpToTime(recording, time) {
-    const validLocations = recording.simplifiedPathLocations.filter((location) => new Date(location.created_at) >= new Date(this.raceStartedAtValue) && new Date(location.created_at) <= time)
+    const validLocations = recording.recorded_locations.filter((location) => new Date(location.created_at) >= new Date(this.raceStartedAtValue) && new Date(location.created_at) <= time)
 
     for (let i = 1; i <= validLocations.length - 1; i++) {
       const previousLocation = validLocations[i - 1];
@@ -132,65 +132,65 @@ export default class extends Controller {
     this.drawPaths(time);
   }
 
-  // Ramer-Douglas-Peucker Algorithm
-  simplifyPath(points, tolerance) {
-    if (points.length < 3) return points;
+  // // Ramer-Douglas-Peucker Algorithm
+  // simplifyPath(points, tolerance) {
+  //   if (points.length < 3) return points;
 
-    let dmax = 0;
-    let index = 0;
-    const end = points.length - 1;
-    for (let i = 1; i < end; i++) {
-      const d = this.perpendicularDistance(points[i], points[0], points[end]);
-      if (d > dmax) {
-        index = i;
-        dmax = d;
-      }
-    }
+  //   let dmax = 0;
+  //   let index = 0;
+  //   const end = points.length - 1;
+  //   for (let i = 1; i < end; i++) {
+  //     const d = this.perpendicularDistance(points[i], points[0], points[end]);
+  //     if (d > dmax) {
+  //       index = i;
+  //       dmax = d;
+  //     }
+  //   }
 
-    if (dmax > tolerance) {
-      const recResults1 = this.simplifyPath(points.slice(0, index + 1), tolerance);
-      const recResults2 = this.simplifyPath(points.slice(index, end + 1), tolerance);
+  //   if (dmax > tolerance) {
+  //     const recResults1 = this.simplifyPath(points.slice(0, index + 1), tolerance);
+  //     const recResults2 = this.simplifyPath(points.slice(index, end + 1), tolerance);
 
-      return [...recResults1.slice(0, recResults1.length - 1), ...recResults2];
-    } else {
-      return [points[0], points[end]];
-    }
-  }
+  //     return [...recResults1.slice(0, recResults1.length - 1), ...recResults2];
+  //   } else {
+  //     return [points[0], points[end]];
+  //   }
+  // }
 
-  perpendicularDistance(point, lineStart, lineEnd) {
-    const lat1 = this.degreesToRadians(lineStart.latitude);
-    const lon1 = this.degreesToRadians(lineStart.longitude);
-    const lat2 = this.degreesToRadians(lineEnd.latitude);
-    const lon2 = this.degreesToRadians(lineEnd.longitude);
-    const lat3 = this.degreesToRadians(point.latitude);
-    const lon3 = this.degreesToRadians(point.longitude);
+  // perpendicularDistance(point, lineStart, lineEnd) {
+  //   const lat1 = this.degreesToRadians(lineStart.latitude);
+  //   const lon1 = this.degreesToRadians(lineStart.longitude);
+  //   const lat2 = this.degreesToRadians(lineEnd.latitude);
+  //   const lon2 = this.degreesToRadians(lineEnd.longitude);
+  //   const lat3 = this.degreesToRadians(point.latitude);
+  //   const lon3 = this.degreesToRadians(point.longitude);
 
-    const distStartToPoint = this.haversineDistance(lat1, lon1, lat3, lon3);
-    const distEndPointToPoint = this.haversineDistance(lat2, lon2, lat3, lon3);
-    const distStartToEnd = this.haversineDistance(lat1, lon1, lat2, lon2);
+  //   const distStartToPoint = this.haversineDistance(lat1, lon1, lat3, lon3);
+  //   const distEndPointToPoint = this.haversineDistance(lat2, lon2, lat3, lon3);
+  //   const distStartToEnd = this.haversineDistance(lat1, lon1, lat2, lon2);
 
-    const semiPerimeter = (distStartToPoint + distEndPointToPoint + distStartToEnd) / 2;
-    const area = Math.sqrt(semiPerimeter * (semiPerimeter - distStartToPoint) * (semiPerimeter - distEndPointToPoint) * (semiPerimeter - distStartToEnd));
+  //   const semiPerimeter = (distStartToPoint + distEndPointToPoint + distStartToEnd) / 2;
+  //   const area = Math.sqrt(semiPerimeter * (semiPerimeter - distStartToPoint) * (semiPerimeter - distEndPointToPoint) * (semiPerimeter - distStartToEnd));
 
-    return (2 * area) / distStartToEnd;
-  }
+  //   return (2 * area) / distStartToEnd;
+  // }
 
-  haversineDistance(lat1, lon1, lat2, lon2) {
-    const R = 6371e3; // meters
-    const φ1 = lat1;
-    const φ2 = lat2;
-    const Δφ = lat2 - lat1;
-    const Δλ = lon2 - lon1;
+  // haversineDistance(lat1, lon1, lat2, lon2) {
+  //   const R = 6371e3; // meters
+  //   const φ1 = lat1;
+  //   const φ2 = lat2;
+  //   const Δφ = lat2 - lat1;
+  //   const Δλ = lon2 - lon1;
 
-    const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
-              Math.cos(φ1) * Math.cos(φ2) *
-              Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  //   const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+  //             Math.cos(φ1) * Math.cos(φ2) *
+  //             Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+  //   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
-    return R * c; // Distance in meters
-  }
+  //   return R * c; // Distance in meters
+  // }
 
-  degreesToRadians(degrees) {
-    return degrees * (Math.PI / 180);
-  }
+  // degreesToRadians(degrees) {
+  //   return degrees * (Math.PI / 180);
+  // }
 }
