@@ -3,7 +3,7 @@ class RecordingsController < ApplicationController
 
   # GET /recordings or /recordings.json
   def index
-    @recordings = Recording.all.order(created_at: :desc)
+    @recordings = Current.user.recordings.order(created_at: :desc)
   end
 
   # GET /recordings/1 or /recordings/1.json
@@ -77,13 +77,16 @@ class RecordingsController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
     def set_recording
-      @recording = Recording.find(params[:id])
+      if recording = Current.user.recordings.find(params[:id])
+        @recording = recording
+      else
+        redirect_to root_url, alert: "⛔️"
+      end
     end
 
     # Only allow a list of trusted parameters through.
     def recording_params
-      params.require(:recording).compact_blank.permit(:name, :started_at, :ended_at, :time_zone, :is_race, :boat_id, :user_id)
+      params.require(:recording).compact_blank.permit(:name, :started_at, :ended_at, :time_zone, :is_race, :boat_id)
     end
 end

@@ -18,27 +18,22 @@
 
   <div>
     <%= form.label :registration_country, style: "display: block" %>
-    <%= form.country_select :registration_country, priority_countries: ["US"] %>
+    <%= form.country_select :registration_country, priority_countries: ["US"], required: true %>
   </div>
 
   <div>
     <%= form.label :sail_number, style: "display: block" %>
-    <%= form.text_field :sail_number %>
+    <%= form.text_field :sail_number, required: true %>
   </div>
 
   <div>
     <%= form.label :hull_color, style: "display: block" %>
-    <%= form.text_field :hull_color %>
+    <%= form.text_field :hull_color, required: true %>
   </div>
 
   <div>
     <%= form.label :boat_class_id, style: "display: block" %>
     <%= form.collection_select :boat_class_id, BoatClass.order(:name), :id, :name %>
-  </div>
-
-  <div>
-    <%= form.label :user_id, style: "display: block" %>
-    <%= form.collection_select :user_id, User.order(:username), :id, :username %>
   </div>
 
   <div>

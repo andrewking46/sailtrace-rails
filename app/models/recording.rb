@@ -1,6 +1,6 @@
 class Recording < ApplicationRecord
   belongs_to :boat
-  belongs_to :user
+  belongs_to :user, default: -> { Current.user }
   belongs_to :race, optional: true
   has_many :recorded_locations, dependent: :destroy
 

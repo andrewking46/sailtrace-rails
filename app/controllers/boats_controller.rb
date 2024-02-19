@@ -3,7 +3,7 @@ class BoatsController < ApplicationController
 
   # GET /boats or /boats.json
   def index
-    @boats = Boat.all
+    @boats = Current.user.boats.order(:name)
   end
 
   # GET /boats/1 or /boats/1.json
@@ -60,11 +60,15 @@ class BoatsController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_boat
-      @boat = Boat.find(params[:id])
+      if boat = Current.user.boats.find(params[:id])
+        @boat = boat
+      else
+        redirect_to root_url, alert: "⛔️"
+      end
     end
 
     # Only allow a list of trusted parameters through.
     def boat_params
-      params.require(:boat).compact_blank.permit(:name, :registration_country, :sail_number, :hull_color, :boat_class_id, :user_id)
+      params.require(:boat).compact_blank.permit(:name, :registration_country, :sail_number, :hull_color, :boat_class_id)
     end
 end

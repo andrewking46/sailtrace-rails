@@ -20,12 +20,7 @@
 
   <div>
     <%= form.label :boat_id, style: "display: block" %>
-    <%= form.collection_select :boat_id, Boat.all, :id, :name %>
-  </div>
-
-  <div>
-    <%= form.label :user_id, style: "display: block" %>
-    <%= form.collection_select :user_id, User.all, :id, :username %>
+    <%= form.collection_select :boat_id, Current.user.boats, :id, :name %>
   </div>
 
   <div>

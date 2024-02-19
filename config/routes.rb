@@ -18,6 +18,7 @@ Rails.application.routes.draw do
   resources :boats
   resources :users
   resources :boat_classes
+  resource  :session
 
   # Route for the 'More' page
   get 'more', to: 'pages#more'
