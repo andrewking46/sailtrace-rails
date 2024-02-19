@@ -6,6 +6,10 @@ class Race < ApplicationRecord
 
   reverse_geocoded_by :start_latitude, :start_longitude
 
+  def ended_at
+    recordings.maximum(:ended_at)
+  end
+
   def after_ending_actions
     recalculate_start_attributes
     update_boat_class_if_consistent

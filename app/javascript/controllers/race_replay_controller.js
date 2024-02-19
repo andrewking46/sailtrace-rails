@@ -3,7 +3,7 @@ import L from "leaflet";
 
 export default class extends Controller {
   static targets = ["slider", "timeDisplay", "map"];
-  static values = { recordingId: Number, raceId: Number, recordingStartedAt: Number, recordingEndedAt: Number };
+  static values = { userRecordingId: Number, raceId: Number, raceStartedAt: Number, raceEndedAt: Number };
 
   connect() {
     this.initializeMap();
@@ -32,15 +32,12 @@ export default class extends Controller {
     this.recordings = []
 
     try {
-      if (Number.isFinite(this.raceIdValue) && this.raceIdValue > 0) {
-        const response = await fetch(`/races/${this.raceIdValue}/recordings.json`);
-        const recordings = await response.json();
-        this.recordings.push(...recordings);
-      } else {
-        const response = await fetch(`/recordings/${this.recordingIdValue}.json`);
-        const recording = await response.json();
-        this.recordings.push(recording);
-      }
+      if (!Number.isFinite(this.raceIdValue)) return;
+
+      const response = await fetch(`/races/${this.raceIdValue}/recordings.json`);
+      const recordings = await response.json();
+      this.recordings.push(...recordings);
+
       this.simplifyPaths();
       this.drawPaths(parseInt(this.sliderTarget.value, 10));
       this.centerMap();
@@ -71,25 +68,25 @@ export default class extends Controller {
   }
 
   resizeMap() {
-    this.map.fitBounds(L.polyline(this.recordings.find((recording) => recording.id = this.recordingIdValue).simplifiedPathLocations.map(positions => [positions.latitude, positions.longitude])).getBounds());
+    this.map.fitBounds(L.polyline(this.recordings.find((recording) => recording.id = this.userRecordingIdValue).simplifiedPathLocations.map(positions => [positions.latitude, positions.longitude])).getBounds());
   }
 
   centerMap() {
-    this.map.fitBounds(L.polyline(this.recordings.find((recording) => recording.id = this.recordingIdValue).simplifiedPathLocations.slice(0,4).map(positions => [positions.latitude, positions.longitude])).getBounds());
+    this.map.fitBounds(L.polyline(this.recordings.find((recording) => recording.id = this.userRecordingIdValue).simplifiedPathLocations.slice(0,4).map(positions => [positions.latitude, positions.longitude])).getBounds());
   }
 
   drawPathUpToTime(recording, time) {
-    const validLocations = recording.simplifiedPathLocations.filter((location) => new Date(location.created_at) >= new Date(this.recordingStartedAtValue) && new Date(location.created_at) <= time)
+    const validLocations = recording.simplifiedPathLocations.filter((location) => new Date(location.created_at) >= new Date(this.raceStartedAtValue) && new Date(location.created_at) <= time)
 
     for (let i = 1; i <= validLocations.length - 1; i++) {
       const previousLocation = validLocations[i - 1];
       const currentLocation = validLocations[i];
-      const color = recording.id === this.recordingIdValue ? this.getSegmentColor(previousLocation, currentLocation) : 'white';
+      const color = recording.boat.hull_color.toLowerCase() || 'white';
 
       L.polyline([
         [previousLocation.latitude, previousLocation.longitude],
         [currentLocation.latitude, currentLocation.longitude]
-      ], { color, weight: 3 }).addTo(this.map);
+      ], { color, weight: 2 }).addTo(this.map);
     }
 
     if (validLocations.length > 0) {
@@ -101,7 +98,7 @@ export default class extends Controller {
     // Create a custom icon for the boat marker
     const boatIcon = L.divIcon({
       className: 'boat-marker',
-      html: `<div style="background-color: ${color};">${sailNumber}</div>`
+      html: `<div style="color: ${color};">${sailNumber}</div>`
     });
 
     // Add the marker to the map at the given position
@@ -113,45 +110,8 @@ export default class extends Controller {
     // }).addTo(this.map);
   }
 
-  calculateDistance(lat1, lon1, lat2, lon2) {
-    const R = 6371e3; // meters
-    const φ1 = lat1 * Math.PI / 180; // φ, λ in radians
-    const φ2 = lat2 * Math.PI / 180;
-    const Δφ = (lat2 - lat1) * Math.PI / 180;
-    const Δλ = (lon2 - lon1) * Math.PI / 180;
-
-    const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
-              Math.cos(φ1) * Math.cos(φ2) *
-              Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-    return R * c; // in meters
-  }
-
-  getSegmentColor(previousLocation, location) {
-    const speed = this.calculateSpeed(previousLocation, location);
-
-    if (speed > 1.5) return 'green';
-    if (speed > 1.25) return 'limegreen';
-    if (speed > 1) return 'yellowgreen';
-    if (speed > 0.75) return 'yellow';
-    if (speed > 0.5) return 'gold';
-    if (speed > 0.25) return 'orange';
-    return 'red';
-  }
-
-  calculateSpeed(previousLocation, location) {
-    const distance = this.calculateDistance(
-      previousLocation.latitude, previousLocation.longitude,
-      location.latitude, location.longitude
-    );
-    const timeElapsed = (new Date(location.created_at) - new Date(previousLocation.created_at)) / 1000;
-
-    return distance / timeElapsed;
-  }
-
   updateTimeDisplay(time) {
-    const startTime = new Date(this.recordingStartedAtValue);
+    const startTime = new Date(this.raceStartedAtValue);
     const currentTime = new Date(time);
     this.timeDisplayTarget.textContent = this.formatTime(currentTime - startTime);
   }

@@ -1,5 +1,5 @@
 class RecordingsController < ApplicationController
-  before_action :set_recording, only: %i[ show track replay edit update end destroy ]
+  before_action :set_recording, only: %i[ show track edit update end destroy ]
 
   # GET /recordings or /recordings.json
   def index
@@ -12,10 +12,6 @@ class RecordingsController < ApplicationController
 
   # GET /recordings/1/track
   def track
-  end
-
-  # GET /recordings/1/replay
-  def replay
   end
 
   # GET /recordings/new

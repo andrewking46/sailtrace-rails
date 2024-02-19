@@ -1,40 +1,38 @@
-<%# views/recordings/replay.html.erb %>
-
-<div class="recording-replay-container" data-controller="replay-map"
-       data-replay-map-recording-id-value="<%= @recording.id %>"
-       data-replay-map-race-id-value="<%= @recording.race_id %>"
-       data-replay-map-recording-started-at-value="<%= @recording.started_at.to_i * 1000 %>"
-       data-replay-map-recording-ended-at-value="<%= @recording.ended_at.to_i * 1000 %>">
+<div class="race-replay-container" data-controller="race-replay"
+       data-race-replay-user-recording-id-value="<%= @user_recording.id %>"
+       data-race-replay-race-id-value="<%= @race.id %>"
+       data-race-replay-race-started-at-value="<%= @race.started_at.to_i * 1000 %>"
+       data-race-replay-race-ended-at-value="<%= @race.ended_at.to_i * 1000 %>">
   <div id="replay-map-container">
 
     <!-- Time Display -->
-    <div id="time-display" data-replay-map-target="timeDisplay">
+    <div id="time-display" data-race-replay-target="timeDisplay">
       00:00:00
     </div>
 
     <!-- Interactive Map -->
-    <div id="replay-map" data-replay-map-target="map" style="height: 100vh;">
+    <div id="replay-map" data-race-replay-target="map" style="height: 100dvh;">
       <!-- Map will be initialized here by the replay-map Stimulus controller -->
     </div>
   </div>
 
   <!-- Slider for scrubbing through the recorded locations -->
   <div class="slider-wrapper">
-    <input type="range" data-action="input->replay-map#sliderValueChanged"
-           data-replay-map-target="slider" min="<%= @recording.started_at.to_i * 1000 %>" max="<%= @recording.ended_at.to_i * 1000 %>" value="<%= @recording.started_at.to_i * 1000 %>" step="5000"
+    <input type="range" data-action="input->race-replay#sliderValueChanged"
+           data-race-replay-target="slider" min="<%= @race.started_at.to_i * 1000 %>" max="<%= @race.ended_at.to_i * 1000 %>" value="<%= @race.started_at.to_i * 1000 %>" step="5000"
            class="slider" id="replay-slider">
   </div>
 
   <!-- Links for navigation -->
   <div class="navigation-links">
-    <%= link_to 'Back to Recording Details', recording_path(@recording), class: "btn btn-primary" %>
+    <%= link_to 'Back to Recording Details', recording_path(@user_recording), class: "btn btn-primary" if @user_recording.present? %>
     <%= link_to 'Back to All Recordings', recordings_path, class: "btn btn-secondary" %>
   </div>
 </div>
 
 <!-- The following style block is just an example. Adapt and move to your asset pipeline or CSS files as needed. -->
 <style>
-  .recording-replay-container {
+  .race-replay-container {
     position: relative;
   }
 
@@ -80,11 +78,13 @@
   }
 
   .boat-marker {
-    border-radius: 2px;
-    width: auto;
+    min-width: fit-content;
+    min-height: fit-content;
+    line-height: normal;
   }
 
   .btn {
     margin: 0 10px;
   }
 </style>
+

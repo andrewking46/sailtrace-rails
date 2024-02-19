@@ -4,14 +4,14 @@ Rails.application.routes.draw do
 
     member do
       get   :track
-      get   :replay
       patch :end
     end
   end
 
-  resources :races, only: [] do
+  resources :races, only: :show do
     scope module: "races" do
-      resources :recordings, only: [:index]
+      resources :recordings, only: :index
+      resource  :replay, only: :show
     end
   end
 
