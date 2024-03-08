@@ -1,12 +1,10 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>SailTrace</title>
+    <%= page_title_tag %>
 
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, interactive-widget=resizes-content">
     <meta name="view-transition" content="same-origin">
-    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
-    <meta name="theme-color" content="#010711" media="(prefers-color-scheme: dark)">
     <meta name="apple-mobile-web-app-capable" content="yes">
 
     <link rel="manifest" href="/manifest.json">
@@ -22,9 +20,19 @@
 
   <body>
     <% if notice = flash[:notice] || flash[:alert] %>
-      <%= notice %>
+      <div class="flash" data-controller="element-removal" data-action="animationend->element-removal#remove">
+        <div class="flash-inner">
+          <%= notice %>
+        </div>
+      </div>
     <% end %>
 
-    <%= yield %>
+    <%= render 'shared/app_navigation' if signed_in? %>
+    <%= render 'shared/app_page_header' if signed_in? %>
+
+    <main id="main">
+      <%= yield %>
+    </main>
+
   </body>
 </html>

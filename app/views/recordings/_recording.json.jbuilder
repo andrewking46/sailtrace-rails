@@ -5,7 +5,7 @@ json.boat do
 end
 
 json.recorded_locations recording.recorded_locations.order(:created_at) do |recorded_location|
-  json.extract! recorded_location, :id, :latitude, :longitude, :created_at
+  json.extract! recorded_location, :id, :latitude, :longitude, :accuracy, :created_at
 end
 
 json.url recording_url(recording, format: :json)

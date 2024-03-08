@@ -1,10 +1,13 @@
-<%= render 'shared/tab_bar' %>
+<% @show_app_navigation = true %>
 
-<h1>More</h1>
+<div class="container">
+  <h1>More</h1>
 
-<%= link_to "Boats", boats_path %>
-<%= link_to "Boat Classes", boat_classes_path %>
+  <%= link_to "Recordings", recordings_path %>
+  <%= link_to "Boats", boats_path %>
+  <%= link_to "Boat Classes", boat_classes_path %>
 
-<%= form_with url: session_path, method: :delete, data: { controller: "sessions" } do %>
-  <button>Log out</button>
-<% end %>
+  <%= form_with url: session_path, method: :delete, data: { controller: "sessions" } do %>
+    <button>Log out</button>
+  <% end %>
+</div>

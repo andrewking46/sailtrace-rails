@@ -1,0 +1,26 @@
+.flash {
+  display: flex;
+  inset-block-start: var(--block-space);
+  inset-inline-start: 50%;
+  justify-content: center;
+  position: fixed;
+  text-align: center;
+  z-index: 6;
+  transform: translate(-50%);
+
+  [data-turbo-preview] & {
+    display: none;
+  }
+}
+
+.flash-inner {
+  align-items: center;
+  animation: appear-then-fade 5s 300ms both;
+  background: var(--color-text);
+  border-radius: 2em;
+  color: var(--color-text-reversed);
+  display: flex;
+  justify-content: center;
+  margin: auto;
+  padding: var(--block-space-half) var(--block-space);
+}

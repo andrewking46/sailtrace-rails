@@ -1,20 +1,22 @@
-<div data-controller="track-recording" id="<%= dom_id @recording %>" data-track-recording-recording-id-value="<%= @recording.id %>">
-  <h1>Recording</h1>
-  <p>Do not close your phone or navigate away from this screen while the recording is in progress.</p>
+<div class="container">
+  <div data-controller="track-recording" id="<%= dom_id @recording %>" data-track-recording-recording-id-value="<%= @recording.id %>">
+    <h1>Recording</h1>
+    <p>Do not close your phone or navigate away from this screen while the recording is in progress.</p>
 
-  <div id="beacon" data-track-recording-target="beacon" class="beacon"></div>
+    <div id="beacon" data-track-recording-target="beacon" class="beacon"></div>
 
-  <div data-track-recording-target="gpsWarning" class="gps-warning">
-    GPS accuracy is too low. Move to an open area with a clear view of the sky.
-  </div>
+    <div data-track-recording-target="gpsWarning" class="gps-warning">
+      GPS accuracy is too low. Move to an open area with a clear view of the sky.
+    </div>
 
-  <pre data-track-recording-target="consoleLog" class="console-log"></pre>
+    <pre data-track-recording-target="consoleLog" class="console-log"></pre>
 
-  <button data-action="click->track-recording#toggleRecordingAction" data-track-recording-target="pauseButton">Pause recording</button>
-  <button data-action="click->track-recording#confirmEndRecording">End recording</button>
+    <button data-action="click->track-recording#toggleRecordingAction" data-track-recording-target="pauseButton">Pause recording</button>
+    <button data-action="click->track-recording#confirmEndRecording">End recording</button>
 
-  <div>
-    <%= link_to "Back to recordings", recordings_path %>
+    <div>
+      <%= link_to "Back to recordings", recordings_path %>
+    </div>
   </div>
 </div>
 

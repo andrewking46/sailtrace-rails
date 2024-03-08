@@ -14,11 +14,11 @@ export default class extends Controller {
     this.map = L.map(this.mapTarget, {
       center: [0, 0],
       zoom: 13,
-      zoomControl: true,
+      zoomControl: false,
       touchZoom: true,
       scrollWheelZoom: true,
       doubleClickZoom: true,
-      dragging: false,
+      dragging: true,
       keyboard: false
     });
 

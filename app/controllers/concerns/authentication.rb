@@ -14,7 +14,7 @@ module Authentication
 
     def require_unauthenticated_access(**options)
       skip_before_action :require_authentication, **options
-      before_action :restore_authentication, :redirect_signed_in_user_to_root, **options
+      before_action :restore_authentication, :redirect_signed_in_user_to_default_url, **options
     end
   end
 
@@ -38,8 +38,8 @@ module Authentication
       redirect_to new_session_url
     end
 
-    def redirect_signed_in_user_to_root
-      redirect_to root_url if signed_in?
+    def redirect_signed_in_user_to_default_url
+      redirect_to recordings_url if signed_in?
     end
 
     def start_new_session_for(user)
@@ -59,7 +59,7 @@ module Authentication
     end
 
     def post_authenticating_url
-      session.delete(:return_to_after_authenticating) || root_url
+      session.delete(:return_to_after_authenticating) || recordings_url
     end
 
     def reset_authentication

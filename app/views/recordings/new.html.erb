@@ -1,14 +1,16 @@
-<div data-controller="geolocation">
-  <h1>New recording</h1>
+<% content_for :app_page_header do %>
+  <div class="flex-item-justify-start"><%= link_back %></div>
+<% end %>
 
-  <div data-geolocation-target="locationWarning" class="location-warning" style="display: none;">
-    <p>Location tracking is off. You need to turn it on for the app to work properly.</p>
-    <button data-action="click->geolocation#requestLocation">Turn location tracking on</button>
-  </div>
+<div class="container">
+  <div data-controller="geolocation">
+    <h1>New recording</h1>
 
-  <%= render "form", recording: @recording %>
+    <div data-geolocation-target="locationWarning" class="location-warning" style="display: none;">
+      <p>Location tracking is off. You need to turn it on for the app to work properly.</p>
+      <button data-action="click->geolocation#requestLocation">Turn location tracking on</button>
+    </div>
 
-  <div class="navigation-links">
-    <%= link_to "Back to recordings", recordings_path %>
+    <%= render "form", recording: @recording %>
   </div>
 </div>

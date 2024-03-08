@@ -1,19 +1,21 @@
-<h1>New session</h1>
+<div class="container">
+  <h1>New session</h1>
 
-<%= form_with url: session_url do |form| %>
-  <div>
-    <%= form.label :email_address, style: "display: block" %>
-    <%= form.email_field :email_address, autofocus: true, required: true, placeholder: "Enter your email address" %>
-  </div>
+  <%= form_with url: session_url do |form| %>
+    <div>
+      <%= form.label :email_address, style: "display: block" %>
+      <%= form.email_field :email_address, autofocus: true, required: true, placeholder: "Enter your email address" %>
+    </div>
 
-  <div>
-    <%= form.label :password, style: "display: block" %>
-    <%= form.password_field :password, required: true, maxlength: 72, placeholder: "Enter your password" %>
-  </div>
+    <div>
+      <%= form.label :password, style: "display: block" %>
+      <%= form.password_field :password, required: true, maxlength: 72, placeholder: "Enter your password" %>
+    </div>
 
-  <div>
-    <%= form.button type: :submit %>
-  </div>
-<% end %>
+    <div>
+      <%= form.button type: :submit %>
+    </div>
+  <% end %>
 
-<%= link_to "Sign up", new_user_path %>
+  <%= link_to "Sign up", new_user_path %>
+</div>

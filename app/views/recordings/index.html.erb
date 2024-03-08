@@ -1,11 +1,13 @@
-<%= render 'shared/tab_bar' %>
+<% content_for :app_page_header do %>
+  <div class="flex-item-justify-start">SailTrace</div>
+<% end %>
 
-<p style="color: green"><%= notice %></p>
+<div class="container">
+  <h1>Recordings</h1>
 
-<h1>Recordings</h1>
+  <div id="recordings">
+    <%= render partial: 'recording', collection: @recordings, as: :recording %>
+  </div>
 
-<div id="recordings">
-  <%= render partial: 'recording', collection: @recordings, as: :recording %>
+  <%= link_to "New recording", new_recording_path %>
 </div>
-
-<%= link_to "New recording", new_recording_path %>

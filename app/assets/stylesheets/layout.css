@@ -1,0 +1,26 @@
+body {
+  display: grid;
+  grid-template-areas:
+    "app-page-header"
+    "main";
+  grid-template-columns: 1fr;
+  grid-template-rows: min-content 1fr;
+  max-block-size: 100dvh;
+
+  --container-width: 60rem;
+}
+
+#app-page-header {
+  grid-area: app-page-header;
+}
+
+#main {
+  grid-area: main;
+  position: relative;
+}
+
+.container {
+  width: 100%;
+  max-width: var(--container-width);
+  margin: 0 auto;
+}

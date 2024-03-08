@@ -63,7 +63,7 @@ class BoatsController < ApplicationController
       if boat = Current.user.boats.find(params[:id])
         @boat = boat
       else
-        redirect_to root_url, alert: "⛔️"
+        redirect_to recordings_url, alert: "⛔️"
       end
     end
 

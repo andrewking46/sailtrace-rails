@@ -77,7 +77,7 @@ class RecordingsController < ApplicationController
       if recording = Current.user.recordings.find(params[:id])
         @recording = recording
       else
-        redirect_to root_url, alert: "⛔️"
+        redirect_to recordings_url, alert: "⛔️"
       end
     end
 

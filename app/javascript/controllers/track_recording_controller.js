@@ -51,14 +51,14 @@ export default class extends Controller {
     this.gpsWarningTarget.hidden = accuracy <= this.constructor.ACCEPTABLE_ACCURACY_THRESHOLD;
   }
 
-  postLocationData({ latitude, longitude, speed: velocity, heading }) {
+  postLocationData({ latitude, longitude, speed: velocity, heading, accuracy }) {
     fetch(`/recordings/${this.recordingIdValue}/recorded_locations`, {
       method: 'POST',
       headers: {
         'X-CSRF-Token': this.getCSRFToken(),
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ recorded_location: { latitude, longitude, velocity, heading } })
+      body: JSON.stringify({ recorded_location: { latitude, longitude, velocity, heading, accuracy } })
     })
     .then(response => this.checkResponse(response))
     .then(data => this.printLog('Location recorded:', data))

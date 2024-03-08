@@ -31,6 +31,6 @@ class RecordedLocationsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def recorded_location_params
-      params.require(:recorded_location).permit(:latitude, :longitude, :velocity, :heading)
+      params.require(:recorded_location).permit(:latitude, :longitude, :velocity, :heading, :accuracy)
     end
 end

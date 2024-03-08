@@ -1,3 +1,7 @@
+<% content_for :app_page_header do %>
+  <div class="flex-item-justify-start"><%= link_back %></div>
+<% end %>
+
 <div class="race-replay-container" data-controller="race-replay"
        data-race-replay-user-recording-id-value="<%= @user_recording.id %>"
        data-race-replay-race-id-value="<%= @race.id %>"
@@ -11,38 +15,46 @@
     </div>
 
     <!-- Interactive Map -->
-    <div id="replay-map" data-race-replay-target="map" style="height: 100dvh;">
+    <div id="replay-map" data-race-replay-target="map">
       <!-- Map will be initialized here by the replay-map Stimulus controller -->
     </div>
   </div>
 
   <!-- Slider for scrubbing through the recorded locations -->
   <div class="slider-wrapper">
-    <input type="range" data-action="input->race-replay#sliderValueChanged"
-           data-race-replay-target="slider" min="<%= @race.started_at.to_i * 1000 %>" max="<%= @race.ended_at.to_i * 1000 %>" value="<%= @race.started_at.to_i * 1000 %>" step="5000"
-           class="slider" id="replay-slider">
-  </div>
-
-  <!-- Links for navigation -->
-  <div class="navigation-links">
-    <%= link_to 'Back to Recording Details', recording_path(@user_recording), class: "btn btn-primary" if @user_recording.present? %>
-    <%= link_to 'Back to All Recordings', recordings_path, class: "btn btn-secondary" %>
+    <div class="container">
+      <input type="range" data-action="input->race-replay#sliderValueChanged"
+             data-race-replay-target="slider" min="<%= @race.started_at.to_i * 1000 %>" max="<%= @race.ended_at.to_i * 1000 %>" value="<%= @race.started_at.to_i * 1000 %>" step="5000"
+             class="slider" id="replay-slider">
+    </div>
   </div>
 </div>
 
 <!-- The following style block is just an example. Adapt and move to your asset pipeline or CSS files as needed. -->
 <style>
   .race-replay-container {
-    position: relative;
+    position: fixed;
+    inset: 0;
+    display: grid;
+    grid-template-areas:
+      "map"
+      "slider";
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr min-content;
+    max-block-size: 100dvh;
   }
 
   #replay-map {
     height: 100%;
   }
 
+  #replay-map-container {
+    grid-area: map;
+  }
+
   #time-display {
     position: absolute;
-    top: 10px;
+    bottom: 5rem;
     left: 50%;
     transform: translateX(-50%);
     z-index: 1000;
@@ -52,15 +64,13 @@
   }
 
   .slider-wrapper {
-    position: absolute;
-    bottom: 20px;
-    width: 80%;
-    max-width: 600px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 1000;
-    padding: 20px;
-    background: white;
+    grid-area: slider;
+    bottom: 0;
+    width: 100%;
+    z-index: 401;
+    padding-block: var(--block-space);
+    padding-inline: var(--inline-space);
+    background-color: #fff;
   }
 
   .slider {
