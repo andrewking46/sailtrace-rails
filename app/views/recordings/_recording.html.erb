@@ -1,12 +1,22 @@
-<div id="<%= dom_id recording %>">
+<div id="<%= dom_id recording %>" class="border-top padding-block">
   <div>
-    <h3>Recording</h3>
-    <p><%= recording.created_at.in_time_zone(recording.time_zone).strftime("%A, %b %d %Y %l:%M%p") %></p>
-    <p>Boat: <%= recording.boat.name %></p>
-    <p>Sail number: <%= recording.boat.sail_number %></p>
-    <p>Distance: <%= number_with_precision(recording.distance, precision: 2) %> nm</p>
-    <p>Time: <%= recording.duration %></p>
-    <p>Average Speed: <%= recording.average_speed %> knots</p>
+    <h3 class="margin-block-end-half">Recording</h3>
+    <p class="text-small margin-block-end"><%= recording.created_at.in_time_zone(recording.time_zone).strftime("%A, %b %d %Y %l:%M%p") %></p>
+    <p><%= recording.boat.name %> (<%= recording.boat.registration_country %> <%= recording.boat.sail_number %>)</p>
+    <dl class="flex flex-wrap gap margin-block">
+      <div>
+        <dt class="text-small text-muted">Distance</dt>
+        <dd><%= number_with_precision(recording.distance, precision: 2) %> nm</dd>
+      </div>
+      <div>
+        <dt class="text-small text-muted">Time</dt>
+        <dd><%= recording.duration %></dd>
+      </div>
+      <div>
+        <dt class="text-small text-muted">Average speed</dt>
+        <dd><%= recording.average_speed %> knots</dd>
+      </div>
+    </dl>
   </div>
 
   <div>

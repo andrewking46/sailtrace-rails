@@ -15,7 +15,6 @@
   right: 0;
   z-index: 402;
   padding-block: var(--block-space-half);
-  padding-inline: var(--inline-space-half);
 
   @media (min-width: 60rem) {
     right: calc(50% - var(--container-width) / 2);

@@ -18,6 +18,7 @@
   --color-message-bg: oklch(var(--lch-gray));
   --color-text: oklch(var(--lch-black));
   --color-text-reversed: oklch(var(--lch-white));
+  --color-text-muted: oklch(var(--lch-gray-darker));
   --color-link: oklch(var(--lch-blue));
   --color-border: oklch(var(--lch-gray));
   --color-border-dark: oklch(var(--lch-gray-dark));

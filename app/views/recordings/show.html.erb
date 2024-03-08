@@ -5,34 +5,41 @@
 <% end %>
 
 <div class="container">
-  <h1>Recording</h1>
+  <h1 class="margin-block-end">Recording</h1>
 
   <div id="<%= dom_id @recording %>">
-    <div>
-      <p><%= @recording.created_at.in_time_zone(@recording.time_zone).strftime("%A, %b %d %Y %l:%M%p") %></p>
-      <p>Race: #<%= @recording.race_id %></p>
-      <p>Boat: <%= @recording.boat.name %></p>
-      <p>Sail number: <%= @recording.boat.sail_number %></p>
-      <p>Distance: <%= number_with_precision(@recording.distance, precision: 2) %> nm</p>
-      <p>Time: <%= @recording.duration %></p>
-      <p>Average Speed: <%= @recording.average_speed %> knots</p>
-    </div>
+    <p class="text-small margin-block-end"><%= @recording.created_at.in_time_zone(@recording.time_zone).strftime("%A, %b %d %Y %l:%M%p") %></p>
+    <p class="margin-block-end"><%= @recording.boat.name %> (<%= @recording.boat.registration_country %> <%= @recording.boat.sail_number %>)</p>
+    <dl class="flex flex-wrap gap margin-block-end">
+      <div>
+        <dt class="text-small text-muted">Distance</dt>
+        <dd><%= number_with_precision(@recording.distance, precision: 2) %> nm</dd>
+      </div>
+      <div>
+        <dt class="text-small text-muted">Time</dt>
+        <dd><%= @recording.duration %></dd>
+      </div>
+      <div>
+        <dt class="text-small text-muted">Average speed</dt>
+        <dd><%= @recording.average_speed %> knots</dd>
+      </div>
+    </dl>
+  </div>
 
-    <div data-controller="static-map"
-       data-static-map-recording-id-value="<%= @recording.id %>"
-       data-static-map-boat-color-value="<%= @recording.boat.hull_color %>"
-       data-action="click->static-map#goToReplay"
-       data-static-map-replay-path-value="<%= race_replay_path(@recording.race_id) if @recording.is_race? %>"
-       id="static-map" style="height: 400px;">
-    </div>
+  <div data-controller="static-map"
+     data-static-map-recording-id-value="<%= @recording.id %>"
+     data-static-map-boat-color-value="<%= @recording.boat.hull_color %>"
+     data-action="click->static-map#goToReplay"
+     data-static-map-replay-path-value="<%= race_replay_path(@recording.race_id) if @recording.is_race? %>"
+     id="static-map" style="height: 400px;"
+     class="border-radius margin-block-end">
   </div>
 
   <div>
-    <%= link_to "View replay", race_replay_path(@recording.race_id) if @recording.is_race? %> |
-    <%= link_to "Back to recordings", recordings_path %>
+    <%= link_to "View replay", race_replay_path(@recording.race_id) if @recording.is_race? %>
 
     <br>
     <br>
-    <%= button_to "Destroy this recording", @recording, method: :delete %>
+    <%= link_to "Destroy this recording", @recording, method: :delete %>
   </div>
 </div>
