@@ -12,6 +12,7 @@ class RecordingsController < ApplicationController
 
   # GET /recordings/1/track
   def track
+    redirect_to recordings_url if @recording.ended?
   end
 
   # GET /recordings/new

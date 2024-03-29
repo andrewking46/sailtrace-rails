@@ -42,6 +42,6 @@
 
     <br>
     <br>
-    <%= link_to "Destroy this recording", @recording, method: :delete %>
+    <%= link_to "Destroy this recording", @recording, data: { turbo_method: :delete, turbo_confirm: 'Are you sure you want to delete this recording?' } %>
   </div>
 </div>
