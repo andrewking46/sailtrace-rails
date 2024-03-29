@@ -1,31 +1,32 @@
 import { Controller } from "@hotwired/stimulus";
-import L from "leaflet";
+import mapboxgl from "mapbox-gl";
 
 export default class extends Controller {
   static targets = ["slider", "timeDisplay", "map"];
-  static values = { userRecordingId: Number, raceId: Number, raceStartedAt: Number, raceEndedAt: Number };
+  static values = {
+    userRecordingId: Number,
+    raceId: Number,
+    raceStartedAt: Number,
+    raceEndedAt: Number,
+    raceStartLatitude: Number,
+    raceStartLongitude: Number
+  };
+
+  boatMarkers = {};
 
   connect() {
+    mapboxgl.accessToken = 'pk.eyJ1IjoiYW5kcmV3a2luZzQ2IiwiYSI6ImNsdGozang0MTBsbDgya21kNGsybGNvODkifQ.-2ds5rFYjTBPgTYc7EG0-A'
     this.initializeMap();
     this.fetchRecordingData();
   }
 
   initializeMap() {
-    this.map = L.map(this.mapTarget, {
-      center: [0, 0],
-      zoom: 13,
-      zoomControl: false,
-      touchZoom: true,
-      scrollWheelZoom: true,
-      doubleClickZoom: true,
-      dragging: true,
-      keyboard: false
+    this.map = new mapboxgl.Map({
+      container: this.mapTarget, // container ID
+      style: 'mapbox://styles/mapbox/standard', // style URL
+      center: [this.raceStartLongitudeValue, this.raceStartLatitudeValue],
+      zoom: 13 // starting zoom
     });
-
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; OpenStreetMap contributors',
-      noWrap: true
-    }).addTo(this.map);
   }
 
   async fetchRecordingData() {
@@ -39,11 +40,46 @@ export default class extends Controller {
       this.recordings.push(...recordings);
 
       // this.simplifyPaths();
+      this.initializeBoatSources();
       this.drawPaths(parseInt(this.sliderTarget.value, 10));
       this.centerMap();
     } catch (error) {
       console.error(error);
     }
+  }
+
+  initializeBoatSources() {
+    this.recordings.forEach(recording => {
+      const sourceId = `route-${recording.id}`;
+
+      // Initialize sources for each boat's path with empty data initially
+      this.map.addSource(sourceId, {
+        'type': 'geojson',
+        'data': {
+          'type': 'Feature',
+          'properties': {},
+          'geometry': {
+            'type': 'LineString',
+            'coordinates': []
+          }
+        }
+      });
+
+      // Add layer for the boat's path
+      this.map.addLayer({
+        'id': sourceId,
+        'type': 'line',
+        'source': sourceId,
+        'layout': {
+          'line-join': 'round',
+          'line-cap': 'round'
+        },
+        'paint': {
+          'line-color': recording.boat.hull_color.toLowerCase() || 'white',
+          'line-width': 2
+        }
+      });
+    });
   }
 
   // simplifyPaths() {
@@ -56,15 +92,19 @@ export default class extends Controller {
 
   // Draw paths for the recording(s)
   drawPaths(time) {
-    this.map.eachLayer(layer => {
-      if (!(layer instanceof L.TileLayer)) {
-        this.map.removeLayer(layer);
-      }
-    });
-
     this.recordings.forEach(recording => {
-      this.drawPathUpToTime(recording, time);
+      this.updateBoatPath(recording, time);
+      this.updateBoatMarker(recording, time);
     });
+  }
+
+  updateBoatPath(recording, time) {
+    const sourceId = `route-${recording.id}`;
+    const pathData = this.getPathData(recording, time);
+
+    if (this.map.getSource(sourceId)) {
+      this.map.getSource(sourceId).setData(pathData);
+    }
   }
 
   resizeMap() {
@@ -72,42 +112,68 @@ export default class extends Controller {
   }
 
   centerMap() {
-    this.map.fitBounds(L.polyline(this.recordings.find((recording) => recording.id = this.userRecordingIdValue).recorded_locations.slice(0,4).map(positions => [positions.latitude, positions.longitude])).getBounds());
-  }
-
-  drawPathUpToTime(recording, time) {
-    const validLocations = recording.recorded_locations.filter((location) => new Date(location.created_at) >= new Date(this.raceStartedAtValue) && new Date(location.created_at) <= time)
-
-    for (let i = 1; i <= validLocations.length - 1; i++) {
-      const previousLocation = validLocations[i - 1];
-      const currentLocation = validLocations[i];
-      const color = recording.boat.hull_color.toLowerCase() || 'white';
-
-      L.polyline([
-        [previousLocation.latitude, previousLocation.longitude],
-        [currentLocation.latitude, currentLocation.longitude]
-      ], { color, weight: 2 }).addTo(this.map);
-    }
-
-    if (validLocations.length > 0) {
-      this.addBoatMarker(validLocations.at(-1), recording.boat.sail_number, recording.boat.hull_color);
-    }
-  }
-
-  addBoatMarker(position, sailNumber, color) {
-    // Create a custom icon for the boat marker
-    const boatIcon = L.divIcon({
-      className: 'boat-marker',
-      html: `<div style="color: ${color};">${sailNumber}</div>`
+    const bounds = new mapboxgl.LngLatBounds();
+    this.recordings.forEach(recording => {
+      recording.recorded_locations.forEach(location => {
+        bounds.extend([location.longitude, location.latitude]);
+      });
     });
 
-    // Add the marker to the map at the given position
-    L.marker([position.latitude, position.longitude], { icon: boatIcon }).addTo(this.map);
+    this.map.fitBounds(bounds, { padding: 20 });
+  }
 
-    // L.circleMarker([currentPosition.latitude, currentPosition.longitude], {
-    //   radius: 4,
-    //   color: this.boatColorValue
-    // }).addTo(this.map);
+  updateBoatMarker(recording, time) {
+    const position = this.getLastPosition(recording, time);
+    const recordingId = recording.id;
+    const sailNumber = recording.boat.sail_number;
+    const color = recording.boat.hull_color.toLowerCase() || 'white';
+
+    // Remove the existing marker if there is one
+    if (this.boatMarkers[recordingId]) {
+      this.boatMarkers[recordingId].remove();
+    }
+
+    // If there's a valid position, create a new marker
+    if (position) {
+      // Create a new marker element
+      const el = document.createElement('div');
+      el.className = 'boat-marker';
+      el.style.backgroundColor = color;
+      el.innerText = sailNumber;
+
+      // Create a new marker and add it to the map
+      const marker = new mapboxgl.Marker(el)
+        .setLngLat([position.longitude, position.latitude])
+        .addTo(this.map);
+
+      // Store the new marker in the map with recordingId as the key
+      this.boatMarkers[recordingId] = marker;
+    }
+  }
+
+  // Helper method to get the path data for a recording
+  getPathData(recording, time) {
+    const validLocations = recording.recorded_locations.filter(location =>
+      new Date(location.created_at) <= time
+    );
+
+    return {
+      'type': 'Feature',
+      'properties': {},
+      'geometry': {
+        'type': 'LineString',
+        'coordinates': validLocations.map(location => [location.longitude, location.latitude])
+      }
+    };
+  }
+
+  // Helper method to get the last known position for a recording
+  getLastPosition(recording, time) {
+    const validLocations = recording.recorded_locations.filter(location =>
+      new Date(location.created_at) <= time
+    );
+
+    return validLocations.at(-1) || null;
   }
 
   updateTimeDisplay(time) {
@@ -130,6 +196,7 @@ export default class extends Controller {
     const time = parseInt(event.target.value, 10);
     this.updateTimeDisplay(time);
     this.drawPaths(time);
+    this.centerMap();
   }
 
   // // Ramer-Douglas-Peucker Algorithm

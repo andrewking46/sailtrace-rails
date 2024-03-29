@@ -1,57 +1,85 @@
 import { Controller } from "@hotwired/stimulus";
-import L from "leaflet";
+import mapboxgl from "mapbox-gl";
 
 export default class extends Controller {
   static values = {
     recordingId: Number,
     boatColor: String,
-    replayPath: String
+    replayPath: String,
+    startLatitude: Number,
+    startLongitude: Number
   };
 
   connect() {
-    this.initializeStaticMap();
+    mapboxgl.accessToken = 'pk.eyJ1IjoiYW5kcmV3a2luZzQ2IiwiYSI6ImNsdGozang0MTBsbDgya21kNGsybGNvODkifQ.-2ds5rFYjTBPgTYc7EG0-A'
+    this.loadRecordedLocations();
   }
 
-  initializeStaticMap() {
-    const map = L.map(this.element, {
-      center: [0, 0], // Will be set dynamically
-      zoom: 13,
-      zoomControl: false,
-      touchZoom: false,
-      scrollWheelZoom: false,
-      doubleClickZoom: false,
-      dragging: false,
-      keyboard: false
-    });
-
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; OpenStreetMap contributors'
-    }).addTo(map);
-
+  loadRecordedLocations() {
     fetch(`/recordings/${this.recordingIdValue}/recorded_locations.json`)
       .then(response => response.json())
       .then(locations => {
-        this.drawColoredPath(map, locations);
+        this.initializeStaticMap(locations);
       })
       .catch(error => console.log(error));
   }
 
-  drawColoredPath(map, locations) {
-    const simplifiedLocations = this.simplifyPath(locations, 2);
+  initializeStaticMap(locations) {
+    const map = new mapboxgl.Map({
+      container: this.element,
+      style: 'mapbox://styles/mapbox/standard', // This can be changed to other map styles
+      center: [this.startLongitudeValue, this.startLatitudeValue], // Will be set dynamically
+      zoom: 13,
+      interactive: false
+    });
 
-    for (let i = 1; i < simplifiedLocations.length; i++) {
-      const prevLocation = simplifiedLocations[i - 1];
-      const location = simplifiedLocations[i];
-      const color = this.getSegmentColor(prevLocation, location);
+    map.on('style.load', () => {
+      map.setConfigProperty('basemap', 'showRoadLabels', false);
+      map.setConfigProperty('basemap', 'showPointOfInterestLabels', false);
+      map.setConfigProperty('basemap', 'showTransitLabels', false);
+    });
 
-      L.polyline([
-        [prevLocation.latitude, prevLocation.longitude],
-        [location.latitude, location.longitude]
-      ], { color, weight: 3 }).addTo(map);
+    if (locations.length > 0) {
+      this.drawColoredPath(map, locations);
     }
+  }
 
-    if (simplifiedLocations.length > 0) {
-      map.fitBounds(L.polyline(simplifiedLocations.map(loc => [loc.latitude, loc.longitude])).getBounds());
+  drawColoredPath(map, locations) {
+    if (locations.length > 0) {
+      const path = locations.map(loc => [loc.longitude, loc.latitude]);
+      map.on('load', () => {
+        map.addSource('route', {
+          'type': 'geojson',
+          'data': {
+            'type': 'Feature',
+            'properties': {},
+            'geometry': {
+              'type': 'LineString',
+              'coordinates': path
+            }
+          }
+        });
+        map.addLayer({
+          'id': 'route',
+          'type': 'line',
+          'source': 'route',
+          'layout': {
+            'line-join': 'round',
+            'line-cap': 'round'
+          },
+          'paint': {
+            'line-color': this.boatColorValue,
+            'line-width': 3
+          }
+        });
+        const bounds = path.reduce(function(bounds, coord) {
+          return bounds.extend(coord);
+        }, new mapboxgl.LngLatBounds(path[0], path[0]));
+
+        map.fitBounds(bounds, {
+          padding: 20
+        });
+      });
     }
   }
 

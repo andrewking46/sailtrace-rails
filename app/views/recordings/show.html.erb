@@ -31,6 +31,8 @@
      data-static-map-boat-color-value="<%= @recording.boat.hull_color %>"
      data-action="click->static-map#goToReplay"
      data-static-map-replay-path-value="<%= race_replay_path(@recording.race_id) if @recording.is_race? %>"
+     data-static-map-start-latitude-value="<%= @recording.start_latitude %>"
+     data-static-map-start-longitude-value="<%= @recording.start_longitude %>"
      id="static-map" style="height: 400px;"
      class="border-radius margin-block-end">
   </div>

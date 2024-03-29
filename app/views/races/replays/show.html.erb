@@ -6,7 +6,8 @@
        data-race-replay-user-recording-id-value="<%= @user_recording.id %>"
        data-race-replay-race-id-value="<%= @race.id %>"
        data-race-replay-race-started-at-value="<%= @race.started_at.to_i * 1000 %>"
-       data-race-replay-race-ended-at-value="<%= @race.ended_at.to_i * 1000 %>">
+       data-race-replay-race-start-latitude-value="<%= @race.start_latitude %>"
+       data-race-replay-race-start-longitude-value="<%= @race.start_longitude %>">
   <div id="replay-map-container">
 
     <!-- Time Display -->
