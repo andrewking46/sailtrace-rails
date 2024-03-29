@@ -6,6 +6,6 @@ json.array!(@recordings) do |recording|
   end
   
   json.recorded_locations recording.recorded_locations.order(:created_at) do |recorded_location|
-    json.extract! recorded_location, :id, :latitude, :longitude, :created_at
+    json.extract! recorded_location, :id, :latitude, :longitude, :created_at, :adjusted_latitude, :adjusted_longitude
   end
 end

@@ -10,8 +10,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_02_20_034818) do
+ActiveRecord::Schema[7.1].define(version: 2024_03_29_223408) do
+  create_schema "heroku_ext"
+
   # These are extensions that must be enabled in order to support this database
+  enable_extension "pg_stat_statements"
   enable_extension "plpgsql"
 
   create_table "boat_classes", force: :cascade do |t|
@@ -55,6 +58,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_20_034818) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.decimal "accuracy", precision: 5, scale: 2
+    t.decimal "adjusted_latitude", precision: 10, scale: 6
+    t.decimal "adjusted_longitude", precision: 10, scale: 6
     t.index ["recording_id"], name: "index_recorded_locations_on_recording_id"
   end
 

@@ -3,7 +3,7 @@ import { Controller } from "@hotwired/stimulus"
 export default class extends Controller {
   static targets = ["pauseButton", "beacon", "gpsWarning", "consoleLog"]
   static values = { recordingId: Number }
-  static ACCEPTABLE_ACCURACY_THRESHOLD = 50;
+  static ACCEPTABLE_ACCURACY_THRESHOLD = 15;
 
   connect() {
     this.isRecording = true;
@@ -40,7 +40,7 @@ export default class extends Controller {
 
   handleSuccess({ coords }) {
     this.updateGPSWarning(coords.accuracy);
-    this.printLog(`Location recorded with accuracy: ${coords.accuracy}m`);
+    this.printLog(`Location tracked to within ${coords.accuracy} meters`);
 
     if (this.isRecording && coords.accuracy <= this.constructor.ACCEPTABLE_ACCURACY_THRESHOLD) {
       this.postLocationData(coords);
@@ -61,7 +61,7 @@ export default class extends Controller {
       body: JSON.stringify({ recorded_location: { latitude, longitude, velocity, heading, accuracy } })
     })
     .then(response => this.checkResponse(response))
-    .then(data => this.printLog('Location recorded:', data))
+    .then(data => this.printLog('Location saved successfully'))
     .catch(error => this.logError(error));
   }
 

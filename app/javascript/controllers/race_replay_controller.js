@@ -82,14 +82,6 @@ export default class extends Controller {
     });
   }
 
-  // simplifyPaths() {
-  //   this.recordings.forEach(recording => {
-  //     const simplifiedPathLocations = this.simplifyPath(recording.recorded_locations, 2);
-
-  //     recording.simplifiedPathLocations = simplifiedPathLocations;
-  //   })
-  // }
-
   // Draw paths for the recording(s)
   drawPaths(time) {
     this.recordings.forEach(recording => {
@@ -143,7 +135,7 @@ export default class extends Controller {
 
       // Create a new marker and add it to the map
       const marker = new mapboxgl.Marker(el)
-        .setLngLat([position.longitude, position.latitude])
+        .setLngLat([position.adjusted_longitude, position.adjusted_latitude])
         .addTo(this.map);
 
       // Store the new marker in the map with recordingId as the key
@@ -162,7 +154,7 @@ export default class extends Controller {
       'properties': {},
       'geometry': {
         'type': 'LineString',
-        'coordinates': validLocations.map(location => [location.longitude, location.latitude])
+        'coordinates': validLocations.map(location => [location.adjusted_longitude, location.adjusted_latitude])
       }
     };
   }
@@ -198,6 +190,14 @@ export default class extends Controller {
     this.drawPaths(time);
     this.centerMap();
   }
+
+  // simplifyPaths() {
+  //   this.recordings.forEach(recording => {
+  //     const simplifiedPathLocations = this.simplifyPath(recording.recorded_locations, 2);
+
+  //     recording.simplifiedPathLocations = simplifiedPathLocations;
+  //   })
+  // }
 
   // // Ramer-Douglas-Peucker Algorithm
   // simplifyPath(points, tolerance) {

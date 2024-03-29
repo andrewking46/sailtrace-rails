@@ -96,6 +96,7 @@ class Recording < ApplicationRecord
     puts "after_ending_actions called"
     set_start_location_values
     associate_with_race
+    ProcessRecordingLocations.perform(id)
   end
 
   def set_start_location_values
