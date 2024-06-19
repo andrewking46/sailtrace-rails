@@ -1,21 +1,26 @@
-<div class="container">
-  <h1>New session</h1>
+<section class="text-align-center">
+  <%= form_with url: session_url, class: "center flex flex-column gap fit-content" do |form| %>
+    <fieldset class="flex flex-column gap center-block <%= "shake" if flash[:alert] %>">
+      <legend class="txt-large txt-align-center">
+        <h1>Log in</h1>
+      </legend>
 
-  <%= form_with url: session_url do |form| %>
-    <div>
-      <%= form.label :email_address, style: "display: block" %>
-      <%= form.email_field :email_address, autofocus: true, required: true, placeholder: "Enter your email address" %>
-    </div>
+      <div>
+        <label class="flex align-center gap input input--actor txt-large">
+          <%= form.email_field :email_address, required: true, class: "input", autofocus: true, autocomplete: "email", placeholder: "Enter your email address" %>
+        </label>
+      </div>
 
-    <div>
-      <%= form.label :password, style: "display: block" %>
-      <%= form.password_field :password, required: true, maxlength: 72, placeholder: "Enter your password" %>
-    </div>
+      <div>
+        <label class="flex align-center gap input input--actor txt-large">
+          <%= form.password_field :password, required: true, class: "input", autocomplete: "current-password", placeholder: "Enter your password", maxlength: 72 %>
+        </label>
+      </div>
 
-    <div>
-      <%= form.button type: :submit %>
-    </div>
+      <%= form.button class: "btn btn--reversed center txt-large", type: :submit do %>
+        <span class="for-screen-reader">Go</span>
+      <% end %>
+    </fieldset>
   <% end %>
-
   <%= link_to "Sign up", new_user_path %>
-</div>
+</section>

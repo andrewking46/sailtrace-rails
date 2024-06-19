@@ -1,4 +1,8 @@
-<p>Welcome to SailTrace!</p>
+<div class="container text-align-center">
+  <%= image_tag "logos/sailtrace-app-icon.png", role: "presentation", size: 72, class: "center margin-block" %>
 
-<%= link_to "Sign up", new_user_path %> |
-<%= link_to "Sign in", new_session_path %>
+  <p class="margin-block">Welcome to SailTrace</p>
+
+  <%= link_to "Sign up", new_user_path, class: "btn btn--reversed" %> or
+  <%= link_to "Log in", new_session_path %>
+</div>

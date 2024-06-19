@@ -1,52 +1,47 @@
-<%= form_with(model: user) do |form| %>
-  <% if user.errors.any? %>
-    <div style="color: red">
-      <h2><%= pluralize(user.errors.count, "error") %> prohibited this user from being saved:</h2>
+<%= form_with(model: user, class: "center flex flex-column gap fit-content") do |form| %>
+  <fieldset class="flex flex-column gap center-block <%= "shake" if flash[:alert] %>">
+    <legend class="txt-large txt-align-center">
+      <h1>Sign up</h1>
+    </legend>
 
-      <ul>
-        <% user.errors.each do |error| %>
-          <li><%= error.full_message %></li>
-        <% end %>
-      </ul>
+    <div>
+      <label class="flex align-center gap input input--actor txt-large">
+        <%= form.text_field :username, required: true, class: "input", autocomplete: :off, placeholder: "Enter a username" %>
+      </label>
     </div>
-  <% end %>
 
-  <div>
-    <%= form.label :username, style: "display: block" %>
-    <%= form.text_field :username, required: true %>
-  </div>
+    <div>
+      <label class="flex align-center gap input input--actor txt-large">
+        <%= form.text_field :first_name, required: true, class: "input", autocomplete: "given-name", placeholder: "Enter your first name" %>
+      </label>
+    </div>
 
-  <div>
-    <%= form.label :first_name, style: "display: block" %>
-    <%= form.text_field :first_name, required: true %>
-  </div>
+    <div>
+      <label class="flex align-center gap input input--actor txt-large">
+        <%= form.text_field :last_name, required: true, class: "input", autocomplete: "family-name", placeholder: "Enter your last name" %>
+      </label>
+    </div>
 
-  <div>
-    <%= form.label :last_name, style: "display: block" %>
-    <%= form.text_field :last_name, required: true %>
-  </div>
+    <div>
+      <label class="flex align-center gap input input--actor txt-large">
+        <%= form.email_field :email_address, required: true, class: "input", autocomplete: "email", placeholder: "Enter your email address" %>
+      </label>
+    </div>
 
-  <div>
-    <%= form.label :email_address, style: "display: block" %>
-    <%= form.email_field :email_address, required: true %>
-  </div>
+    <div>
+      <label class="flex align-center gap input input--actor txt-large">
+        <%= form.password_field :password, required: true, class: "input", placeholder: "Enter a password", maxlength: 72 %>
+      </label>
+    </div>
 
-  <div>
-    <%# form.label :time_zone, style: "display: block" %>
-    <%# form.time_zone_select :time_zone %>
-  </div>
+    <div>
+      <label class="flex align-center gap input input--actor txt-large">
+        <%= form.password_field :password_confirmation, required: true, class: "input", placeholder: "Confirm your password", maxlength: 72 %>
+      </label>
+    </div>
 
-  <div>
-    <%= form.label :password, style: "display: block" %>
-    <%= form.password_field :password, required: true, maxlength: 72 %>
-  </div>
-
-  <div>
-    <%= form.label :password_confirmation, style: "display: block" %>
-    <%= form.password_field :password_confirmation, required: true, maxlength: 72 %>
-  </div>
-
-  <div>
-    <%= form.submit %>
-  </div>
+    <%= form.button class: "btn btn--reversed center txt-large", type: :submit do %>
+      <span class="for-screen-reader">Sign up</span>
+    <% end %>
+  </fieldset>
 <% end %>

@@ -29,6 +29,7 @@
 .full-width { inline-size: 100%; }
 .min-width { min-inline-size: 0; }
 .max-width { max-inline-size: 100%; }
+.fit-content { inline-size: fit-content; }
 .min-content { inline-size: min-content; }
 .max-inline-size { max-inline-size: 100%; }
 .constrain-height { max-block-size: var(--max-height, 50vh); }
