@@ -1,4 +1,5 @@
 <section class="text-align-center">
+  <%= image_tag "logos/sailtrace-app-icon.png", role: "presentation", size: 36, class: "center margin-block" %>
   <h1 class="text-x-large text-bold margin-block">Welcome back</h1>
   <%= form_with url: session_url, class: "center fit-content margin-block" do |form| %>
     <fieldset class="flex flex-column gap <%= "shake" if flash[:alert] %>">
@@ -18,7 +19,7 @@
         </div>
       </div>
 
-      <%= form.button class: "btn btn--reversed txt-large", type: :submit do %>
+      <%= form.button class: "btn btn--reversed center", type: :submit do %>
         <span class="for-screen-reader">Log in</span>
       <% end %>
     </fieldset>
