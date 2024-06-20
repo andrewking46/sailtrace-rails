@@ -1,9 +1,11 @@
 :root {
   --inline-space: 1ch;
   --inline-space-half: calc(var(--inline-space) / 2);
+  --inline-space-quarter: calc(var(--inline-space) / 4);
   --inline-space-double: calc(var(--inline-space) * 2);
 
   --block-space: 1rem;
   --block-space-half: calc(var(--block-space) / 2);
+  --block-space-quarter: calc(var(--block-space) / 4);
   --block-space-double: calc(var(--block-space) * 2);
 }

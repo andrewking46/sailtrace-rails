@@ -1,4 +1,4 @@
-<%= form_with(model: boat) do |form| %>
+<%= form_with(model: boat, class: "center fit-content") do |form| %>
   <% if boat.errors.any? %>
     <div style="color: red">
       <h2><%= pluralize(boat.errors.count, "error") %> prohibited this boat from being saved:</h2>
@@ -11,32 +11,49 @@
     </div>
   <% end %>
 
-  <div>
-    <%= form.label :name, style: "display: block" %>
-    <%= form.text_field :name %>
+  <fieldset class="flex flex-column gap <%= "shake" if flash[:alert] %>">
+
+  <div class="input-group">
+    <div class="input-wrapper">
+      <%= form.label :name %>
+      <div class="input">
+        <%= form.text_field :name, required: true, autocomplete: :off, placeholder: "e.g. Odyssey" %>
+      </div>
+    </div>
+    <div class="input-wrapper">
+      <%= form.label :hull_color %>
+      <div class="input">
+        <%= form.text_field :hull_color, required: true, autocomplete: :off, placeholder: "e.g. Red" %>
+      </div>
+    </div>
+  </div>
+
+  <div class="input-group">
+    <div class="input-wrapper">
+      <%= form.label :boat_class_id %>
+      <div class="input">
+        <%= form.collection_select :boat_class_id, BoatClass.order(:name), :id, :name %>
+      </div>
+    </div>
+    <div class="input-wrapper">
+      <%= form.label :registration_country %>
+      <div class="input">
+        <%= form.country_select :registration_country, priority_countries: ["US"], required: true %>
+      </div>
+    </div>
+    <div class="input-wrapper">
+      <%= form.label :sail_number %>
+      <div class="input">
+        <%= form.number_field :sail_number, required: true, placeholder: "e.g. 220" %>
+      </div>
+    </div>
   </div>
 
   <div>
-    <%= form.label :registration_country, style: "display: block" %>
-    <%= form.country_select :registration_country, priority_countries: ["US"], required: true %>
+    <%= form.button class: "btn btn--reversed center txt-large", type: :submit do %>
+      <span class="for-screen-reader">Save</span>
+    <% end %>
   </div>
 
-  <div>
-    <%= form.label :sail_number, style: "display: block" %>
-    <%= form.text_field :sail_number, required: true %>
-  </div>
-
-  <div>
-    <%= form.label :hull_color, style: "display: block" %>
-    <%= form.text_field :hull_color, required: true %>
-  </div>
-
-  <div>
-    <%= form.label :boat_class_id, style: "display: block" %>
-    <%= form.collection_select :boat_class_id, BoatClass.order(:name), :id, :name %>
-  </div>
-
-  <div>
-    <%= form.submit %>
-  </div>
+  </fieldset>
 <% end %>

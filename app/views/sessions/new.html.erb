@@ -1,20 +1,21 @@
 <section class="text-align-center">
-  <%= form_with url: session_url, class: "center flex flex-column gap fit-content" do |form| %>
-    <fieldset class="flex flex-column gap center-block <%= "shake" if flash[:alert] %>">
-      <legend class="txt-large txt-align-center">
-        <h1>Log in</h1>
-      </legend>
+  <h1>Log in</h1>
+  <%= form_with url: session_url, class: "center fit-content" do |form| %>
+    <fieldset class="flex flex-column gap <%= "shake" if flash[:alert] %>">
 
-      <div>
-        <label class="flex align-center gap input input--actor txt-large">
-          <%= form.email_field :email_address, required: true, class: "input", autofocus: true, autocomplete: "email", placeholder: "Enter your email address" %>
-        </label>
-      </div>
-
-      <div>
-        <label class="flex align-center gap input input--actor txt-large">
-          <%= form.password_field :password, required: true, class: "input", autocomplete: "current-password", placeholder: "Enter your password", maxlength: 72 %>
-        </label>
+      <div class="input-group">
+        <div class="input-wrapper">
+          <label>Email</label>
+          <div class="input">
+            <%= form.email_field :email_address, required: true, autofocus: true, autocomplete: "email" %>
+          </div>
+        </div>
+        <div class="input-wrapper">
+          <label>Password</label>
+          <div class="input">
+            <%= form.password_field :password, required: true, autocomplete: "current-password", maxlength: 72 %>
+          </div>
+        </div>
       </div>
 
       <%= form.button class: "btn btn--reversed center txt-large", type: :submit do %>

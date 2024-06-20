@@ -1,0 +1,100 @@
+<div class="container">
+  <h1>Style guide</h1>
+
+  <h2>Forms</h2>
+
+  <%= form_with(model: @user, class: "center") do |form| %>
+    <fieldset class="flex flex-column gap <%= "shake" if flash[:alert] %>">
+
+      <div class="input-group">
+        <div class="input-wrapper">
+          <label>Text</label>
+          <div class="input">
+            <input type="text" required="true" placeholder="e.g. Placeholder"/>
+          </div>
+        </div>
+        <div class="input-wrapper">
+          <label>Text</label>
+          <div class="input">
+            <input type="text" required="true" placeholder="e.g. Placeholder"/>
+          </div>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <div class="input-wrapper">
+          <label>Prepend</label>
+          <div class="input-prepend">sailtrace.app/</div>
+          <div class="input">
+            <input type="text" required="true" placeholder="e.g. string" autocomplete="off" minlength="3"/>
+          </div>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <div class="input-wrapper">
+          <label>Select</label>
+          <div class="input">
+            <select>
+              <option value=""></option>
+              <option value="USA">United States</option>
+              <option value="CAN">Canada</option>
+            </select>
+          </div>
+        </div>
+        <div class="input-wrapper">
+          <label>Phone number</label>
+          <div class="input">
+            <input type="tel" required="true" placeholder="e.g. 1(234) 567-8901"/>
+          </div>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <div class="input-wrapper">
+          <label>Date</label>
+          <div class="input">
+            <input type="date" required="true" autocomplete="off"/>
+          </div>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <div class="input-wrapper">
+          <label>Number</label>
+          <div class="input">
+            <input type="number" required="true"/>
+          </div>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <div class="input-wrapper">
+          <label>Email</label>
+          <div class="input">
+            <input type="email" required="true" placeholder="e.g. andrewking@email.com" autocomplete="email"/>
+          </div>
+        </div>
+        <div class="input-wrapper">
+          <label>Password</label>
+          <div class="input">
+            <input type="password" required="true" maxlength="72"/>
+          </div>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <div class="input-wrapper">
+          <label>Textarea</label>
+          <div class="input">
+            <textarea rows="5" required="true" placeholder="Type the message here..."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <%= form.button class: "btn btn--reversed center txt-large", type: :submit do %>
+        <span class="for-screen-reader">Save</span>
+      <% end %>
+    </fieldset>
+  <% end %>
+</div>

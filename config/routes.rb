@@ -23,6 +23,9 @@ Rails.application.routes.draw do
   # Route for the 'More' page
   get 'more', to: 'pages#more'
 
+  # Route for the style guide page
+  get 'styleguide', to: 'pages#styleguide'
+
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
