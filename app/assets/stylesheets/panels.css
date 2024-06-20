@@ -5,7 +5,6 @@
 /*  inline-size: var(--panel-width);*/
   background-color: var(--color-bg);
   color: var(--text-color);
-  margin: calc(var(--navbar-height) - var(--block-space)) auto var(--block-space);
   max-inline-size: 100vw;
   padding: var(--panel-padding);
   text-decoration: none;
