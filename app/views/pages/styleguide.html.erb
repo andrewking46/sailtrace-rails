@@ -92,6 +92,15 @@
         </div>
       </div>
 
+      <div class="input-group">
+        <div class="input-wrapper">
+          <label>Checkbox</label>
+          <div class="input">
+            <%= form.check_box :is_race %>
+          </div>
+        </div>
+      </div>
+
       <%= form.button class: "btn btn--reversed min-content txt-large", type: :submit do %>
         <span class="for-screen-reader">Save</span>
       <% end %>

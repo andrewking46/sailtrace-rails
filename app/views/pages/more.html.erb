@@ -1,13 +1,15 @@
 <% @show_app_navigation = true %>
 
 <div class="container">
-  <h1>More</h1>
+  <h1 class="text-xx-large text-bold">More</h1>
 
-  <%= link_to "Recordings", recordings_path %>
-  <%= link_to "Boats", boats_path %>
-  <%= link_to "Boat Classes", boat_classes_path %>
+  <section class="flex flex-column margin-block gap">
+    <%= link_to "Recordings", recordings_path %>
+    <%= link_to "Boats", boats_path %>
+    <%= link_to "Boat Classes", boat_classes_path %>
+  </section>
 
   <%= form_with url: session_path, method: :delete, data: { controller: "sessions" } do %>
-    <button>Log out</button>
+    <button class="btn">Log out</button>
   <% end %>
 </div>

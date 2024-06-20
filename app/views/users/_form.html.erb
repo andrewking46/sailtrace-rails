@@ -1,40 +1,52 @@
 <%= form_with(model: user, class: "center fit-content margin-block") do |form| %>
   <fieldset class="flex flex-column gap <%= "shake" if flash[:alert] %>">
 
-    <div>
-      <label class="flex align-center gap input input--actor txt-large">
-        <%= form.text_field :username, required: true, class: "input", autocomplete: :off, placeholder: "Enter a username" %>
-      </label>
+    <div class="input-group">
+      <div class="input-wrapper">
+        <%= form.label :first_name %>
+        <div class="input">
+          <%= form.text_field :first_name, autofocus: true, required: true, autocomplete: "given-name" %>
+        </div>
+      </div>
+      <div class="input-wrapper">
+        <%= form.label :last_name %>
+        <div class="input">
+          <%= form.text_field :last_name, required: true, autocomplete: "family-name" %>
+        </div>
+      </div>
     </div>
 
-    <div>
-      <label class="flex align-center gap input input--actor txt-large">
-        <%= form.text_field :first_name, required: true, class: "input", autocomplete: "given-name", placeholder: "Enter your first name" %>
-      </label>
+    <div class="input-group">
+      <div class="input-wrapper">
+        <%= form.label :username %>
+        <div class="input">
+          <%= form.text_field :username, required: true, autocomplete: :off %>
+        </div>
+      </div>
     </div>
 
-    <div>
-      <label class="flex align-center gap input input--actor txt-large">
-        <%= form.text_field :last_name, required: true, class: "input", autocomplete: "family-name", placeholder: "Enter your last name" %>
-      </label>
+    <div class="input-group">
+      <div class="input-wrapper">
+        <%= form.label :email_address %>
+        <div class="input">
+          <%= form.email_field :email_address, required: true, autocomplete: :email %>
+        </div>
+      </div>
     </div>
 
-    <div>
-      <label class="flex align-center gap input input--actor txt-large">
-        <%= form.email_field :email_address, required: true, class: "input", autocomplete: "email", placeholder: "Enter your email address" %>
-      </label>
-    </div>
-
-    <div>
-      <label class="flex align-center gap input input--actor txt-large">
-        <%= form.password_field :password, required: true, class: "input", placeholder: "Enter a password", maxlength: 72 %>
-      </label>
-    </div>
-
-    <div>
-      <label class="flex align-center gap input input--actor txt-large">
-        <%= form.password_field :password_confirmation, required: true, class: "input", placeholder: "Confirm your password", maxlength: 72 %>
-      </label>
+    <div class="input-group">
+      <div class="input-wrapper">
+        <%= form.label :password %>
+        <div class="input">
+          <%= form.password_field :password, required: true, maxlength: 72, autocomplete: :off %>
+        </div>
+      </div>
+      <div class="input-wrapper">
+        <%= form.label :password_confirmation %>
+        <div class="input">
+          <%= form.password_field :password_confirmation, required: true, maxlength: 72, autocomplete: :off %>
+        </div>
+      </div>
     </div>
 
     <%= form.button class: "btn btn--reversed center txt-large", type: :submit do %>

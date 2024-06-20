@@ -1,13 +1,16 @@
 <% content_for :app_page_header do %>
-  <div class="flex-item-justify-start">SailTrace</div>
+  <div class="flex align-center">
+    <%= image_tag "logos/sailtrace-app-icon.png", role: "presentation", size: 24 %>
+    <div class="margin-inline-start text-semibold">SailTrace</div>
+  </div>
 <% end %>
 
-<div class="container">
-  <h1>Recordings</h1>
+<div class="container margin-block-end">
+  <h1 class="text-xx-large text-bold">Recordings</h1>
 
-  <div id="recordings" class="margin-block-start">
+  <div id="recordings" class="margin-block">
     <%= render partial: 'recording', collection: @recordings, as: :recording %>
   </div>
 
-  <%= link_to "New recording", new_recording_path %>
+  <%= link_to "New recording", new_recording_path, class: "btn btn--reversed" %>
 </div>

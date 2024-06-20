@@ -1,7 +1,7 @@
 <div class="container">
-  <h1>Boats</h1>
+  <h1 class="text-xx-large text-bold">Boats</h1>
 
-  <div id="boats">
+  <div class="margin-block" id="boats">
     <% @boats.each do |boat| %>
       <%= render boat %>
       <p>
@@ -10,5 +10,5 @@
     <% end %>
   </div>
 
-  <%= link_to "New boat", new_boat_path %>
+  <%= link_to "New boat", new_boat_path, class: "btn btn--reversed" %>
 </div>

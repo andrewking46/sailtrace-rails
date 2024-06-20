@@ -27,7 +27,7 @@
     border-color: var(--color-border);
     border-width: 1px;
     border-style: solid;
-    background: #fff;
+    background: var(--color-bg);
     color: inherit;
   }
 }

@@ -5,13 +5,13 @@
 
       <div class="input-group">
         <div class="input-wrapper">
-          <label>Email</label>
+          <%= form.label :email_address %>
           <div class="input">
             <%= form.email_field :email_address, required: true, autofocus: true, autocomplete: "email" %>
           </div>
         </div>
         <div class="input-wrapper">
-          <label>Password</label>
+          <%= form.label :password %>
           <div class="input">
             <%= form.password_field :password, required: true, autocomplete: "current-password", maxlength: 72 %>
           </div>

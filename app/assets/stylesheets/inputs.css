@@ -103,6 +103,10 @@ textarea {
   }
 }
 
+input[type="checkbox"] {
+  appearance: auto;
+}
+
 
 
 
