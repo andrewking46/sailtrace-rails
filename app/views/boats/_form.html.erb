@@ -13,47 +13,47 @@
 
   <fieldset class="flex flex-column gap <%= "shake" if flash[:alert] %>">
 
-  <div class="input-group">
-    <div class="input-wrapper">
-      <%= form.label :name %>
-      <div class="input">
-        <%= form.text_field :name, required: true, autocomplete: :off, placeholder: "e.g. Odyssey" %>
+    <div class="input-group">
+      <div class="input-wrapper">
+        <%= form.label :name %>
+        <div class="input">
+          <%= form.text_field :name, required: true, autocomplete: :off, placeholder: "e.g. Odyssey" %>
+        </div>
+      </div>
+      <div class="input-wrapper">
+        <%= form.label :hull_color %>
+        <div class="input">
+          <%= form.text_field :hull_color, required: true, autocomplete: :off, placeholder: "e.g. Red" %>
+        </div>
       </div>
     </div>
-    <div class="input-wrapper">
-      <%= form.label :hull_color %>
-      <div class="input">
-        <%= form.text_field :hull_color, required: true, autocomplete: :off, placeholder: "e.g. Red" %>
-      </div>
-    </div>
-  </div>
 
-  <div class="input-group">
-    <div class="input-wrapper">
-      <%= form.label :boat_class_id %>
-      <div class="input">
-        <%= form.collection_select :boat_class_id, BoatClass.order(:name), :id, :name, autocomplete: :off %>
+    <div class="input-group">
+      <div class="input-wrapper">
+        <%= form.label :boat_class_id %>
+        <div class="input">
+          <%= form.collection_select :boat_class_id, BoatClass.order(:name), :id, :name, autocomplete: :off %>
+        </div>
+      </div>
+      <div class="input-wrapper">
+        <%= form.label :registration_country %>
+        <div class="input">
+          <%= form.country_select :registration_country, priority_countries: ["US"], required: true, autocomplete: :off %>
+        </div>
+      </div>
+      <div class="input-wrapper">
+        <%= form.label :sail_number %>
+        <div class="input">
+          <%= form.number_field :sail_number, required: true, placeholder: "e.g. 220", autocomplete: :off %>
+        </div>
       </div>
     </div>
-    <div class="input-wrapper">
-      <%= form.label :registration_country %>
-      <div class="input">
-        <%= form.country_select :registration_country, priority_countries: ["US"], required: true, autocomplete: :off %>
-      </div>
-    </div>
-    <div class="input-wrapper">
-      <%= form.label :sail_number %>
-      <div class="input">
-        <%= form.number_field :sail_number, required: true, placeholder: "e.g. 220", autocomplete: :off %>
-      </div>
-    </div>
-  </div>
 
-  <div>
-    <%= form.button class: "btn btn--reversed center txt-large", type: :submit do %>
-      <span class="for-screen-reader">Save</span>
-    <% end %>
-  </div>
+    <div>
+      <%= form.button class: "btn btn--reversed center txt-large", type: :submit do %>
+        <span class="for-screen-reader">Save</span>
+      <% end %>
+    </div>
 
   </fieldset>
 <% end %>
