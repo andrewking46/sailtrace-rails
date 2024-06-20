@@ -17,8 +17,6 @@
   "display": "standalone",
   "scope": "/",
   "description": "A app for sailors to track, replay, and analyze their races.",
-  "theme_color": "#ffffff",
-  "background_color": "#ffffff",
   "shortcuts": [
     {
       "name": "New recording",
