@@ -5,10 +5,10 @@
 <% end %>
 
 <div class="container">
-  <h1 class="margin-block-end">Recording</h1>
+  <h1 class="text-xx-large text-bold margin-block-end">Recording</h1>
 
   <div id="<%= dom_id @recording %>">
-    <p class="text-small margin-block-end"><%= @recording.created_at.in_time_zone(@recording.time_zone).strftime("%A, %b %d %Y %l:%M%p") %></p>
+    <p class="text-small text-muted margin-block-end-half"><%= @recording.created_at.in_time_zone(@recording.time_zone).strftime("%A, %b %d %Y %l:%M%p") %></p>
     <p class="margin-block-end"><%= @recording.boat.name %> (<%= @recording.boat.registration_country %> <%= @recording.boat.sail_number %>)</p>
     <dl class="flex flex-wrap gap margin-block-end">
       <div>
@@ -38,10 +38,10 @@
   </div>
 
   <div>
-    <%= link_to "View replay", race_replay_path(@recording.race_id) if @recording.is_race? %>
+    <%= link_to "View replay", race_replay_path(@recording.race_id), class: "btn btn--reversed" if @recording.is_race? %>
 
     <br>
     <br>
-    <%= link_to "Destroy this recording", @recording, data: { turbo_method: :delete, turbo_confirm: 'Are you sure you want to delete this recording?' } %>
+    <%= link_to "Destroy this recording", @recording, class: "btn", data: { turbo_method: :delete, turbo_confirm: 'Are you sure you want to delete this recording?' } %>
   </div>
 </div>

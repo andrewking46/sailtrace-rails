@@ -1,9 +1,8 @@
-<div id="<%= dom_id recording %>" class="border-top padding-block">
+<%= link_to recording, id: (dom_id recording), class: "panel margin-block padding-block flex" do %>
   <div>
-    <h3 class="margin-block-end-half">Recording</h3>
-    <p class="text-small margin-block-end"><%= recording.created_at.in_time_zone(recording.time_zone).strftime("%A, %b %d %Y %l:%M%p") %></p>
+    <p class="text-small text-muted margin-block-end-half"><%= recording.created_at.in_time_zone(recording.time_zone).strftime("%A, %b %d %Y %l:%M%p") %></p>
     <p><%= recording.boat.name %> (<%= recording.boat.registration_country %> <%= recording.boat.sail_number %>)</p>
-    <dl class="flex flex-wrap gap margin-block">
+    <dl class="flex flex-wrap gap margin-block-start">
       <div>
         <dt class="text-small text-muted">Distance</dt>
         <dd><%= number_with_precision(recording.distance, precision: 2) %> nm</dd>
@@ -18,8 +17,4 @@
       </div>
     </dl>
   </div>
-
-  <div>
-    <%= link_to 'View', recording %>
-  </div>
-</div>
+<% end %>
