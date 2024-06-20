@@ -1,7 +1,7 @@
 <div class="container">
-  <h1>Style guide</h1>
+  <h1 class="text-xx-large text-bold margin-block">Style guide</h1>
 
-  <h2>Forms</h2>
+  <h2 class="text-x-large text-semibold margin-block">Forms</h2>
 
   <%= form_with(model: @user, class: "center") do |form| %>
     <fieldset class="flex flex-column gap <%= "shake" if flash[:alert] %>">
@@ -92,7 +92,7 @@
         </div>
       </div>
 
-      <%= form.button class: "btn btn--reversed center txt-large", type: :submit do %>
+      <%= form.button class: "btn btn--reversed min-content txt-large", type: :submit do %>
         <span class="for-screen-reader">Save</span>
       <% end %>
     </fieldset>

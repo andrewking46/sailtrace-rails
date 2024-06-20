@@ -1,12 +1,17 @@
 /* Text inputs */
 
+:root {
+  --input-border-color: var(--color-border-darker);
+  --input-border-radius: 0.5em;
+}
+
 .input-group {
   --input-border-size: 1px;
   --input-padding-block: var(--block-space-half);
   --input-padding-inline: var(--inline-space);
 
-  border-radius: var(--input-border-radius, 0.5em);
-  border: var(--input-border-size, 1px) solid var(--input-border-color, var(--color-border-darker));
+  border-radius: var(--input-border-radius);
+  border: var(--input-border-size, 1px) solid var(--input-border-color);
 
   .input-wrapper {
     align-items: stretch;
@@ -22,26 +27,27 @@
       --outline-size: calc(var(--input-border-size) * 2);
 
       border-color: var(--color-selected-dark);
-      outline: 2px solid blue;
+      outline: 2px solid var(--color-border-darkest);
       outline-offset: -1px;
     }
 
     &:first-of-type {
-      border-top-left-radius: calc(var(--input-border-radius, 0.5em) - var(--input-border-size));
-      border-top-right-radius: calc(var(--input-border-radius, 0.5em) - var(--input-border-size));
+      border-top-left-radius: calc(var(--input-border-radius) - var(--input-border-size));
+      border-top-right-radius: calc(var(--input-border-radius) - var(--input-border-size));
     }
 
     &:last-of-type {
-      border-bottom-left-radius: calc(var(--input-border-radius, 0.5em) - var(--input-border-size));
-      border-bottom-right-radius: calc(var(--input-border-radius, 0.5em) - var(--input-border-size));
+      border-bottom-left-radius: calc(var(--input-border-radius) - var(--input-border-size));
+      border-bottom-right-radius: calc(var(--input-border-radius) - var(--input-border-size));
     }
 
     label {
       color: var(--color-text-muted);
       font-size: 0.875rem;
       left: 0;
+      max-inline-size: 100%;
       padding-block: var(--input-padding-block) 0;
-      padding-inline: var(--input-padding-inline);
+      padding-inline: calc(var(--input-padding-inline) + 1px);
       position: absolute;
       top: 0;
     }
@@ -86,6 +92,7 @@ input,
 select,
 textarea {
   color: var(--input-color, var(--color-text));
+  min-block-size: 3.5rem;
 
   &:autofill,
   &:-webkit-autofill,
@@ -144,7 +151,6 @@ textarea {
 
   .input {
     --input-padding: 0;
-    --input-border-radius: 0;
     --input-background: transparent;
     --input-border-size: 0;
     --hover-size: 0;

@@ -1,8 +1,5 @@
-<%= form_with(model: user, class: "center flex flex-column gap fit-content") do |form| %>
-  <fieldset class="flex flex-column gap center-block <%= "shake" if flash[:alert] %>">
-    <legend class="txt-large txt-align-center">
-      <h1>Sign up</h1>
-    </legend>
+<%= form_with(model: user, class: "center fit-content margin-block") do |form| %>
+  <fieldset class="flex flex-column gap <%= "shake" if flash[:alert] %>">
 
     <div>
       <label class="flex align-center gap input input--actor txt-large">

@@ -5,7 +5,7 @@
 .btn {
   align-items: center;
   background-color: var(--btn-background, var(--color-text-reversed));
-  border-radius: var(--btn-border-radius, 2em);
+  border-radius: var(--btn-border-radius, var(--input-border-radius));
   border: var(--btn-border-size, 1px) solid var(--btn-border-color, var(--color-border-darker));
   color: var(--btn-color, var(--color-text));
   cursor: pointer;
@@ -13,6 +13,7 @@
   font-weight: 600;
   gap: 0.5em;
   justify-content: center;
+  min-block-size: var(--btn-size);
   padding: var(--btn-padding, 0.5em 1.1em);
   text-align: center;
 

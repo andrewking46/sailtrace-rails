@@ -1,6 +1,6 @@
 <section class="text-align-center">
-  <h1>Log in</h1>
-  <%= form_with url: session_url, class: "center fit-content" do |form| %>
+  <h1 class="text-x-large text-bold margin-block">Welcome back</h1>
+  <%= form_with url: session_url, class: "center fit-content margin-block" do |form| %>
     <fieldset class="flex flex-column gap <%= "shake" if flash[:alert] %>">
 
       <div class="input-group">
@@ -18,10 +18,11 @@
         </div>
       </div>
 
-      <%= form.button class: "btn btn--reversed center txt-large", type: :submit do %>
-        <span class="for-screen-reader">Go</span>
+      <%= form.button class: "btn btn--reversed txt-large", type: :submit do %>
+        <span class="for-screen-reader">Log in</span>
       <% end %>
     </fieldset>
   <% end %>
+
   <%= link_to "Sign up", new_user_path %>
 </section>
