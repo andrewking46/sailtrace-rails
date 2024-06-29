@@ -20,7 +20,7 @@ class SessionsController < ApplicationController
 
   private
     def render_rejection(status)
-      flash.now[:alert] = "⛔️"
+      flash.now[:alert] = "Not authorized"
       render :new, status: status
     end
 end

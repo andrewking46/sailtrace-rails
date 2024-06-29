@@ -120,6 +120,8 @@ class Recording < ApplicationRecord
 
     time_window = 5.minutes
 
+    return if start_latitude.blank?
+
     # Use Geocoder's 'near' scope to find races within distance_threshold of the recording's start location
     nearby_races = Race.near([start_latitude, start_longitude], 0.5, units: :km)
                        .where(started_at: started_at - time_window..started_at + time_window)

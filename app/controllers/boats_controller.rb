@@ -25,7 +25,7 @@ class BoatsController < ApplicationController
 
     respond_to do |format|
       if @boat.save
-        format.html { redirect_to boat_url(@boat), notice: "Boat was successfully created." }
+        format.html { redirect_to boat_url(@boat), notice: "Boat saved" }
         format.json { render :show, status: :created, location: @boat }
       else
         format.html { render :new, status: :unprocessable_entity }
@@ -38,7 +38,7 @@ class BoatsController < ApplicationController
   def update
     respond_to do |format|
       if @boat.update(boat_params)
-        format.html { redirect_to boat_url(@boat), notice: "Boat was successfully updated." }
+        format.html { redirect_to boat_url(@boat), notice: "Boat saved" }
         format.json { render :show, status: :ok, location: @boat }
       else
         format.html { render :edit, status: :unprocessable_entity }
@@ -52,7 +52,7 @@ class BoatsController < ApplicationController
     @boat.destroy!
 
     respond_to do |format|
-      format.html { redirect_to boats_url, notice: "Boat was successfully destroyed." }
+      format.html { redirect_to boats_url, notice: "Boat destroyed" }
       format.json { head :no_content }
     end
   end
@@ -63,7 +63,7 @@ class BoatsController < ApplicationController
       if boat = Current.user.boats.find(params[:id])
         @boat = boat
       else
-        redirect_to recordings_url, alert: "⛔️"
+        redirect_to recordings_url, alert: "Boat not found"
       end
     end
 

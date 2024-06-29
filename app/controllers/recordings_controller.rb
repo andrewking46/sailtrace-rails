@@ -30,7 +30,7 @@ class RecordingsController < ApplicationController
 
     respond_to do |format|
       if @recording.save
-        format.html { redirect_to track_recording_url(@recording), notice: "Recording was successfully created." }
+        format.html { redirect_to track_recording_url(@recording), notice: "Recording created" }
         format.json { render :show, status: :created, location: @recording }
       else
         format.html { render :new, status: :unprocessable_entity }
@@ -43,7 +43,7 @@ class RecordingsController < ApplicationController
   def update
     respond_to do |format|
       if @recording.update(recording_params)
-        format.html { redirect_to recording_url(@recording), notice: "Recording was successfully updated." }
+        format.html { redirect_to recording_url(@recording), notice: "Recording updated" }
         format.json { render :show, status: :ok, location: @recording }
       else
         format.html { render :edit, status: :unprocessable_entity }
@@ -55,12 +55,12 @@ class RecordingsController < ApplicationController
   # PATCH /recordings/1/end
   def end
     if @recording.ended?
-      render json: { error: 'Recording has already ended' }, status: :unprocessable_entity
+      render json: { error: 'Recording already ended' }, status: :unprocessable_entity
       return
     end
 
     @recording.end!
-    render json: { message: 'Recording ended successfully' }, status: :ok
+    render json: { message: 'Recording ended' }, status: :ok
   end
 
   # DELETE /recordings/1 or /recordings/1.json
@@ -68,7 +68,7 @@ class RecordingsController < ApplicationController
     @recording.destroy!
 
     respond_to do |format|
-      format.html { redirect_to recordings_url, notice: "Recording was successfully destroyed." }
+      format.html { redirect_to recordings_url, notice: "Recording destroyed" }
       format.json { head :no_content }
     end
   end
@@ -78,7 +78,7 @@ class RecordingsController < ApplicationController
       if recording = Current.user.recordings.find(params[:id])
         @recording = recording
       else
-        redirect_to recordings_url, alert: "⛔️"
+        redirect_to recordings_url, alert: "Recording not found"
       end
     end
 

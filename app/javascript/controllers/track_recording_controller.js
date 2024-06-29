@@ -40,7 +40,7 @@ export default class extends Controller {
 
   handleSuccess({ coords }) {
     this.updateGPSWarning(coords.accuracy);
-    this.printLog(`Location tracked to within ${coords.accuracy} meters`);
+    // this.printLog(`Location tracked to within ${coords.accuracy} meters`);
     this.updateBeacon(coords.accuracy);
 
     if (this.isRecording && coords.accuracy <= this.constructor.ACCEPTABLE_ACCURACY_THRESHOLD) {
