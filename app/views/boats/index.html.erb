@@ -1,12 +1,13 @@
+<% content_for :app_page_header do %>
+  <div class="flex-item-justify-start"><%= link_back %></div>
+<% end %>
+
 <div class="container">
   <h1 class="text-xx-large text-bold">Boats</h1>
 
   <div class="margin-block" id="boats">
     <% @boats.each do |boat| %>
       <%= render boat %>
-      <p>
-        <%= link_to "Show this boat", boat %>
-      </p>
     <% end %>
   </div>
 
