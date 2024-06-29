@@ -8,4 +8,6 @@
   --block-space-half: calc(var(--block-space) / 2);
   --block-space-quarter: calc(var(--block-space) / 4);
   --block-space-double: calc(var(--block-space) * 2);
+  --block-space-triple: calc(var(--block-space) * 3);
+  --block-space-quadruple: calc(var(--block-space) * 4);
 }

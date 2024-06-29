@@ -103,6 +103,7 @@ class Recording < ApplicationRecord
     puts "set_start_location_values called"
     return if start_latitude.present? || start_longitude.present?
     first_recorded_location = recorded_locations.order(created_at: :asc).first
+    return if first_recorded_location.blank?
     self.start_latitude = first_recorded_location.latitude
     self.start_longitude = first_recorded_location.longitude
     save

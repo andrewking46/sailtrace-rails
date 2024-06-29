@@ -71,6 +71,8 @@
 .margin-block-end { margin-block-end: var(--block-space); }
 .margin-block-end-half { margin-block-end: var(--block-space-half); }
 .margin-block-double { margin-block: var(--block-space-double); }
+.margin-block-triple { margin-block: var(--block-space-triple); }
+.margin-block-quadruple { margin-block: var(--block-space-quadruple); }
 
 .margin-inline { margin-inline: var(--inline-space); }
 .margin-inline-start { margin-inline-start: var(--inline-space); }

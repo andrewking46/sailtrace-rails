@@ -94,7 +94,7 @@ export default class extends Controller {
 
   validateForm = () => {
     const isFormValid = this.formTarget.checkValidity();
-    const isLocationGranted = !this.locationWarningTarget.hidden;
+    const isLocationGranted = this.locationWarningTarget.hidden;
     this.startButtonTarget.disabled = !(isFormValid && isLocationGranted);
   }
 }

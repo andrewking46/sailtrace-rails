@@ -41,6 +41,7 @@ export default class extends Controller {
   handleSuccess({ coords }) {
     this.updateGPSWarning(coords.accuracy);
     this.printLog(`Location tracked to within ${coords.accuracy} meters`);
+    this.updateBeacon(coords.accuracy);
 
     if (this.isRecording && coords.accuracy <= this.constructor.ACCEPTABLE_ACCURACY_THRESHOLD) {
       this.postLocationData(coords);
@@ -49,6 +50,12 @@ export default class extends Controller {
 
   updateGPSWarning(accuracy) {
     this.gpsWarningTarget.hidden = accuracy <= this.constructor.ACCEPTABLE_ACCURACY_THRESHOLD;
+  }
+
+  updateBeacon(accuracy) {
+    let isAcceptableAccuracy = accuracy <= this.constructor.ACCEPTABLE_ACCURACY_THRESHOLD;
+    this.beaconTarget.classList.toggle('pulse-red', !isAcceptableAccuracy);
+    this.beaconTarget.classList.toggle('pulse-green', isAcceptableAccuracy);
   }
 
   postLocationData({ latitude, longitude, speed: velocity, heading, accuracy }) {
@@ -71,8 +78,9 @@ export default class extends Controller {
   }
 
   printLog(message) {
-    this.consoleLogTarget.textContent += `${message}\n`;
-    this.consoleLogTarget.scrollTop = this.consoleLogTarget.scrollHeight;
+    // this.consoleLogTarget.textContent += `${message}\n`;
+    // this.consoleLogTarget.scrollTop = this.consoleLogTarget.scrollHeight;
+    this.consoleLogTarget.textContent = `${message}`;
   }
 
   getCSRFToken() {
