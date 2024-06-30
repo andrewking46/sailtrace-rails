@@ -21,7 +21,7 @@ export default class extends Controller {
       container: this.mapTarget,
       style: 'mapbox://styles/mapbox/standard',
       center: [this.recordingStartLongitudeValue, this.recordingStartLatitudeValue],
-      zoom: 13
+      zoom: 14
     });
   }
 

@@ -75,6 +75,10 @@
     }
   }
 
+  &:where(a) {
+    text-decoration: none;
+  }
+
   &:where(summary) {
     list-style: none;
 

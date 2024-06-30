@@ -26,16 +26,16 @@
     </dl>
   </div>
 
-  <div data-controller="static-map"
-     data-static-map-recording-id-value="<%= @recording.id %>"
-     data-static-map-boat-color-value="<%= @recording.boat.hull_color %>"
-     data-action="click->static-map#goToReplay"
-     data-static-map-replay-path-value="<%= recording_replay_path(@recording) %>"
-     data-static-map-start-latitude-value="<%= @recording.start_latitude %>"
-     data-static-map-start-longitude-value="<%= @recording.start_longitude %>"
+  <div data-controller="recordings--static-map"
+     data-recordings--static-map-recording-id-value="<%= @recording.id %>"
+     data-recordings--static-map-boat-color-value="<%= @recording.boat.hull_color %>"
+     data-action="click->recordings--static-map#goToReplay"
+     data-recordings--static-map-replay-path-value="<%= recording_replay_path(@recording) %>"
+     data-recordings--static-map-start-latitude-value="<%= @recording.start_latitude %>"
+     data-recordings--static-map-start-longitude-value="<%= @recording.start_longitude %>"
      id="static-map" style="height: 400px;"
-     class="border-radius margin-block-end">
-  </div>
+     class="border-radius margin-block-end"></div>
+
 
   <div class="flex gap margin-block">
     <%= link_to "View replay", recording_replay_path(@recording), class: "btn btn--reversed" %>

@@ -29,7 +29,7 @@ export default class extends Controller {
       container: this.element,
       style: 'mapbox://styles/mapbox/standard', // This can be changed to other map styles
       center: [this.startLongitudeValue, this.startLatitudeValue], // Will be set dynamically
-      zoom: 13,
+      zoom: 14,
       interactive: false
     });
 
@@ -46,7 +46,7 @@ export default class extends Controller {
 
   drawColoredPath(map, locations) {
     if (locations.length > 0) {
-      const path = locations.map(loc => [loc.longitude, loc.latitude]);
+      const path = locations.map(loc => [loc.adjusted_longitude || loc.longitude, loc.adjusted_latitude || loc.latitude]);
       map.on('load', () => {
         map.addSource('route', {
           'type': 'geojson',
@@ -110,12 +110,12 @@ export default class extends Controller {
 
   perpendicularDistance(point, lineStart, lineEnd) {
     // Convert points to radians
-    const lat1 = this.degreesToRadians(lineStart.latitude);
-    const lon1 = this.degreesToRadians(lineStart.longitude);
-    const lat2 = this.degreesToRadians(lineEnd.latitude);
-    const lon2 = this.degreesToRadians(lineEnd.longitude);
-    const lat3 = this.degreesToRadians(point.latitude);
-    const lon3 = this.degreesToRadians(point.longitude);
+    const lat1 = this.degreesToRadians(lineStart.adjusted_latitude || lineStart.latitude);
+    const lon1 = this.degreesToRadians(lineStart.adjusted_longitude || lineStart.longitude);
+    const lat2 = this.degreesToRadians(lineEnd.adjusted_latitude || lineEnd.latitude);
+    const lon2 = this.degreesToRadians(lineEnd.adjusted_longitude || lineEnd.longitude);
+    const lat3 = this.degreesToRadians(point.adjusted_latitude || point.latitude);
+    const lon3 = this.degreesToRadians(point.adjusted_longitude || point.longitude);
 
     // Calculate the distances from point to line start/end
     const distStartToPoint = this.haversineDistance(lat1, lon1, lat3, lon3);
@@ -165,8 +165,8 @@ export default class extends Controller {
 
   calculateSpeed(prevLocation, location) {
     const distance = this.calculateDistance(
-      prevLocation.latitude, prevLocation.longitude,
-      location.latitude, location.longitude
+      prevLocation.adjusted_latitude || prevLocation.latitude, prevLocation.adjusted_longitude || prevLocation.longitude,
+      location.adjusted_latitude || location.latitude, location.adjusted_longitude || location.longitude
     );
     const timeElapsed = (new Date(location.created_at) - new Date(prevLocation.created_at)) / 1000;
 
