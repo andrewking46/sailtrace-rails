@@ -1,8 +1,10 @@
 /* Borders */
 .border { border: var(--border-size, 1px) solid var(--border-color, var(--color-border)); }
-.border-top { border-top: var(--border-size, 1px) solid var(--border-color, var(--color-border)); }
-.border-bottom { border-bottom: var(--border-size, 1px) solid var(--border-color, var(--color-border)); }
 .borderless { border: 0; }
+.border-top { border-top: var(--border-size, 1px) solid var(--border-color, var(--color-border)); }
+.border-right { border-right: var(--border-size, 1px) solid var(--border-color, var(--color-border)); }
+.border-bottom { border-bottom: var(--border-size, 1px) solid var(--border-color, var(--color-border)); }
+.border-left { border-left: var(--border-size, 1px) solid var(--border-color, var(--color-border)); }
 
 /* Border radius */
 .border-radius { border-radius: var(--border-radius, 1em); }

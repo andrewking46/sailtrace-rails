@@ -2,7 +2,7 @@
   <div class="flex-item-justify-start"><%= link_back %></div>
 <% end %>
 
-<div class="position-fixed fill-shade" data-controller="recordings--replay"
+<div class="position-fixed" data-controller="recordings--replay"
        data-recordings--replay-recording-id-value="<%= @recording.id %>"
        data-recordings--replay-recording-started-at-value="<%= @recording.started_at.to_i * 1000 %>"
        data-recordings--replay-recording-start-latitude-value="<%= @recording.start_latitude %>"

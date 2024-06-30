@@ -36,6 +36,7 @@
      id="static-map" style="height: 400px;"
      class="border-radius margin-block-end"></div>
 
+     <%= link_to "Race", race_path(@recording.race) if @recording.race_id.present? %>
 
   <div class="flex gap margin-block">
     <%= link_to "View replay", recording_replay_path(@recording), class: "btn btn--reversed" %>

@@ -1,0 +1,10 @@
+<% @page_title = "Race" %>
+
+<% content_for :app_page_header do %>
+  <div class="flex-item-justify-start"><%= link_back %></div>
+<% end %>
+
+<div class="container">
+  <h1 class="text-xx-large text-bold margin-block-end">Race</h1>
+  <%= link_to "Replay race", race_replay_path(@race), class: "btn" %>
+</div>

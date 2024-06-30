@@ -23,6 +23,12 @@ export default class extends Controller {
       center: [this.recordingStartLongitudeValue, this.recordingStartLatitudeValue],
       zoom: 14
     });
+
+    this.map.on('style.load', () => {
+      this.map.setConfigProperty('basemap', 'showRoadLabels', false);
+      this.map.setConfigProperty('basemap', 'showPointOfInterestLabels', false);
+      this.map.setConfigProperty('basemap', 'showTransitLabels', false);
+    });
   }
 
   async fetchRecordingData() {
