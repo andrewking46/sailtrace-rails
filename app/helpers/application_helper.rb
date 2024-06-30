@@ -8,7 +8,7 @@ module ApplicationHelper
   end
 
   def link_back_to(destination)
-    link_to destination, class: "fill border border-radius padding-block-half padding-inline text-primary text-undecorated" do
+    link_to destination, class: "fill border border-radius padding-block-half padding-inline text-primary text-undecorated shadow" do
       # image_tag("arrow-left.svg", role: "presentation") +
       tag.span(class: "") do
         "&#8592;".html_safe + " Back"

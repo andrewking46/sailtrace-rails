@@ -1,6 +1,11 @@
 Rails.application.routes.draw do
   resources :recordings do
-    resources :recorded_locations, only: [:create, :index]
+    resources :recorded_locations, only: [:create]
+
+    scope module: :recordings do
+      resources :recorded_locations, only: :index
+      resource  :replay, only: :show
+    end
 
     member do
       get   :track
@@ -9,7 +14,7 @@ Rails.application.routes.draw do
   end
 
   resources :races, only: :show do
-    scope module: "races" do
+    scope module: :races do
       resources :recordings, only: :index
       resource  :replay, only: :show
     end

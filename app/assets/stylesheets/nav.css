@@ -14,7 +14,6 @@
   top: 0;
   right: 0;
   z-index: 402;
-  padding-block: var(--block-space-half);
 
   @media (min-width: 60rem) {
     right: calc(50% - var(--container-width) / 2);
@@ -22,12 +21,6 @@
 
   & a {
     padding: var(--block-space-half);
-    display: inline-block;
     border-radius: 50%;
-    border-color: var(--color-border);
-    border-width: 1px;
-    border-style: solid;
-    background: var(--color-bg);
-    color: inherit;
   }
 }

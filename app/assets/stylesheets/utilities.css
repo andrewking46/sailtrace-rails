@@ -94,6 +94,7 @@
 
 /* Position */
 .position-relative { position: relative; }
+.position-fixed { position: fixed; }
 
 /* Fills */
 .fill { background-color: var(--color-bg); }
