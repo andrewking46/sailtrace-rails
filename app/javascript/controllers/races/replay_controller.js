@@ -50,6 +50,7 @@ export default class extends Controller {
     this.fetchRaceData();
     this.playing = false; // Track playback state
     this.animationFrameId = null;
+    this.lastFrameTime = null; // Last frame time for consistent playback
 
     document.addEventListener('visibilitychange', this.handleVisibilityChange.bind(this));
   }
@@ -271,12 +272,18 @@ export default class extends Controller {
     this.playPauseButtonTarget.textContent = 'Pause';
     const endTime = parseInt(this.sliderTarget.max, 10);
     let currentTime = startTime;
-    const stepTime = PLAYBACK_SPEED / 60;
+    const stepTime = PLAYBACK_SPEED;
 
     const animate = () => {
       if (!this.playing) return;
 
-      currentTime += stepTime;
+      const now = Date.now();
+      if (this.lastFrameTime) {
+        const elapsed = now - this.lastFrameTime;
+        currentTime += (elapsed / 1000) * stepTime;
+      }
+      this.lastFrameTime = now;
+
       if (currentTime > endTime) {
         currentTime = parseInt(this.sliderTarget.min, 10);
       }
@@ -294,5 +301,6 @@ export default class extends Controller {
     this.playing = false;
     this.playPauseButtonTarget.textContent = 'Play';
     cancelAnimationFrame(this.animationFrameId);
+    this.lastFrameTime = null; // Reset the frame time
   }
 }
