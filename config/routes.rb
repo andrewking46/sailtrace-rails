@@ -24,6 +24,25 @@ Rails.application.routes.draw do
   resources :users
   resource  :session
 
+  namespace :api do
+    namespace :v1 do
+      post :login, to: 'sessions#create'
+      post :refresh, to: 'sessions#refresh'
+      delete :logout, to: 'sessions#destroy'
+      resources :recordings, only: [:create, :update, :show] do
+        member do
+          patch 'end'
+        end
+
+        resources :recorded_locations, only: [:create] do
+          collection do
+            post :batch, to: 'recorded_locations#batch_create'
+          end
+        end
+      end
+    end
+  end
+
   scope module: :admin do
     resources :boat_classes
   end

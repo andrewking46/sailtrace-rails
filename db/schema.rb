@@ -10,12 +10,25 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_03_29_223408) do
+ActiveRecord::Schema[7.1].define(version: 2024_07_04_221655) do
   create_schema "heroku_ext"
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "plpgsql"
+
+  create_table "access_tokens", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "token", null: false
+    t.datetime "expires_at", null: false
+    t.string "refresh_token", null: false
+    t.datetime "refresh_token_expires_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["refresh_token"], name: "index_access_tokens_on_refresh_token", unique: true
+    t.index ["token"], name: "index_access_tokens_on_token", unique: true
+    t.index ["user_id"], name: "index_access_tokens_on_user_id"
+  end
 
   create_table "boat_classes", force: :cascade do |t|
     t.string "name", null: false
@@ -111,6 +124,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_03_29_223408) do
     t.index ["username"], name: "index_users_on_username", unique: true
   end
 
+  add_foreign_key "access_tokens", "users"
   add_foreign_key "boats", "boat_classes"
   add_foreign_key "boats", "users"
   add_foreign_key "races", "boat_classes"
