@@ -19,7 +19,7 @@ export default class extends Controller {
   initializeMap() {
     this.map = new mapboxgl.Map({
       container: this.mapTarget,
-      style: 'mapbox://styles/mapbox/light-v11',
+      style: 'mapbox://styles/mapbox/dark-v11',
       center: [this.recordingStartLongitudeValue, this.recordingStartLatitudeValue],
       zoom: 14
     });
