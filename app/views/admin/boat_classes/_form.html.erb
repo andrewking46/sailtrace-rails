@@ -22,9 +22,13 @@
       </div>
     </div>
 
-    <div>
-      <%= form.label :is_one_design, style: "display: block" %>
-      <%= form.check_box :is_one_design %>
+    <div class="input-group">
+      <div class="input-wrapper">
+        <div class="input">
+          <%= form.check_box :is_one_design %>
+          <%= form.label :is_one_design, "This is a one-design class" %>
+        </div>
+      </div>
     </div>
 
     <%= form.button class: "btn btn--reversed fit-content", type: :submit do %>

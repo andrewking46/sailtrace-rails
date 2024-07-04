@@ -15,16 +15,19 @@
 
     <%= form.hidden_field :time_zone, data: { geolocation_target: 'timeZoneInput' } %>
 
-    <div>
-      <%= form.label :is_race, style: "display: block" %>
-      <%= form.check_box :is_race %>
-    </div>
-
     <div class="input-group">
       <div class="input-wrapper">
         <%= form.label :boat_id %>
         <div class="input">
           <%= form.collection_select :boat_id, Current.user.boats, :id, :name, required: true %>
+        </div>
+      </div>
+    </div>
+    <div class="input-group">
+      <div class="input-wrapper">
+        <div class="input">
+          <%= form.check_box :is_race %>
+          <%= form.label :is_race, "This is a race" %>
         </div>
       </div>
     </div>
