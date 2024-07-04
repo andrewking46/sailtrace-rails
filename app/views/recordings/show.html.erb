@@ -36,10 +36,25 @@
      id="static-map" style="height: 400px;"
      class="border-radius margin-block-end"></div>
 
-     <%= link_to "Race", race_path(@recording.race) if @recording.race_id.present? %>
 
   <div class="flex gap margin-block">
-    <%= link_to "View replay", recording_replay_path(@recording), class: "btn btn--reversed" %>
-    <%= link_to "Delete recording", @recording, class: "btn", data: { turbo_method: :delete, turbo_confirm: 'Are you sure you want to delete this recording?' } %>
+    <%= link_to "Replay", recording_replay_path(@recording), class: "btn btn--reversed" %>
+    <%= link_to "Delete", @recording, class: "btn", data: { turbo_method: :delete, turbo_confirm: 'Are you sure you want to delete this recording?' } %>
   </div>
+
+  <% if @recording.race_id.present? %>
+    <div class="margin-block panel">
+      <div class="flex gap justify-space-between align-center">
+        <div>
+          <div class="text-orange">&#9873;</div>
+          <h3 class="text-large text-bold">Race</h3>
+          <div class="text-muted text-small"><%= pluralize(@recording.race.recordings.count, "boat") %></div>
+        </div>
+        <div class="flex gap">
+          <%= link_to "View", race_path(@recording.race), class: "btn" %>
+          <%= link_to "Replay", race_replay_path(@recording.race), class: "btn btn--reversed" %>
+        </div>
+      </div>
+    </div>
+  <% end %>
 </div>

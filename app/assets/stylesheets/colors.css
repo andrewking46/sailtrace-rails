@@ -9,7 +9,7 @@
   --lch-blue: 54% 0.23 255;
   --lch-blue-light: 95% 0.03 255;
   --lch-blue-dark: 80% 0.08 255;
-  --lch-orange: 70% 0.2 44;
+  --lch-orange: 67% 0.222 37.4;
   --lch-red: 51% 0.2 31;
   --lch-always-black: 0% 0 0;
 
@@ -28,6 +28,7 @@
   --color-selected: oklch(var(--lch-blue-light));
   --color-selected-dark: oklch(var(--lch-blue-dark));
   --color-alert: oklch(var(--lch-orange));
+  --color-orange: oklch(var(--lch-orange));
 
   /* Redefine named color values for dark mode */
   @media (prefers-color-scheme: dark) {

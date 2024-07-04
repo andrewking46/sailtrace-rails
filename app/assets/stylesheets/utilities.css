@@ -102,6 +102,7 @@
 .fill-white { background-color: var(--color-text-reversed); }
 .fill-shade { background-color: var(--color-border); }
 .fill-transparent { background-color: transparent; }
+.fill-orange { background-color: var(--color-orange); }
 
 .translucent { opacity: var(--opacity, 0.5); }
 
