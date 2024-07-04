@@ -29,9 +29,13 @@ Rails.application.routes.draw do
       post :login, to: 'sessions#create'
       post :refresh, to: 'sessions#refresh'
       delete :logout, to: 'sessions#destroy'
+
+      resources :boats
+      resources :boat_classes, only: [:index]
+
       resources :recordings, only: [:create, :update, :show] do
         member do
-          patch 'end'
+          patch :end
         end
 
         resources :recorded_locations, only: [:create] do

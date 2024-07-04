@@ -6,7 +6,7 @@ module Api
       def create
         @recorded_location = @recording.recorded_locations.new(recorded_location_params)
         if @recorded_location.save
-          render json: @recorded_location, status: :created
+          render json: @recorded_location, serializer: RecordedLocationSerializer, status: :created
         else
           render json: { errors: @recorded_location.errors }, status: :unprocessable_entity
         end
@@ -16,7 +16,7 @@ module Api
         ActiveRecord::Base.transaction do
           @recorded_locations = @recording.recorded_locations.create!(batch_locations_params)
         end
-        render json: @recorded_locations, status: :created
+        render json: @recorded_locations, each_serializer: RecordedLocationSerializer, status: :created
       rescue ActiveRecord::RecordInvalid => e
         render json: { errors: e.record.errors }, status: :unprocessable_entity
       end
