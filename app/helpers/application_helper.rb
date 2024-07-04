@@ -15,4 +15,8 @@ module ApplicationHelper
       end
     end
   end
+
+  def can_administer?
+    Current.user&.is_admin?
+  end
 end

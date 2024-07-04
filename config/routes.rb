@@ -22,8 +22,11 @@ Rails.application.routes.draw do
 
   resources :boats
   resources :users
-  resources :boat_classes
   resource  :session
+
+  scope module: :admin do
+    resources :boat_classes
+  end
 
   # Route for the 'More' page
   get 'more', to: 'pages#more'

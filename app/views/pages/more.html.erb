@@ -6,7 +6,7 @@
   <section class="flex flex-column margin-block gap">
     <%= link_to "Recordings", recordings_path %>
     <%= link_to "Boats", boats_path %>
-    <%= link_to "Boat Classes", boat_classes_path %>
+    <%= link_to "Boat Classes", boat_classes_path if can_administer? %>
   </section>
 
   <%= form_with url: session_path, method: :delete, data: { controller: "sessions" } do %>
