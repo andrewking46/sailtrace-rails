@@ -38,7 +38,7 @@ gem "bcrypt"
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem "tzinfo-data", platforms: %i[ windows jruby ]
 
-gem "active_model_serializers", "~> 0.10.0"
+gem "active_model_serializers"
 gem "country_select", "~> 8.0"
 gem "geocoder"
 gem "rack-attack"

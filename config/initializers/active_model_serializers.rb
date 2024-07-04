@@ -1,7 +1,4 @@
-ActiveModel::Serializer.config.adapter = :json_api
+ActiveModelSerializers.config.adapter = :json_api
 
-# Disable for all serializers (except ArraySerializer)
-ActiveModel::Serializer.root = false
-
-# Disable for ArraySerializer
-ActiveModel::ArraySerializer.root = false
+# If you want to disable the root element in your JSON output
+ActiveModelSerializers.config.key_transform = :unaltered
