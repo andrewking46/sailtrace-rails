@@ -1,11 +1,14 @@
+<% content_for :app_page_header do %>
+  <div class="flex-item-justify-start"><%= link_back %></div>
+<% end %>
+
 <div class="container">
+  <h1 class="text-xx-large text-bold margin-block-end">Boat class</h1>
+
   <%= render @boat_class %>
 
-  <div class="margin-block">
-    <%= link_to "Edit this class", edit_boat_class_path(@boat_class) %> |
-    <%= link_to "Back to boat classes", boat_classes_path %>
-  </div>
-  <div>
-    <%= button_to "Destroy this class", @boat_class, method: :delete, class: "btn" %>
+  <div class="flex gap margin-block">
+    <%= link_to "Edit", edit_boat_class_path(@boat_class), class: "btn" %>
+    <%= button_to "Delete", @boat_class, method: :delete, class: "btn", data: { turbo_method: :delete, turbo_confirm: 'Are you sure you want to delete this boat class?' } %>
   </div>
 </div>

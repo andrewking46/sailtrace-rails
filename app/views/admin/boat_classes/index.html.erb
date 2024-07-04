@@ -3,10 +3,9 @@
 
   <div class="margin-block" id="boat_classes">
     <% @boat_classes.each do |boat_class| %>
-      <%= render boat_class %>
-      <p>
-        <%= link_to "View", boat_class %>
-      </p>
+      <%= link_to boat_class do %>
+        <%= render boat_class %>
+      <% end %>
     <% end %>
   </div>
 
