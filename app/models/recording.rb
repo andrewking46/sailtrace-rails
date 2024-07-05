@@ -62,6 +62,6 @@ class Recording < ApplicationRecord
   def set_start_location
     return if start_latitude.present? && start_longitude.present?
     first_recorded_location = recorded_locations.order(created_at: :asc).first
-    update(start_latitude: first_location.latitude, start_longitude: first_location.longitude) unless first_recorded_location.blank?
+    update(start_latitude: first_recorded_location.latitude, start_longitude: first_recorded_location.longitude) unless first_recorded_location.blank?
   end
 end
