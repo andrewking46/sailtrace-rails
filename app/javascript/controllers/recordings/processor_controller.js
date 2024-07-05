@@ -175,7 +175,7 @@ export default class ProcessorController extends Controller {
     this.statusTarget.innerHTML = `
       Max retries reached. Please
       <a href="/recordings" class="text-blue-500 hover:underline">
-        return to the Recordings index
+        Back to Recordings
       </a>.
     `
   }

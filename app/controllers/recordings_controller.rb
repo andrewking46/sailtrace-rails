@@ -74,13 +74,13 @@ class RecordingsController < ApplicationController
 
   def status_message(status)
     case status
-    when 'not_started'
+    when :not_started
       "Recording not started..."
-    when 'in_progress'
+    when :in_progress
       "Recording in progress..."
-    when 'processing'
+    when :processing
       "Processing your recording..."
-    when 'processed'
+    when :processed
       "Processing completed"
     else
       "Unknown status"
