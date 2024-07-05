@@ -4,9 +4,21 @@ module Recordings
       @recording = recording
     end
 
+    def process
+      ApplicationRecord.transaction do
+        process_locations
+        calculate_statistics
+        associate_with_race if @recording.is_race?
+      end
+    rescue StandardError => e
+      ErrorNotifierService.notify(e, context: { recording_id: @recording.id })
+      raise
+    end
+
     def process_locations
       Rails.logger.info "Processing locations for recording #{@recording.id}"
       LocationProcessorService.new(@recording).process
+      optimize_gps_data
     end
 
     def optimize_gps_data
@@ -20,7 +32,7 @@ module Recordings
       Rails.logger.info "Calculating statistics for recording #{@recording.id}"
       distance = @recording.calculate_distance
       average_speed = @recording.average_speed
-      Rails.logger.info "Recording #{@recording.id} statistics: Distance: #{distance}, Average Speed: #{average_speed}"
+      @recording.update(distance: distance)
     end
 
     def associate_with_race

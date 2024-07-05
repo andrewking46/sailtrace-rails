@@ -3,7 +3,7 @@ class RecordingProcessorJob < ApplicationJob
 
   def perform(recording_id)
     recording = Recording.find(recording_id)
-    Recordings::ProcessorService.new(recording).process_locations
+    Recordings::ProcessorService.new(recording).process
   rescue ActiveRecord::RecordNotFound => e
     Rails.logger.error "RecordingProcessorJob: Recording not found - #{e.message}"
     ErrorNotifierService.notify(e, context: { recording_id: recording_id })

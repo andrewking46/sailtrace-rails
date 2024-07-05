@@ -16,6 +16,8 @@ class Recording < ApplicationRecord
 
   scope :in_progress, -> { where(ended_at: nil).where.not(started_at: nil) }
 
+  attribute :processing_completed, :boolean, default: false
+
   def end!
     update!(ended_at: Time.current)
   end
