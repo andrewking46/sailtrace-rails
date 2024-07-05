@@ -2,7 +2,7 @@ class ErrorNotifierService
   class << self
     def notify(error, context = {})
       Rails.logger.error("Error: #{error.message}")
-      Rails.logger.error("Full details: #{error.inspect}")
+      Rails.logger.error("Full details: #{error.to_json}")
       Rails.logger.error("Context: #{context}")
 
       # Here you would typically integrate with an error tracking service
