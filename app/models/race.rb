@@ -1,10 +1,10 @@
 class Race < ApplicationRecord
+  include Geocodable
+
   belongs_to :boat_class, optional: true
   has_many :recordings
 
   validates :started_at, :start_latitude, :start_longitude, presence: true
-
-  reverse_geocoded_by :start_latitude, :start_longitude
 
   scope :empty, -> { left_joins(:recordings).where(recordings: { id: nil }) }
 

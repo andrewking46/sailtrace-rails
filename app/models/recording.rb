@@ -47,6 +47,7 @@ class Recording < ApplicationRecord
 
   def process_ending
     return unless ended?
+    set_start_location
     RecordingProcessorJob.perform_later(id)
   end
 
@@ -56,5 +57,11 @@ class Recording < ApplicationRecord
 
   def end_after_start
     errors.add(:ended_at, "must be after the start time") if ended? && ended_at < started_at
+  end
+
+  def set_start_location
+    return if start_latitude.present? && start_longitude.present?
+    first_recorded_location = recorded_locations.order(created_at: :asc).first
+    update(start_latitude: first_location.latitude, start_longitude: first_location.longitude) unless first_recorded_location.blank?
   end
 end
