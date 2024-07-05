@@ -1,0 +1,42 @@
+<div class="container">
+  <h1 class="text-xx-large text-bold margin-block-end">Processing recording</h1>
+  <div id="<%= dom_id @recording %>" data-controller="recordings--processor" data-recordings--processor-id-value="<%= @recording.id %>">
+    <div class="progress-container">
+      <div class="progress-bar">
+        <div class="progress" data-recordings--processor-target="progress"></div>
+      </div>
+    </div>
+    <p class="status" data-recordings--processor-target="status">Processing your recording...</p>
+  </div>
+</div>
+
+<%= content_for :head do %>
+  <style>
+    .progress-container {
+      width: 100%;
+      background-color: #f3f3f3;
+      padding: 3px;
+      border-radius: 3px;
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, .2);
+      margin-bottom: 20px;
+    }
+    .progress-bar {
+      height: 30px;
+      background-color: #e0e0e0;
+      border-radius: 3px;
+      transition: 0.4s linear;
+      transition-property: width, background-color;
+    }
+    .progress {
+      width: 0%;
+      height: 100%;
+      background-color: #4CAF50;
+      border-radius: 3px;
+      transition: width 0.4s ease-in-out;
+    }
+    .status {
+      text-align: center;
+      font-weight: bold;
+    }
+  </style>
+<% end %>

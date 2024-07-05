@@ -10,6 +10,8 @@ Rails.application.routes.draw do
     member do
       get   :track
       patch :end
+      get   :processing
+      get   :status
     end
   end
 
@@ -56,6 +58,8 @@ Rails.application.routes.draw do
 
   # Route for the style guide page
   get 'styleguide', to: 'pages#styleguide'
+
+  mount ActionCable.server => '/cable'
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 

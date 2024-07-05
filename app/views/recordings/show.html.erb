@@ -8,6 +8,11 @@
   <h1 class="text-xx-large text-bold margin-block-end">Recording</h1>
 
   <div id="<%= dom_id @recording %>">
+    <% if @processing %>
+      <div class="alert alert-info">
+        This recording is still being processed. Some information may be incomplete.
+      </div>
+    <% end %>
     <p class="text-small text-muted margin-block-end-half"><%= @recording.created_at.in_time_zone(@recording.time_zone).strftime("%A, %b %d %Y %l:%M%p") %></p>
     <p class="margin-block-end"><%= @recording.boat.name %> (<%= @recording.boat.registration_country %> <%= @recording.boat.sail_number %>)</p>
     <dl class="flex flex-wrap gap margin-block-end">

@@ -42,6 +42,7 @@ gem "active_model_serializers"
 gem "country_select", "~> 8.0"
 gem "geocoder"
 gem "rack-attack"
+gem "solid_queue"
 
 # Reduces boot times through caching; required in config/boot.rb
 gem "bootsnap", require: false

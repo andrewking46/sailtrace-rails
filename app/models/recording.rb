@@ -1,4 +1,7 @@
 class Recording < ApplicationRecord
+  include Geocodable
+  include Durationable
+
   belongs_to :boat
   belongs_to :user, default: -> { Current.user }
   belongs_to :race, optional: true
@@ -7,139 +10,49 @@ class Recording < ApplicationRecord
   validates :started_at, :time_zone, :boat_id, :user_id, presence: true
   validate :end_after_start
 
-  before_validation :set_started_at_value, on: :create
-  after_update_commit :after_ending_actions, if: :just_ended?
-  after_destroy_commit :destroy_race_if_no_recordings
+  before_validation :set_started_at, on: :create
+  after_update :process_ending, if: :saved_change_to_ended_at?
+  after_destroy :cleanup_race
 
-  reverse_geocoded_by :start_latitude, :start_longitude
+  scope :in_progress, -> { where(ended_at: nil).where.not(started_at: nil) }
 
-  def started?
-    started_at.present?
-  end
-
-  def in_progress?
-    started? && !ended?
-  end
-
-  def just_ended?
-    puts saved_change_to_ended_at?
-    puts ended?
-    saved_change_to_ended_at? && ended?
+  def end!
+    update!(ended_at: Time.current)
   end
 
   def ended?
     ended_at.present?
   end
 
-  def end!
-    self.ended_at = DateTime.current
-    save!
+  def calculate_distance
+    @distance ||= Recordings::DistanceCalculationService.new(self).calculate
   end
 
   def average_speed
-    total_seconds = duration_in_seconds
-    return 0 if total_seconds.zero?
-
-    hours = total_seconds / 3600.0
-    (distance / hours).round(2)
+    return 0 if duration_seconds.zero? || calculate_distance.zero?
+    (calculate_distance / (duration_seconds / 3600.0)).round(2)
   end
 
-  def distance
-    total_distance = 0
-    recorded_locations.order(created_at: :asc).each_cons(2) do |loc1, loc2|
-      total_distance += distance_between(loc1, loc2)
-    end
-    total_distance.round(5)
-  end
-
-  def duration
-    return "00:00:00" unless ended? && started?
-
-    total_seconds = duration_in_seconds
-    hours = total_seconds / 3600
-    minutes = (total_seconds / 60) % 60
-    seconds = total_seconds % 60
-
-    format("%02d:%02d:%02d", hours, minutes, seconds)
-  end
-
-  def duration_in_seconds
-    return 0 unless ended? && started?
-    (ended_at - started_at).to_i
+  def processing_completed?
+    processing_completed == true
   end
 
   private
 
-  def distance_between(loc1, loc2)
-    # Haversine formula to calculate the distance between two points on the Earth
-    # Convert latitude and longitude from degrees to radians
-    rad_per_deg = Math::PI / 180
-    rkm = 6371              # Earth radius in kilometers
-    rm = rkm * 0.539956803  # Radius in nautical miles
-    dlat_rad = (loc2.latitude - loc1.latitude) * rad_per_deg
-    dlon_rad = (loc2.longitude - loc1.longitude) * rad_per_deg
-
-    lat1_rad = loc1.latitude * rad_per_deg
-    lat2_rad = loc2.latitude * rad_per_deg
-
-    a = Math.sin(dlat_rad / 2)**2 + Math.cos(lat1_rad) * Math.cos(lat2_rad) * Math.sin(dlon_rad / 2)**2
-    c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
-
-    rm * c # Delta in nautical miles
+  def set_started_at
+    self.started_at ||= Time.current
   end
 
-  def set_started_at_value
-    self.started_at = DateTime.current
+  def process_ending
+    return unless ended?
+    RecordingProcessorJob.perform_later(id)
   end
 
-  def after_ending_actions
-    puts "after_ending_actions called"
-    set_start_location_values
-    associate_with_race
-    ProcessRecordingLocations.perform(id)
-  end
-
-  def set_start_location_values
-    puts "set_start_location_values called"
-    return if start_latitude.present? || start_longitude.present?
-    first_recorded_location = recorded_locations.order(created_at: :asc).first
-    return if first_recorded_location.blank?
-    self.start_latitude = first_recorded_location.latitude
-    self.start_longitude = first_recorded_location.longitude
-    save
-    puts "set_start_location_values saved"
+  def cleanup_race
+    race&.destroy_if_empty if is_race?
   end
 
   def end_after_start
-    errors.add(:ended_at, "Must be after the start time") if ended? && started? && ended_at < started_at
-  end
-
-  def associate_with_race
-    puts "associate_with_race called"
-    return unless is_race?
-
-    time_window = 5.minutes
-
-    return if start_latitude.blank?
-
-    # Use Geocoder's 'near' scope to find races within distance_threshold of the recording's start location
-    nearby_races = Race.near([start_latitude, start_longitude], 0.5, units: :km)
-                       .where(started_at: started_at - time_window..started_at + time_window)
-
-    self.race = nearby_races.first || Race.create!(
-      started_at: started_at,
-      start_latitude: start_latitude,
-      start_longitude: start_longitude,
-      boat_class_id: boat.boat_class_id
-    )
-
-    save
-    race.after_ending_actions
-    puts "associate_with_race saved"
-  end
-
-  def destroy_race_if_no_recordings
-    return unless is_race? and race.present?
-    race.destroy_if_recordings_empty
+    errors.add(:ended_at, "must be after the start time") if ended? && ended_at < started_at
   end
 end

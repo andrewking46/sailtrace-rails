@@ -3,7 +3,7 @@ import { Controller } from "@hotwired/stimulus"
 export default class extends Controller {
   static targets = ["pauseButton", "beacon", "gpsWarning", "consoleLog"]
   static values = { recordingId: Number }
-  static ACCEPTABLE_ACCURACY_THRESHOLD = 10;
+  static ACCEPTABLE_ACCURACY_THRESHOLD = 50;
 
   connect() {
     this.isRecording = true;
@@ -104,9 +104,9 @@ export default class extends Controller {
     }
   }
 
-  confirmEndRecording() {
+  async confirmEndRecording() {
     if (confirm("Are you sure you want to end this recording?")) {
-      this.endRecording();
+      await this.endRecording()
     }
   }
 
@@ -121,7 +121,7 @@ export default class extends Controller {
     .then(response => this.checkResponse(response))
     .then(() => {
       this.clearWatch();
-      window.location.href = `/recordings/${this.recordingIdValue}`;
+      window.location.href = `/recordings/${this.recordingIdValue}/processing`;
     })
     .catch(error => this.logError(error));
   }
