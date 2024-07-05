@@ -9,7 +9,6 @@ module Recordings
         process_locations
         calculate_statistics
         associate_with_race if @recording.is_race?
-        @recording.update(last_processed_at: Time.current)
       end
     rescue StandardError => e
       ErrorNotifierService.notify(e, context: { recording_id: @recording.id })

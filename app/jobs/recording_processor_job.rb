@@ -5,13 +5,23 @@ class RecordingProcessorJob < ApplicationJob
     Rails.logger.info "RecordingProcessorJob started for recording_id: #{recording_id}"
     recording = Recording.find(recording_id)
     Rails.logger.info "Recording found: #{recording.inspect}"
-    result = Recordings::ProcessorService.new(recording).process
-    Rails.logger.info "Processing completed with result: #{result.inspect}"
+
+    ActiveRecord::Base.transaction do
+      begin
+        result = Recordings::ProcessorService.new(recording).process
+        Rails.logger.info "Processing completed with result: #{result.inspect}"
+        recording.update!(last_processed_at: Time.current)
+      rescue => e
+        Rails.logger.error "Error processing recording: #{e.message}"
+        Rails.logger.error e.backtrace.join("\n")
+        raise # Re-raise the error to mark the job as failed
+      end
+    end
   rescue ActiveRecord::RecordNotFound => e
     Rails.logger.error "RecordingProcessorJob: Recording not found - #{e.message}"
     ErrorNotifierService.notify(e, context: { recording_id: recording_id })
   rescue StandardError => e
-    Rails.logger.error "RecordingProcessorJob: Error processing recording - #{e.message}"
+    Rails.logger.error "RecordingProcessorJob: Unexpected error - #{e.message}"
     Rails.logger.error e.backtrace.join("\n")
     ErrorNotifierService.notify(e, context: { recording_id: recording_id })
   ensure
