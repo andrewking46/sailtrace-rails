@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_07_05_030613) do
+ActiveRecord::Schema[7.1].define(version: 2024_07_05_190645) do
   create_schema "heroku_ext"
 
   # These are extensions that must be enabled in order to support this database
@@ -90,7 +90,9 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_05_030613) do
     t.decimal "start_latitude", precision: 10, scale: 6
     t.decimal "start_longitude", precision: 10, scale: 6
     t.decimal "distance"
+    t.datetime "last_processed_at"
     t.index ["boat_id"], name: "index_recordings_on_boat_id"
+    t.index ["last_processed_at"], name: "index_recordings_on_last_processed_at"
     t.index ["race_id"], name: "index_recordings_on_race_id"
     t.index ["start_latitude", "start_longitude"], name: "index_recordings_on_start_latitude_and_start_longitude"
     t.index ["user_id"], name: "index_recordings_on_user_id"

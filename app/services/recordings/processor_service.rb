@@ -9,6 +9,7 @@ module Recordings
         process_locations
         calculate_statistics
         associate_with_race if @recording.is_race?
+        @recording.update(last_processed_at: Time.current)
       end
     rescue StandardError => e
       ErrorNotifierService.notify(e, context: { recording_id: @recording.id })
@@ -31,7 +32,6 @@ module Recordings
     def calculate_statistics
       Rails.logger.info "Calculating statistics for recording #{@recording.id}"
       distance = @recording.calculate_distance
-      average_speed = @recording.average_speed
       @recording.update(distance: distance)
     end
 

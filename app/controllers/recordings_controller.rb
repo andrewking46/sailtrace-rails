@@ -1,5 +1,5 @@
 class RecordingsController < ApplicationController
-  before_action :set_recording, only: %i[show track edit update end destroy]
+  before_action :set_recording, only: %i[show track edit update status end destroy]
 
   def index
     @recordings = Current.user.recordings.order(created_at: :desc)
@@ -54,10 +54,9 @@ class RecordingsController < ApplicationController
   end
 
   def status
-    @recording = Recording.find(params[:id])
     render json: {
-      completed: @recording.processing_completed?,
-      message: @recording.processing_completed? ? "Processing completed" : "Processing in progress..."
+      status: @recording.status,
+      message: status_message(@recording.status)
     }
   end
 
@@ -71,5 +70,20 @@ class RecordingsController < ApplicationController
 
   def recording_params
     params.require(:recording).compact_blank.permit(:name, :started_at, :ended_at, :time_zone, :is_race, :boat_id)
+  end
+
+  def status_message(status)
+    case status
+    when 'not_started'
+      "Recording not started..."
+    when 'in_progress'
+      "Recording in progress..."
+    when 'processing'
+      "Processing your recording..."
+    when 'processed'
+      "Processing completed"
+    else
+      "Unknown status"
+    end
   end
 end

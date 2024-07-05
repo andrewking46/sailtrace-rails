@@ -27,7 +27,7 @@ class Recording < ApplicationRecord
   end
 
   def calculate_distance
-    @distance ||= Recordings::DistanceCalculationService.new(self).calculate
+    distance ||= Recordings::DistanceCalculationService.new(self).calculate
   end
 
   def average_speed
@@ -37,6 +37,13 @@ class Recording < ApplicationRecord
 
   def processing_completed?
     processing_completed == true
+  end
+
+  def status
+    return :not_started if started_at.nil?
+    return :in_progress if ended_at.nil?
+    return :processing if last_processed_at.nil?
+    :processed
   end
 
   private
