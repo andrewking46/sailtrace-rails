@@ -23,7 +23,7 @@ module Recordings
 
     def optimize_gps_data
       Rails.logger.info "Optimizing GPS data for recording #{@recording.id}"
-      locations = @recording.recorded_locations.order(:created_at).select(:adjusted_latitude, :adjusted_longitude, :accuracy, :created_at)
+      locations = RecordedLocation.select(:adjusted_latitude, :adjusted_longitude, :accuracy, :created_at).where(recording: @recording).order(created_at: :asc)
       processed_locations = Gps::DataProcessingService.new(locations).process
       update_locations(processed_locations)
     end
