@@ -49,7 +49,7 @@ class Recording < ApplicationRecord
   def process_ending
     return unless ended?
     set_start_location
-    result = Recordings::ProcessorService.new(self).process
+    Recordings::ProcessorService.new(self).process
     update(last_processed_at: Time.current)
     # RecordingProcessorJob.perform_later(id)
   end
