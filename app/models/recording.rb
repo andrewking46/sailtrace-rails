@@ -54,7 +54,7 @@ class Recording < ApplicationRecord
       begin
         result = Recordings::ProcessorService.new(self).process
         Rails.logger.info "Processing completed with result: #{result.inspect}"
-        recording.update!(last_processed_at: Time.current)
+        update(last_processed_at: Time.current)
       rescue => e
         Rails.logger.error "Error processing recording: #{e.message}"
         Rails.logger.error e.backtrace.join("\n")

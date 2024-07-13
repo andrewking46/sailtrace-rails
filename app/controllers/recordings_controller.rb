@@ -6,7 +6,7 @@ class RecordingsController < ApplicationController
   end
 
   def show
-    @processing = RecordingProcessorJob.processing?(@recording.id)
+    # @processing = RecordingProcessorJob.processing?(@recording.id)
   end
 
   def track

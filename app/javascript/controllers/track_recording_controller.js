@@ -121,7 +121,7 @@ export default class extends Controller {
     .then(response => this.checkResponse(response))
     .then(() => {
       this.clearWatch();
-      window.location.href = `/recordings/${this.recordingIdValue}`;
+      window.location.href = `/recordings/${this.recordingIdValue}/processing`;
     })
     .catch(error => this.logError(error));
   }

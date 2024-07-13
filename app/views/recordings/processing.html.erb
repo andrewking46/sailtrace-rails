@@ -1,5 +1,5 @@
 <div class="container">
-  <h1 class="page-title">Processing recording</h1>
+  <h1 class="text-xx-large text-bold margin-block-end">Processing recording</h1>
   <div id="<%= dom_id @recording %>"
        data-controller="recordings--processor"
        data-recordings--processor-id-value="<%= @recording.id %>"
@@ -7,49 +7,26 @@
        data-recordings--processor-initial-delay-value="5000"
        data-recordings--processor-max-backoff-value="30000"
        data-recordings--processor-check-interval-value="2000">
-    <div class="progress-container">
-      <div class="progress-bar" data-recordings--processor-target="progress"></div>
+    <div class="border-radius margin-block overflow-hidden fill-shade full-width">
+      <div class="progress-bar fill-orange border-radius" data-recordings--processor-target="progress"></div>
     </div>
-    <p class="status" data-recordings--processor-target="status">
+    <p class="text-center status" data-recordings--processor-target="status">
       Processing your recording...
     </p>
   </div>
 </div>
 
-<%= content_for :head do %>
-  <style>
-    .container {
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 2rem 1rem;
-    }
-    .page-title {
-      font-size: 2.5rem;
-      font-weight: bold;
-      margin-bottom: 1.5rem;
-    }
-    .progress-container {
-      width: 100%;
-      background-color: #f3f3f3;
-      border-radius: 0.25rem;
-      overflow: hidden;
-      margin-bottom: 1.5rem;
-    }
-    .progress-bar {
-      width: 0%;
-      height: 1rem;
-      background-color: #4CAF50;
-      transition: width 0.5s ease-out;
-    }
-    .status {
-      text-align: center;
-      font-weight: bold;
-      font-size: 1.125rem;
-      animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-    }
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.5; }
-    }
-  </style>
-<% end %>
+<style>
+  .progress-bar {
+    width: 0%;
+    height: 0.5rem;
+    transition: width 0.5s ease-out;
+  }
+  .status {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+</style>
