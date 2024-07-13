@@ -1,9 +1,19 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+laser:
+  name: Laser
+  is_one_design: true
 
-one:
-  name: MyString
+j24:
+  name: J/24
+  is_one_design: true
+
+powerboat:
+  name: Powerboat
   is_one_design: false
 
-two:
-  name: MyString
-  is_one_design: false
+optimist:
+  name: Optimist
+  is_one_design: true
+
+sunfish:
+  name: Sunfish
+  is_one_design: true

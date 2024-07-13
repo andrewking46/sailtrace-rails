@@ -1,19 +1,36 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
-one:
-  name: MyString
-  started_at: 2024-01-13 22:03:47
-  ended_at: 2024-01-13 22:03:47
-  time_zone: MyString
+in_progress:
+  name: "Afternoon Sail"
+  started_at: <%= 2.hours.ago %>
+  ended_at:
+  time_zone: "America/New_York"
   is_race: false
-  boat: one
-  user: one
+  boat: sailboat
+  user: john
+  start_latitude: 40.7128
+  start_longitude: -74.0060
 
-two:
-  name: MyString
-  started_at: 2024-01-13 22:03:47
-  ended_at: 2024-01-13 22:03:47
-  time_zone: MyString
+completed:
+  name: "Weekend Race"
+  started_at: <%= 25.hours.ago %>
+  ended_at: <%= 24.hours.ago %>
+  time_zone: "America/Los_Angeles"
+  is_race: true
+  boat: racing_yacht
+  user: jane
+  race: saturday_regatta
+  start_latitude: 37.7749
+  start_longitude: -122.4194
+  distance: 15.5
+
+processed:
+  name: "Evening Cruise"
+  started_at: <%= 4.hours.ago %>
+  ended_at: <%= 2.hours.ago %>
+  time_zone: "Europe/London"
   is_race: false
-  boat: two
-  user: two
+  boat: motorboat
+  user: bob
+  start_latitude: 51.5074
+  start_longitude: -0.1278
+  last_processed_at: <%= 1.hour.ago %>
+  distance: 8.2

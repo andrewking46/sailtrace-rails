@@ -25,7 +25,7 @@ class Recording < ApplicationRecord
   end
 
   def calculate_distance
-    distance ||= Recordings::DistanceCalculationService.new(self).calculate
+    distance || Recordings::DistanceCalculationService.new(self).calculate
   end
 
   def average_speed
@@ -49,7 +49,17 @@ class Recording < ApplicationRecord
   def process_ending
     return unless ended?
     set_start_location
-    RecordingProcessorJob.perform_later(id)
+    # RecordingProcessorJob.perform_later(id)
+    ActiveRecord::Base.transaction do
+      begin
+        result = Recordings::ProcessorService.new(self).process
+        Rails.logger.info "Processing completed with result: #{result.inspect}"
+        recording.update!(last_processed_at: Time.current)
+      rescue => e
+        Rails.logger.error "Error processing recording: #{e.message}"
+        Rails.logger.error e.backtrace.join("\n")
+      end
+    end
   end
 
   def cleanup_race

@@ -1,0 +1,15 @@
+# test/fixtures/races.yml
+
+saturday_regatta:
+  name: Saturday Regatta
+  started_at: <%= 1.day.ago %>
+  start_latitude: 37.7749
+  start_longitude: -122.4194
+  boat_class: j24
+
+sunday_race:
+  name: Sunday Race
+  started_at: <%= 2.days.ago %>
+  start_latitude: 40.7128
+  start_longitude: -74.0060
+  boat_class: laser

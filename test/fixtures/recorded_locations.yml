@@ -1,15 +1,35 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+location_one:
+  latitude: 40.7128
+  longitude: -74.0060
+  velocity: 5.2
+  heading: 180
+  accuracy: 3.5
+  recording: in_progress
+  created_at: <%= 1.hour.ago %>
 
-one:
-  latitude: 9.99
-  longitude: 9.99
-  velocity: 9.99
-  heading: 1
-  recording: one
+location_two:
+  latitude: 40.7129
+  longitude: -74.0061
+  velocity: 5.5
+  heading: 185
+  accuracy: 3.2
+  recording: in_progress
+  created_at: <%= 30.minutes.ago %>
 
-two:
-  latitude: 9.99
-  longitude: 9.99
-  velocity: 9.99
-  heading: 1
-  recording: two
+location_three:
+  latitude: 37.7749
+  longitude: -122.4194
+  velocity: 6.1
+  heading: 270
+  accuracy: 2.8
+  recording: completed
+  created_at: <%= 23.5.hours.ago %>
+
+location_four:
+  latitude: 51.5074
+  longitude: -0.1278
+  velocity: 4.8
+  heading: 90
+  accuracy: 4.0
+  recording: processed
+  created_at: <%= 69.5.hours.ago %>

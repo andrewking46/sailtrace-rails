@@ -1,17 +1,23 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+sailboat:
+  name: Wind Chaser
+  registration_country: US
+  sail_number: US1234
+  hull_color: White
+  boat_class: laser
+  user: john
 
-one:
-  name: MyString
-  registration_country: MyString
-  sail_number: MyString
-  hull_color: MyString
-  boat_class: one
-  user: one
+racing_yacht:
+  name: Sea Sprinter
+  registration_country: UK
+  sail_number: UK5678
+  hull_color: Blue
+  boat_class: j24
+  user: jane
 
-two:
-  name: MyString
-  registration_country: MyString
-  sail_number: MyString
-  hull_color: MyString
-  boat_class: two
-  user: two
+motorboat:
+  name: Power Cruiser
+  registration_country: AU
+  sail_number: AU9012
+  hull_color: Red
+  boat_class: powerboat
+  user: bob
