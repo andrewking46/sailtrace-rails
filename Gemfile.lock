@@ -242,6 +242,7 @@ GEM
       io-console (~> 0.5)
     rexml (3.2.6)
     rouge (4.2.1)
+    ruby-prof (1.7.0)
     rubyzip (2.3.2)
     selenium-webdriver (4.19.0)
       base64 (~> 0.2)
@@ -307,6 +308,7 @@ DEPENDENCIES
   puma (~> 6.4)
   rack-attack
   rails (~> 7.1)
+  ruby-prof
   selenium-webdriver
   solid_queue
   stimulus-rails
