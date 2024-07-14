@@ -1,6 +1,6 @@
 class RecordingProcessorJob < ApplicationJob
   queue_as :default
-  retry_on ActiveRecord::Deadlock, wait: 5.seconds, attempts: 3
+  retry_on ActiveRecord::Deadlocked, wait: 5.seconds, attempts: 3
   retry_on Net::OpenTimeout, Timeout::Error, wait: 10.seconds, attempts: 3
 
   def perform(recording_id)
