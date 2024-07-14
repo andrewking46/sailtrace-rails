@@ -5,15 +5,19 @@ module Recordings
     end
 
     def process
+      Rails.logger.info "Starting processing for Recording #{@recording.id}"
       ApplicationRecord.transaction do
         process_locations
         calculate_statistics
         associate_with_race if @recording.is_race?
       end
+      Rails.logger.info "Completed processing for Recording #{@recording.id}"
     rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotFound => e
+      Rails.logger.error "Database error in ProcessorService: #{e.message}\n#{e.backtrace.join("\n")}"
       ErrorNotifierService.notify(e, context: { recording_id: @recording.id, error_type: 'database_error' })
       raise
     rescue StandardError => e
+      Rails.logger.error "Unexpected error in ProcessorService: #{e.message}\n#{e.backtrace.join("\n")}"
       ErrorNotifierService.notify(e, context: { recording_id: @recording.id, error_type: 'unexpected_error' })
       raise
     end
