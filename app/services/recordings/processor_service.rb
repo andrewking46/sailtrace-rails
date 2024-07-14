@@ -10,8 +10,11 @@ module Recordings
         calculate_statistics
         associate_with_race if @recording.is_race?
       end
+    rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotFound => e
+      ErrorNotifierService.notify(e, context: { recording_id: @recording.id, error_type: 'database_error' })
+      raise
     rescue StandardError => e
-      ErrorNotifierService.notify(e, context: { recording_id: @recording.id })
+      ErrorNotifierService.notify(e, context: { recording_id: @recording.id, error_type: 'unexpected_error' })
       raise
     end
 

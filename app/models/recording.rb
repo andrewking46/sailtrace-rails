@@ -29,7 +29,7 @@ class Recording < ApplicationRecord
   end
 
   def average_speed
-    return 0 if duration_seconds.zero? || calculate_distance.zero?
+    return 0 if duration_seconds.to_f <= 0 || calculate_distance.to_f <= 0
     (calculate_distance / (duration_seconds / 3600.0)).round(2)
   end
 
@@ -49,9 +49,7 @@ class Recording < ApplicationRecord
   def process_ending
     return unless ended?
     set_start_location
-    Recordings::ProcessorService.new(self).process
-    update(last_processed_at: Time.current)
-    # RecordingProcessorJob.perform_later(id)
+    RecordingProcessorJob.perform_later(id)
   end
 
   def cleanup_race
@@ -65,6 +63,10 @@ class Recording < ApplicationRecord
   def set_start_location
     return if start_latitude.present? && start_longitude.present?
     first_recorded_location = recorded_locations.order(created_at: :asc).first
-    update(start_latitude: first_recorded_location.latitude, start_longitude: first_recorded_location.longitude) unless first_recorded_location.blank?
+    if first_recorded_location.present?
+      self.start_latitude = first_recorded_location.latitude
+      self.start_longitude = first_recorded_location.longitude
+      save(validate: false)
+    end
   end
 end
