@@ -46,17 +46,26 @@ module Gps
     end
 
     def perform_filter_operations(lat_measurement, lng_measurement, accuracy, timestamp)
-      time_inc = (timestamp.to_f - @timestamp) / 1000.0
-      @variance += time_inc * @meters_per_second**2 if time_inc.positive?
-      @timestamp = timestamp.to_f
+      time_inc = (timestamp - @timestamp) * 0.001 # Multiply by 0.001 instead of dividing by 1000.0
+      return set_state(lat_measurement, lng_measurement, accuracy, timestamp) if time_inc <= 0
 
-      kalman_gain = @variance / (@variance + accuracy**2)
-      lat_diff = lat_measurement.to_f - @latitude
-      lng_diff = lng_measurement.to_f - @longitude
+      @variance += time_inc * @meters_per_second * @meters_per_second
+      @timestamp = timestamp
+
+      kalman_gain = @variance / (@variance + accuracy * accuracy)
+      lat_diff = lat_measurement - @latitude
+      lng_diff = lng_measurement - @longitude
 
       @latitude += kalman_gain * lat_diff
       @longitude += kalman_gain * lng_diff
-      @variance *= (1 - kalman_gain)
+      @variance *= (1.0 - kalman_gain)
+
+      if @latitude.finite? && @longitude.finite? && @variance.finite?
+        true
+      else
+        set_state(lat_measurement, lng_measurement, accuracy, timestamp)
+        false
+      end
     end
   end
 end

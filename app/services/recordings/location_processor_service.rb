@@ -21,7 +21,7 @@ module Recordings
           previous_location = location
         end
 
-        RecordedLocation.upsert_all(updates)
+        RecordedLocation.upsert_all(updates, unique_by: :id, update_only: [:adjusted_latitude, :adjusted_longitude])
         updates.clear
       end
     end
