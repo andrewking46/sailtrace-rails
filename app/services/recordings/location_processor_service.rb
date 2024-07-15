@@ -94,6 +94,9 @@ module Recordings
         Rails.logger.debug "Kalman filter produced valid result for location #{location.id}: lat=#{@filter.latitude}, lon=#{@filter.longitude}"
         {
           id: location.id,
+          latitude: location.latitude,
+          longitude: location.longitude,
+          recording_id: location.recording_id,
           adjusted_latitude: @filter.latitude,
           adjusted_longitude: @filter.longitude
         }
@@ -101,6 +104,9 @@ module Recordings
         Rails.logger.warn "Kalman filter produced invalid result for location #{location.id}. Using original coordinates."
         {
           id: location.id,
+          latitude: location.latitude,
+          longitude: location.longitude,
+          recording_id: location.recording_id,
           adjusted_latitude: location.latitude,
           adjusted_longitude: location.longitude
         }
