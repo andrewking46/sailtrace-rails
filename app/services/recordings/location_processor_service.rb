@@ -1,6 +1,6 @@
 module Recordings
   class LocationProcessorService
-    WINDOW_SIZE = 12
+    WINDOW_SIZE = 10
     BASE_PROCESS_NOISE = 0.5
     BATCH_SIZE = 1000
 
@@ -31,6 +31,7 @@ module Recordings
         end
 
         Rails.logger.info "Upserting #{updates.size} records for Recording #{@recording.id}"
+        Rails.logger.debug "Updates array before upsert: #{updates.inspect}"
         RecordedLocation.upsert_all(updates, unique_by: :id, update_only: [:adjusted_latitude, :adjusted_longitude])
         updates.clear
       end
