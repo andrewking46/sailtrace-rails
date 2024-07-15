@@ -32,8 +32,12 @@ module Recordings
 
         Rails.logger.info "Upserting #{updates.size} records for Recording #{@recording.id}"
         Rails.logger.debug "Updates array before upsert: #{updates.inspect}"
-        RecordedLocation.upsert_all(updates, unique_by: :id, update_only: [:adjusted_latitude, :adjusted_longitude])
-        updates.clear
+        RecordedLocation.upsert_all(
+          updates,
+          unique_by: :id,
+          update_only: [:adjusted_latitude, :adjusted_longitude],
+          returning: false
+        )
       end
 
       Rails.logger.info "Completed LocationProcessorService for Recording #{@recording.id}"

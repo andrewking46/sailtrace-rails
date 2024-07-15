@@ -52,7 +52,7 @@ module Gps
     end
 
     def perform_filter_operations(lat_measurement, lng_measurement, accuracy, timestamp)
-      time_inc = (timestamp - @timestamp) * 0.001
+      time_inc = ((timestamp - @timestamp) * 0.001).round(3)
       Rails.logger.debug "KalmanFilter: Time increment: #{time_inc}"
 
       if time_inc <= 0
@@ -60,18 +60,18 @@ module Gps
         return set_state(lat_measurement, lng_measurement, accuracy, timestamp)
       end
 
-      @variance += time_inc * @meters_per_second * @meters_per_second
+      @variance = (@variance + time_inc * @meters_per_second * @meters_per_second).round(8)
       @timestamp = timestamp
 
-      kalman_gain = @variance / (@variance + accuracy * accuracy)
-      lat_diff = lat_measurement - @latitude
-      lng_diff = lng_measurement - @longitude
+      kalman_gain = (@variance / (@variance + accuracy * accuracy)).round(8)
+      lat_diff = (lat_measurement - @latitude).round(8)
+      lng_diff = (lng_measurement - @longitude).round(8)
 
       Rails.logger.debug "KalmanFilter: Kalman gain: #{kalman_gain}, Lat diff: #{lat_diff}, Lng diff: #{lng_diff}"
 
-      @latitude += kalman_gain * lat_diff
-      @longitude += kalman_gain * lng_diff
-      @variance *= (1.0 - kalman_gain)
+      @latitude = (@latitude + kalman_gain * lat_diff).round(6)
+      @longitude = (@longitude + kalman_gain * lng_diff).round(6)
+      @variance = (@variance * (1.0 - kalman_gain)).round(8)
 
       Rails.logger.debug "KalmanFilter: Updated state - Lat: #{@latitude}, Lng: #{@longitude}, Variance: #{@variance}"
 
