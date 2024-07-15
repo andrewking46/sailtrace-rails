@@ -34,7 +34,6 @@ module Recordings
         Rails.logger.debug "Updates array before upsert: #{updates.inspect}"
         RecordedLocation.upsert_all(
           updates,
-          unique_by: :id,
           update_only: [:adjusted_latitude, :adjusted_longitude],
           returning: false
         )
