@@ -18,21 +18,15 @@ module Gps
     end
 
     def process(lat_measurement, lng_measurement, accuracy, timestamp)
-      Rails.logger.debug "KalmanFilter: Processing measurement (#{lat_measurement}, #{lng_measurement}) with accuracy #{accuracy} at timestamp #{timestamp}"
-
       unless valid_input?(lat_measurement, lng_measurement, accuracy, timestamp)
-        Rails.logger.error "KalmanFilter: Invalid input detected"
         raise ArgumentError, "Invalid input for Kalman filter"
       end
 
       accuracy = default_accuracy(accuracy)
-      Rails.logger.debug "KalmanFilter: Using accuracy: #{accuracy}"
 
       if @variance.negative?
-        Rails.logger.debug "KalmanFilter: Negative variance, setting initial state"
         set_state(lat_measurement, lng_measurement, accuracy, timestamp)
       else
-        Rails.logger.debug "KalmanFilter: Performing filter operations"
         perform_filter_operations(lat_measurement, lng_measurement, accuracy, timestamp)
       end
     end
@@ -53,10 +47,8 @@ module Gps
 
     def perform_filter_operations(lat_measurement, lng_measurement, accuracy, timestamp)
       time_inc = ((timestamp - @timestamp) * 0.001).round(3)
-      Rails.logger.debug "KalmanFilter: Time increment: #{time_inc}"
 
       if time_inc <= 0
-        Rails.logger.warn "KalmanFilter: Non-positive time increment, resetting state"
         return set_state(lat_measurement, lng_measurement, accuracy, timestamp)
       end
 
@@ -67,18 +59,13 @@ module Gps
       lat_diff = (lat_measurement - @latitude).round(8)
       lng_diff = (lng_measurement - @longitude).round(8)
 
-      Rails.logger.debug "KalmanFilter: Kalman gain: #{kalman_gain}, Lat diff: #{lat_diff}, Lng diff: #{lng_diff}"
-
       @latitude = (@latitude + kalman_gain * lat_diff).round(6)
       @longitude = (@longitude + kalman_gain * lng_diff).round(6)
       @variance = (@variance * (1.0 - kalman_gain)).round(8)
 
-      Rails.logger.debug "KalmanFilter: Updated state - Lat: #{@latitude}, Lng: #{@longitude}, Variance: #{@variance}"
-
       if @latitude.finite? && @longitude.finite? && @variance.finite?
         true
       else
-        Rails.logger.warn "KalmanFilter: Invalid state detected, resetting"
         set_state(lat_measurement, lng_measurement, accuracy, timestamp)
         false
       end
