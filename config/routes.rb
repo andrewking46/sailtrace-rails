@@ -5,13 +5,13 @@ Rails.application.routes.draw do
     scope module: :recordings do
       resources :recorded_locations, only: :index
       resource  :replay, only: :show
+      resource  :status, only: :show
     end
 
     member do
       get   :track
       patch :end
       get   :processing
-      get   :status
     end
   end
 
@@ -38,6 +38,10 @@ Rails.application.routes.draw do
       resources :recordings, only: [:create, :update, :show] do
         member do
           patch :end
+        end
+
+        scope module: :recordings do
+          resource :status, only: :show
         end
 
         resources :recorded_locations, only: [:create] do

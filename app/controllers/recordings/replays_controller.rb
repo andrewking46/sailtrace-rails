@@ -1,10 +1,5 @@
-class Recordings::ReplaysController < ApplicationController
-  before_action :set_recording
-
-  def show; end
-
-  private
-    def set_recording
-      @recording = Recording.find(params[:recording_id])
-    end
+module Recordings
+  class ReplaysController < BaseController
+    def show; end
+  end
 end
