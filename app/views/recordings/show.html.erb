@@ -51,7 +51,7 @@
           <div class="text-muted text-small"><%= pluralize(@recording.race.recordings.count, "boat") %></div>
         </div>
         <div class="flex gap">
-          <%= link_to "View", race_path(@recording.race), class: "btn" %>
+          <%# link_to "View", race_path(@recording.race), class: "btn" %>
           <%= link_to "Replay", race_replay_path(@recording.race), class: "btn btn--reversed" %>
         </div>
       </div>

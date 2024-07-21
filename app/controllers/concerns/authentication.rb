@@ -10,6 +10,7 @@ module Authentication
   class_methods do
     def allow_unauthenticated_access(**options)
       skip_before_action :require_authentication, **options
+      before_action :attempt_authentication, **options
     end
 
     def require_unauthenticated_access(**options)
@@ -27,9 +28,16 @@ module Authentication
       restore_authentication || request_authentication
     end
 
+    def attempt_authentication
+      restore_authentication
+    end
+
     def restore_authentication
       if session = find_session_by_cookie
         resume_session session
+        true
+      else
+        false
       end
     end
 
@@ -64,5 +72,6 @@ module Authentication
 
     def reset_authentication
       cookies.delete(:session_token)
+      Current.user = nil
     end
 end

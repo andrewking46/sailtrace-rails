@@ -1,4 +1,11 @@
 module ApplicationHelper
+  include MetaTags::BaseHelper
+  include MetaTags::SchemaOrgHelper
+  include MetaTags::RaceHelper
+  include MetaTags::RecordingHelper
+  include MetaTags::BoatHelper
+  include MetaTags::UserHelper
+
   def page_title_tag
     tag.title @page_title || "SailTrace"
   end
