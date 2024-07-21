@@ -1,0 +1,27 @@
+<div class="container">
+  <section class="text-align-center">
+    <%= image_tag "logos/sailtrace-app-icon.png", role: "presentation", size: 36, class: "center margin-block" %>
+    <h1 class="text-x-large text-bold margin-block">Set new password</h1>
+    <%= form_with model: @user, url: password_reset_path(reset_token: @password_reset.reset_token), class: "center fit-content margin-block", method: :patch do |form| %>
+      <fieldset class="flex flex-column gap <%= "shake" if @user.errors.any? %>">
+        <div class="input-group">
+          <div class="input-wrapper">
+            <%= form.label :password %>
+            <div class="input">
+              <%= form.password_field :password, required: true, autocomplete: "new-password" %>
+            </div>
+          </div>
+          <div class="input-wrapper">
+            <%= form.label :password_confirmation %>
+            <div class="input">
+              <%= form.password_field :password_confirmation, required: true, autocomplete: "new-password" %>
+            </div>
+          </div>
+        </div>
+        <%= form.button class: "btn btn--reversed center", type: :submit do %>
+          <span class="for-screen-reader">Update password</span>
+        <% end %>
+      </fieldset>
+    <% end %>
+  </section>
+</div>

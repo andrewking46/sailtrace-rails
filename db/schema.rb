@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_07_05_190645) do
+ActiveRecord::Schema[7.1].define(version: 2024_07_18_232126) do
   create_schema "heroku_ext"
 
   # These are extensions that must be enabled in order to support this database
@@ -49,6 +49,18 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_05_190645) do
     t.datetime "updated_at", null: false
     t.index ["boat_class_id"], name: "index_boats_on_boat_class_id"
     t.index ["user_id"], name: "index_boats_on_user_id"
+  end
+
+  create_table "password_resets", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "reset_token", null: false
+    t.datetime "expires_at", null: false
+    t.datetime "used_at"
+    t.string "request_ip"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["reset_token"], name: "index_password_resets_on_reset_token", unique: true
+    t.index ["user_id"], name: "index_password_resets_on_user_id"
   end
 
   create_table "races", force: :cascade do |t|
@@ -233,6 +245,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_05_190645) do
   add_foreign_key "access_tokens", "users"
   add_foreign_key "boats", "boat_classes"
   add_foreign_key "boats", "users"
+  add_foreign_key "password_resets", "users"
   add_foreign_key "races", "boat_classes"
   add_foreign_key "recorded_locations", "recordings"
   add_foreign_key "recordings", "boats"

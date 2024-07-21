@@ -25,6 +25,7 @@ Rails.application.routes.draw do
   resources :boats
   resources :users
   resource  :session
+  resources :password_resets, only: [:new, :create, :edit, :update], param: :reset_token
 
   namespace :api do
     namespace :v1 do
