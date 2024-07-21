@@ -36,13 +36,16 @@ class Race < ApplicationRecord
   def update_boat_class
     return if recordings.count <= 1
 
-    consistent_boat_class = recordings.joins(:boat)
-                                      .select('boats.boat_class_id')
-                                      .distinct
-                                      .having('COUNT(DISTINCT boats.boat_class_id) = 1')
-                                      .pluck('boats.boat_class_id')
-                                      .first
+    boat_class_ids = recordings
+      .joins(:boat)
+      .distinct
+      .pluck('boats.boat_class_id')
+      .compact
 
-    update(boat_class_id: consistent_boat_class)
+    if boat_class_ids.size == 1
+      update(boat_class_id: boat_class_ids.first)
+    else
+      update(boat_class_id: nil)
+    end
   end
 end
