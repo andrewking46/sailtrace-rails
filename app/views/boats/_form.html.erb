@@ -23,7 +23,7 @@
       <div class="input-wrapper">
         <%= form.label :hull_color %>
         <div class="input">
-          <%= form.text_field :hull_color, required: true, autocomplete: :off, placeholder: "e.g. Red" %>
+          <%= form.select :hull_color, ["Red", "White", "Green", "Black", "Blue"].sort, required: true, placeholder: "e.g. Red" %>
         </div>
       </div>
     </div>
@@ -32,7 +32,7 @@
       <div class="input-wrapper">
         <%= form.label :boat_class_id %>
         <div class="input">
-          <%= form.collection_select :boat_class_id, BoatClass.order(:name), :id, :name, autocomplete: :off %>
+          <%= form.collection_select :boat_class_id, BoatClass.order(:name), :id, :name, autocomplete: :off, required: true %>
         </div>
       </div>
       <div class="input-wrapper">
