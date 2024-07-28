@@ -1,42 +1,6 @@
 <div id="<%= dom_id user %>">
-  <p>
-    <strong>Username:</strong>
-    <%= user.username %>
-  </p>
-
-  <p>
-    <strong>First name:</strong>
-    <%= user.first_name %>
-  </p>
-
-  <p>
-    <strong>Last name:</strong>
-    <%= user.last_name %>
-  </p>
-
-  <p>
-    <strong>Email address:</strong>
-    <%= user.email_address %>
-  </p>
-
-  <p>
-    <strong>Phone number:</strong>
-    <%= user.phone_number %>
-  </p>
-
-  <p>
-    <strong>Country:</strong>
-    <%= user.country %>
-  </p>
-
-  <p>
-    <strong>Time zone:</strong>
-    <%= user.time_zone %>
-  </p>
-
-  <p>
-    <strong>Is admin:</strong>
-    <%= user.is_admin %>
-  </p>
-
+  <p class="margin-block-end-half"><%= user.first_name %> <%= user.last_name %></p>
+  <p class="text-small text-muted"><%= user.username %></p>
+  <p class="text-small text-muted"><%= user.email_address %></p>
 </div>
+

@@ -1,12 +1,11 @@
-<h1>Users</h1>
+<div class="container">
+  <h1 class="text-xx-large text-bold">Users</h1>
 
-<div id="users">
-  <% @users.each do |user| %>
-    <%= render user %>
-    <p>
-      <%= link_to "Show this user", user %>
-    </p>
-  <% end %>
+  <div class="margin-block" id="users">
+    <% @users.each do |user| %>
+      <%= link_to user, class: "panel margin-block flex" do %>
+        <%= render user %>
+      <% end %>
+    <% end %>
+  </div>
 </div>
-
-<%= link_to "New user", new_user_path %>
