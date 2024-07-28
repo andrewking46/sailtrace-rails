@@ -1,8 +1,12 @@
-<div class="container text-align-center">
-  <%= image_tag "logos/sailtrace-app-icon.png", role: "presentation", size: 72, class: "center margin-block" %>
+<div class="container full-height flex flex-column align-center justify-center">
+  <div class="margin-block-end">
+    <%= image_tag "logos/sailtrace-app-icon.png", role: "presentation", size: 72, class: "center shadow border-radius" %>
+  </div>
 
-  <p class="margin-block">Welcome to SailTrace</p>
+  <p class="margin-block-double text-x-large text-bold">Welcome to SailTrace</p>
 
-  <%= link_to "Sign up", new_user_path, class: "btn btn--reversed" %> or
-  <%= link_to "Log in", new_session_path %>
+  <div class="margin-block-double flex flex-wrap gap">
+    <%= link_to "Sign up", new_user_path, class: "btn btn--reversed full-width flex-item-grow" %>
+    <%= link_to "Log in", new_session_path, class: "btn full-width flex-item-grow" %>
+  </div>
 </div>

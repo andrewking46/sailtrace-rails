@@ -27,6 +27,7 @@
 
 /* Sizing */
 .full-width { inline-size: 100%; }
+.full-height { block-size: 100%; }
 .min-width { min-inline-size: 0; }
 .max-width { max-inline-size: 100%; }
 .fit-content { inline-size: fit-content; }
