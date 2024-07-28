@@ -25,6 +25,9 @@
   row-gap: var(--row-gap, var(--block-space));
 }
 
+.block { display: block; }
+.inline-block { display: inline-block; }
+
 /* Sizing */
 .full-width { inline-size: 100%; }
 .full-height { block-size: 100%; }

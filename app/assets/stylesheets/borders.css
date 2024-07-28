@@ -8,3 +8,4 @@
 
 /* Border radius */
 .border-radius { border-radius: var(--border-radius, 1em); }
+.border-radius-circle { border-radius: 9999em; }

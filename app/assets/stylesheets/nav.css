@@ -7,6 +7,11 @@
   row-gap: var(--block-space);
   top: 0;
   z-index: 401;
+
+  & a {
+    min-width: 40px;
+    height: 40px;
+  }
 }
 
 #app-navigation {
@@ -20,7 +25,7 @@
   }
 
   & a {
-    padding: var(--block-space-half);
+    padding: var(--block-space);
     border-radius: 50%;
   }
 }
