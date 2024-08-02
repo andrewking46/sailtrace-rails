@@ -141,7 +141,7 @@ export default class extends Controller {
   // Helper method to get the path data for a recording
   getPathData(recording, time) {
     const validLocations = recording.recorded_locations.filter(location =>
-      new Date(location.created_at) <= time
+      new Date(location.recorded_at) <= time
     );
 
     return {
@@ -157,7 +157,7 @@ export default class extends Controller {
   // Helper method to get the last known position for a recording
   getLastPosition(recording, time) {
     const validLocations = recording.recorded_locations.filter(location =>
-      new Date(location.created_at) <= time
+      new Date(location.recorded_at) <= time
     );
 
     return validLocations.at(-1) || null;

@@ -11,8 +11,8 @@ json.recordings race.recordings do |recording|
     json.extract! recording.boat, :name, :registration_country, :sail_number, :hull_color
   end
 
-  json.recorded_locations recording.recorded_locations.order(:created_at) do |recorded_location|
-    json.extract! recorded_location, :id, :latitude, :longitude, :adjusted_latitude, :adjusted_longitude, :accuracy, :created_at
+  json.recorded_locations recording.recorded_locations.order(:recorded_at) do |recorded_location|
+    json.extract! recorded_location, :id, :latitude, :longitude, :adjusted_latitude, :adjusted_longitude, :accuracy, :created_at, :recorded_at
   end
 end
 

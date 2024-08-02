@@ -9,7 +9,7 @@ class ProcessRecordingLocationsJob < ApplicationJob
     filter = KalmanFilter.new(BASE_PROCESS_NOISE)
     previous_location = nil
 
-    recording.recorded_locations.order(:created_at).each do |location|
+    recording.recorded_locations.order(:recorded_at).each do |location|
       if previous_location
         time_diff = (location.created_at - previous_location.created_at).to_f
         instant_speed = speed_calculator.add_point(

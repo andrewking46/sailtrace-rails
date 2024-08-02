@@ -1,9 +1,7 @@
 Rails.application.routes.draw do
   resources :recordings do
-    resources :recorded_locations, only: [:create]
-
     scope module: :recordings do
-      resources :recorded_locations, only: :index
+      resources :recorded_locations, only: [:index, :create]
       resource  :replay, only: :show
       resource  :status, only: :show
     end
@@ -42,13 +40,8 @@ Rails.application.routes.draw do
         end
 
         scope module: :recordings do
-          resource :status, only: :show
-        end
-
-        resources :recorded_locations, only: [:create] do
-          collection do
-            post :batch, to: 'recorded_locations#batch_create'
-          end
+          resource  :status, only: :show
+          resources :recorded_locations, only: [:index, :create]
         end
       end
     end

@@ -24,7 +24,7 @@ module Recordings
     end
 
     def optimize_gps_data
-      locations = @recording.recorded_locations.select(:adjusted_latitude, :adjusted_longitude, :accuracy, :created_at).order(:created_at)
+      locations = @recording.recorded_locations.select(:adjusted_latitude, :adjusted_longitude, :accuracy, :created_at, :recorded_at).order(:recorded_at)
       processed_locations = Gps::DataProcessingService.new(locations).process
       update_locations(processed_locations)
     end
@@ -42,7 +42,7 @@ module Recordings
 
     def update_locations(processed_locations)
       RecordedLocation.transaction do
-        @recording.recorded_locations.order(:created_at).each_with_index do |location, index|
+        @recording.recorded_locations.order(:recorded_at).each_with_index do |location, index|
           location.update(
             adjusted_latitude: processed_locations[index][:latitude],
             adjusted_longitude: processed_locations[index][:longitude]

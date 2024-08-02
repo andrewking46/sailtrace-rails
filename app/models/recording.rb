@@ -62,7 +62,7 @@ class Recording < ApplicationRecord
 
   def set_start_location
     return if start_latitude.present? && start_longitude.present?
-    first_recorded_location = recorded_locations.order(created_at: :asc).first
+    first_recorded_location = recorded_locations.order(recorded_at: :asc).first
     if first_recorded_location.present?
       self.start_latitude = first_recorded_location.latitude
       self.start_longitude = first_recorded_location.longitude

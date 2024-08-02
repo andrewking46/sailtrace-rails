@@ -203,7 +203,7 @@ export default class extends Controller {
   getPathData(recording, time) {
     const tenMinutesAgo = new Date(time - 10 * 60 * 1000);
     const validLocations = recording.recorded_locations.filter(location =>
-      new Date(location.created_at) >= tenMinutesAgo && new Date(location.created_at) <= time
+      new Date(location.recorded_at) >= tenMinutesAgo && new Date(location.recorded_at) <= time
     );
 
     return {
@@ -219,7 +219,7 @@ export default class extends Controller {
   getLastPosition(recording, time) {
     const tenMinutesAgo = new Date(time - 10 * 60 * 1000);
     const validLocations = recording.recorded_locations.filter(location =>
-      new Date(location.created_at) >= tenMinutesAgo && new Date(location.created_at) <= time
+      new Date(location.recorded_at) >= tenMinutesAgo && new Date(location.recorded_at) <= time
     );
 
     return validLocations.at(-1) || null;

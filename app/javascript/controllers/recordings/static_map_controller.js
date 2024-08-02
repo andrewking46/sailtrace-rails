@@ -4,31 +4,35 @@ import mapboxgl from "mapbox-gl";
 export default class extends Controller {
   static values = {
     recordingId: Number,
-    boatColor: String,
     replayPath: String,
-    startLatitude: Number,
-    startLongitude: Number
   };
 
   connect() {
     mapboxgl.accessToken = 'pk.eyJ1IjoiYW5kcmV3a2luZzQ2IiwiYSI6ImNsdGozang0MTBsbDgya21kNGsybGNvODkifQ.-2ds5rFYjTBPgTYc7EG0-A'
-    this.loadRecordedLocations();
+    this.fetchRecordingData();
   }
 
-  loadRecordedLocations() {
-    fetch(`/recordings/${this.recordingIdValue}/recorded_locations.json`)
-      .then(response => response.json())
-      .then(locations => {
-        this.initializeStaticMap(locations);
-      })
-      .catch(error => console.log(error));
+  async fetchRecordingData() {
+    this.recording = {}
+
+    try {
+      if (!Number.isFinite(this.recordingIdValue)) return;
+
+      const response = await fetch(`/recordings/${this.recordingIdValue}.json`);
+      const recording = await response.json();
+      this.recording = recording;
+
+      this.initializeMap();
+    } catch (error) {
+      console.error(error);
+    }
   }
 
-  initializeStaticMap(locations) {
+  initializeMap() {
     const map = new mapboxgl.Map({
       container: this.element,
       style: 'mapbox://styles/mapbox/standard', // This can be changed to other map styles
-      center: [this.startLongitudeValue, this.startLatitudeValue], // Will be set dynamically
+      center: [this.recording.start_longitude, this.recording.start_latitude], // Will be set dynamically
       zoom: 14,
       interactive: false
     });
@@ -39,8 +43,8 @@ export default class extends Controller {
       map.setConfigProperty('basemap', 'showTransitLabels', false);
     });
 
-    if (locations.length > 0) {
-      this.drawColoredPath(map, locations);
+    if (this.recording.recorded_locations.length > 0) {
+      this.drawColoredPath(map, this.recording.recorded_locations);
     }
   }
 
@@ -68,7 +72,7 @@ export default class extends Controller {
             'line-cap': 'round'
           },
           'paint': {
-            'line-color': this.boatColorValue,
+            'line-color': this.recording.boat.hull_color.toLowerCase() || 'white',
             'line-width': 3
           }
         });
@@ -168,7 +172,7 @@ export default class extends Controller {
       prevLocation.adjusted_latitude || prevLocation.latitude, prevLocation.adjusted_longitude || prevLocation.longitude,
       location.adjusted_latitude || location.latitude, location.adjusted_longitude || location.longitude
     );
-    const timeElapsed = (new Date(location.created_at) - new Date(prevLocation.created_at)) / 1000;
+    const timeElapsed = (new Date(location.recorded_at) - new Date(prevLocation.recorded_at)) / 1000;
 
     return distance / timeElapsed;
   }

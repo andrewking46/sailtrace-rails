@@ -11,6 +11,7 @@ class RecordedLocationTest < ActiveSupport::TestCase
       velocity: 5.5,
       heading: 180,
       accuracy: 10.0,
+      recorded_at: Time.current,
       recording: @recording
     )
   end
@@ -35,6 +36,12 @@ class RecordedLocationTest < ActiveSupport::TestCase
     @recorded_location.recording = nil
     assert_not @recorded_location.valid?
     assert_includes @recorded_location.errors[:recording], "must exist"
+  end
+
+  test "invalid without recorded_at" do
+    @recorded_location.recorded_at = nil
+    assert_not @recorded_location.valid?
+    assert_includes @recorded_location.errors[:recorded_at], "can't be blank"
   end
 
   test "belongs to recording" do
@@ -70,5 +77,21 @@ class RecordedLocationTest < ActiveSupport::TestCase
     @recorded_location.heading = -1
     assert_not @recorded_location.valid?
     assert_includes @recorded_location.errors[:heading], "must be greater than or equal to 0"
+  end
+
+  test "recorded_at cannot be in the future" do
+    @recorded_location.recorded_at = 1.day.from_now
+    assert_not @recorded_location.valid?
+    assert_includes @recorded_location.errors[:recorded_at], "can't be in the future"
+  end
+
+  test "recorded_at can be in the past" do
+    @recorded_location.recorded_at = 1.day.ago
+    assert @recorded_location.valid?
+  end
+
+  test "recorded_at can be the current time" do
+    @recorded_location.recorded_at = Time.current
+    assert @recorded_location.valid?
   end
 end

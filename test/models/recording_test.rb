@@ -117,7 +117,7 @@ class RecordingTest < ActiveSupport::TestCase
     assert_nil new_recording.start_latitude
     assert_nil new_recording.start_longitude
 
-    location = new_recording.recorded_locations.create!(latitude: 40.7128, longitude: -74.0060)
+    location = new_recording.recorded_locations.create!(latitude: 40.7128, longitude: -74.0060, recorded_at: Time.current)
     new_recording.send(:set_start_location)
     new_recording.reload
 
