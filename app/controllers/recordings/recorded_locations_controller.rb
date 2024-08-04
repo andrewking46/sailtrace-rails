@@ -32,8 +32,3 @@ module Recordings
     end
   end
 end
-
-
-# RecordedLocation.all.each do |location|
-#   location.update(recorded_at: location.created_at)
-# end

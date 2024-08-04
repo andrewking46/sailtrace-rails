@@ -5,6 +5,11 @@ module Api
 
       before_action :set_recording, only: [:show, :update, :destroy, :end]
 
+      def index
+        @recordings = current_user.recordings.order(created_at: :desc)
+        render json: @recordings, each_serializer: RecordingSerializer
+      end
+
       def create
         @recording = current_user.recordings.new(recording_params)
         if @recording.save
