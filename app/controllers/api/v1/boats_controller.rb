@@ -3,8 +3,6 @@ module Api
     class BoatsController < BaseController
       include UserOwnedResource
 
-      before_action :set_boat, only: [:show, :update, :destroy]
-
       def index
         @boats = current_user.boats.order(:name)
         render json: @boats, each_serializer: BoatSerializer
@@ -39,11 +37,6 @@ module Api
       end
 
       private
-
-      def set_boat
-        @boat = current_user.boats.find(params[:id])
-        render json: { error: 'Boat not found' }, status: :not_found unless @boat
-      end
 
       def boat_params
         params.require(:boat).permit(:name, :registration_country, :sail_number, :hull_color, :boat_class_id)
