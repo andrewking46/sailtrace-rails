@@ -8,7 +8,10 @@ module UserOwnedResource
   private
 
   def authorize_user_resource
-    unless instance_variable_get("@#{controller_name.singularize}").user_id == current_user.id
+    resource = instance_variable_get("@#{controller_name.singularize}")
+    if resource.nil?
+      render json: { error: 'Resource not found' }, status: :not_found
+    elsif resource.user_id != current_user.id
       render json: { error: 'You are not authorized to perform this action' }, status: :forbidden
     end
   end

@@ -24,7 +24,9 @@ module Api
       end
 
       def update
-        if @boat.update(boat_params)
+        if @boat.nil?
+          render json: { error: 'Boat not found' }, status: :not_found
+        elsif @boat.update(boat_params)
           render json: @boat, serializer: BoatSerializer
         else
           render json: { errors: @boat.errors }, status: :unprocessable_entity
@@ -40,6 +42,7 @@ module Api
 
       def set_boat
         @boat = current_user.boats.find(params[:id])
+        render json: { error: 'Boat not found' }, status: :not_found unless @boat
       end
 
       def boat_params
