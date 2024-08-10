@@ -5,6 +5,6 @@ class RecordingSerializer < ActiveModel::Serializer
   belongs_to :race, optional: true
 
   def boat
-    BoatSerializer.new(object.boat, root: false)
+    BoatSerializer.new(object.boat).as_json
   end
 end
