@@ -34,7 +34,7 @@ Rails.application.routes.draw do
       resources :boats
       resources :boat_classes, only: [:index]
 
-      resources :recordings, only: [:index, :create, :update, :show] do
+      resources :recordings do
         member do
           patch :end
         end

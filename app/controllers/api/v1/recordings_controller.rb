@@ -3,7 +3,7 @@ module Api
     class RecordingsController < BaseController
       include UserOwnedResource
 
-      before_action :set_recording, only: [:show, :update, :destroy, :end]
+      before_action :set_recording, only: [:end]
 
       def index
         @recordings = current_user.recordings.order(created_at: :desc)
@@ -29,6 +29,11 @@ module Api
         else
           render json: { errors: @recording.errors }, status: :unprocessable_entity
         end
+      end
+
+      def destroy
+        @recording.destroy
+        head :no_content
       end
 
       def end
