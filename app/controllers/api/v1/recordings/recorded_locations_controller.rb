@@ -30,7 +30,7 @@ module Api
 
         def recorded_location_params
           params.require(:recorded_locations).map do |location|
-            location.permit(:latitude, :longitude, :accuracy, :recorded_at)
+            location.compact_blank.permit(:latitude, :longitude, :accuracy, :recorded_at)
           end
         end
       end

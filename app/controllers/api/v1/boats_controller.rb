@@ -39,7 +39,7 @@ module Api
       private
 
       def boat_params
-        params.require(:boat).permit(:name, :registration_country, :sail_number, :hull_color, :boat_class_id)
+        params.require(:boat).compact_blank.permit(:name, :registration_country, :sail_number, :hull_color, :boat_class_id)
       end
     end
   end

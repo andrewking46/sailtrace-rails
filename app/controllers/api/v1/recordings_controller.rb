@@ -51,7 +51,7 @@ module Api
       end
 
       def recording_params
-        params.require(:recording).permit(:name, :started_at, :ended_at, :time_zone, :is_race, :boat_id, :race_id, :start_latitude, :start_longitude)
+        params.require(:recording).compact_blank.permit(:name, :started_at, :ended_at, :time_zone, :is_race, :boat_id, :race_id, :start_latitude, :start_longitude)
       end
     end
   end
