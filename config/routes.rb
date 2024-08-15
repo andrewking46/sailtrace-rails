@@ -54,6 +54,8 @@ Rails.application.routes.draw do
   # Route for the 'More' page
   get 'more', to: 'pages#more'
 
+  get 'privacy', to: 'pages#privacy'
+
   # Route for the style guide page
   get 'styleguide', to: 'pages#styleguide'
 
