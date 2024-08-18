@@ -2,7 +2,7 @@ module Recordings
   class LocationProcessorService
     WINDOW_SIZE = 10
     BASE_PROCESS_NOISE = 0.5
-    BATCH_SIZE = 1000
+    BATCH_SIZE = 500
 
     def initialize(recording)
       @recording = recording

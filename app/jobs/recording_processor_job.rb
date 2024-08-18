@@ -10,18 +10,22 @@ class RecordingProcessorJob < ApplicationJob
       Recordings::ProcessorService.new(recording).process
       recording.update!(last_processed_at: Time.current)
     end
+
+    GC.start
   rescue ActiveRecord::RecordNotFound => e
     handle_error(e, recording_id, "Recording not found")
   rescue ActiveRecord::RecordInvalid => e
     handle_error(e, recording_id, "Invalid record")
-  rescue Recordings::ProcessorError => e
-    handle_error(e, recording_id, "Processing error")
+  rescue StandardError => e
+    handle_error(e, recording_id, "Unexpected error")
   end
 
   def self.processing?(recording_id)
-    SolidQueue::Job.where(class_name: name, arguments: [recording_id].to_json)
-                   .where.not(finished_at: nil)
-                   .exists?
+    job = SolidQueue::Job.where(class_name: name, arguments: [recording_id].to_json)
+                         .where.not(finished_at: nil)
+                         .order(created_at: :desc)
+                         .first
+    job.present? && job.finished_at.nil?
   end
 
   private

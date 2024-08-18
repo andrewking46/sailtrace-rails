@@ -13,20 +13,25 @@ module Api
             return
           end
 
-          @locations = @recording.recorded_locations.build(recorded_location_params)
+          locations_to_create = build_locations
 
-          if @locations.all?(&:valid?)
+          if locations_to_create.all? { |loc| loc.valid? }
             RecordedLocation.transaction do
-              @locations.each(&:save!)
+              locations_to_create.each(&:save!)
             end
-
             render json: @locations, each_serializer: RecordedLocationSerializer, status: :created
           else
-            render json: { errors: @locations.map(&:errors) }, status: :unprocessable_entity
+            render json: { errors: locations_to_create.map(&:errors) }, status: :unprocessable_entity
           end
         end
 
         private
+
+        def build_locations
+          recorded_location_params.map do |location_params|
+            @recording.recorded_locations.build(location_params)
+          end
+        end
 
         def recorded_location_params
           params.require(:recorded_locations).map do |location|

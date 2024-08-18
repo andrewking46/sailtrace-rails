@@ -1,33 +1,28 @@
 module Gps
   class DistanceCalculator
-    EARTH_RADIUS_KM = 6371 # Earth's radius in kilometers
+    EARTH_RADIUS_KM = 6371.0 # Earth's radius in kilometers
+    RAD_PER_DEG = Math::PI / 180.0
 
     class << self
       def distance_in_meters(lat1, lon1, lat2, lon2)
-        unless valid_coordinates?(lat1, lon1, lat2, lon2)
-          return 0
-        end
+        return 0.0 unless valid_coordinates?(lat1, lon1, lat2, lon2)
 
-        begin
-          radians_per_degree = Math::PI / 180
-          dlat_rad = (lat2 - lat1) * radians_per_degree
-          dlon_rad = (lon2 - lon1) * radians_per_degree
+        dlat = (lat2 - lat1) * RAD_PER_DEG
+        dlon = (lon2 - lon1) * RAD_PER_DEG
 
-          lat1_rad, lat2_rad = [lat1, lat2].map { |i| i * radians_per_degree }
-          a = Math.sin(dlat_rad / 2)**2 + Math.cos(lat1_rad) * Math.cos(lat2_rad) * Math.sin(dlon_rad / 2)**2
+        a = Math.sin(dlat / 2)**2 +
+            Math.cos(lat1 * RAD_PER_DEG) *
+            Math.cos(lat2 * RAD_PER_DEG) *
+            Math.sin(dlon / 2)**2
+        c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
 
-          c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
-          result = EARTH_RADIUS_KM * c * 1000
-          result.round(2)
-        rescue StandardError => e
-          0 # Return a default distance in case of error
-        end
+        (EARTH_RADIUS_KM * c * 1000).round(2)
       end
 
       private
 
       def valid_coordinates?(*values)
-        values.all? { |value| value.is_a?(Numeric) && !value.nan? && value.finite? }
+        values.all? { |v| v.is_a?(Numeric) && v.finite? }
       end
     end
   end

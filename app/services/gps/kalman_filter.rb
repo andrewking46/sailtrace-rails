@@ -18,17 +18,16 @@ module Gps
     end
 
     def process(lat_measurement, lng_measurement, accuracy, timestamp)
-      unless valid_input?(lat_measurement, lng_measurement, accuracy, timestamp)
-        raise ArgumentError, "Invalid input for Kalman filter"
-      end
+      return false unless valid_input?(lat_measurement, lng_measurement, accuracy, timestamp)
 
       accuracy = default_accuracy(accuracy)
 
       if @variance.negative?
         set_state(lat_measurement, lng_measurement, accuracy, timestamp)
-      else
-        perform_filter_operations(lat_measurement, lng_measurement, accuracy, timestamp)
+        return true
       end
+
+      perform_filter_operations(lat_measurement, lng_measurement, accuracy, timestamp)
     end
 
     def accuracy
@@ -42,33 +41,22 @@ module Gps
     end
 
     def valid_input?(*values)
-      values.all? { |value| value.is_a?(Numeric) }
+      values.all? { |value| value.is_a?(Numeric) && value.finite? }
     end
 
     def perform_filter_operations(lat_measurement, lng_measurement, accuracy, timestamp)
       time_inc = ((timestamp - @timestamp) * 0.001).round(3)
+      return set_state(lat_measurement, lng_measurement, accuracy, timestamp) if time_inc <= 0
 
-      if time_inc <= 0
-        return set_state(lat_measurement, lng_measurement, accuracy, timestamp)
-      end
-
-      @variance = (@variance + time_inc * @meters_per_second * @meters_per_second).round(8)
+      @variance += time_inc * @meters_per_second * @meters_per_second
       @timestamp = timestamp
 
-      kalman_gain = (@variance / (@variance + accuracy * accuracy)).round(8)
-      lat_diff = (lat_measurement - @latitude).round(8)
-      lng_diff = (lng_measurement - @longitude).round(8)
+      kalman_gain = @variance / (@variance + accuracy * accuracy)
+      @latitude += kalman_gain * (lat_measurement - @latitude)
+      @longitude += kalman_gain * (lng_measurement - @longitude)
+      @variance *= (1.0 - kalman_gain)
 
-      @latitude = (@latitude + kalman_gain * lat_diff).round(6)
-      @longitude = (@longitude + kalman_gain * lng_diff).round(6)
-      @variance = (@variance * (1.0 - kalman_gain)).round(8)
-
-      if @latitude.finite? && @longitude.finite? && @variance.finite?
-        true
-      else
-        set_state(lat_measurement, lng_measurement, accuracy, timestamp)
-        false
-      end
+      @latitude.finite? && @longitude.finite? && @variance.finite?
     end
   end
 end

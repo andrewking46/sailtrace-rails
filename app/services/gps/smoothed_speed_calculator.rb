@@ -16,19 +16,19 @@ module Gps
       @distances.shift if @distances.size > @window_size
       @times.shift if @times.size > @window_size
 
-      average_speed
+      calculate_average_speed
     end
 
     private
 
-    def average_speed
+    def calculate_average_speed
       total_distance = @distances.sum
       total_time = @times.sum
       total_time.positive? ? total_distance / total_time : 0
     end
 
     def valid_input?(*values)
-      values.all? { |value| value.is_a?(Numeric) } && values.last.positive?
+      values.all? { |value| value.is_a?(Numeric) && value.finite? } && values.last.positive?
     end
   end
 end
