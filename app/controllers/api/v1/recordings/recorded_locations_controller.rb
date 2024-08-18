@@ -19,7 +19,7 @@ module Api
             RecordedLocation.transaction do
               locations_to_create.each(&:save!)
             end
-            render json: @locations, each_serializer: RecordedLocationSerializer, status: :created
+            render json: locations_to_create, each_serializer: RecordedLocationSerializer, status: :created
           else
             render json: { errors: locations_to_create.map(&:errors) }, status: :unprocessable_entity
           end
