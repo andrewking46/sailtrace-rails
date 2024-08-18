@@ -4,7 +4,7 @@ module Api
       include UserOwnedResource
 
       def index
-        @boats = current_user.boats.order(:name)
+        @boats = current_user.boats.includes(:boat_class).order(:name)
         render json: @boats, each_serializer: BoatSerializer
       end
 

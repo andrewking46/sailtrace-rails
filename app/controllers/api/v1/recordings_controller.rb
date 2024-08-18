@@ -6,7 +6,7 @@ module Api
       before_action :set_recording, only: [:end]
 
       def index
-        @recordings = current_user.recordings.order(created_at: :desc)
+        @recordings = current_user.recordings.includes(:boat).order(created_at: :desc)
         render json: @recordings, each_serializer: RecordingSerializer
       end
 

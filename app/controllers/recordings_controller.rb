@@ -2,7 +2,9 @@ class RecordingsController < ApplicationController
   before_action :set_recording, only: %i[show track edit update end destroy]
 
   def index
-    @recordings = Current.user.recordings.order(created_at: :desc)
+    @recordings = Current.user.recordings
+                         .includes(:boat)
+                         .order(created_at: :desc)
   end
 
   def show

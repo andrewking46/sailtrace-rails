@@ -43,6 +43,7 @@ gem "country_select", "~> 8.0"
 gem "geocoder"
 gem "memory_profiler"
 gem "rack-attack"
+gem "rack-mini-profiler"
 gem "ruby-prof"
 gem "solid_queue"
 
@@ -65,6 +66,7 @@ group :development do
 
   gem "better_errors"
   gem "binding_of_caller"
+  gem "bullet"
   gem "letter_opener"
 
   # Add speed badges [https://github.com/MiniProfiler/rack-mini-profiler]

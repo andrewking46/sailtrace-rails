@@ -4,7 +4,7 @@ json.boat_class do
   json.extract! race.boat_class, :name, :is_one_design
 end
 
-json.recordings race.recordings do |recording|
+json.recordings race.recordings.includes(:boat) do |recording|
   json.extract! recording, :id, :started_at, :ended_at, :time_zone, :created_at
 
   json.boat do

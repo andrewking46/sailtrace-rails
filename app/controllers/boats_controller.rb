@@ -3,7 +3,7 @@ class BoatsController < ApplicationController
 
   # GET /boats or /boats.json
   def index
-    @boats = Current.user.boats.order(:name)
+    @boats = Current.user.boats.includes(:boat_class).order(:name)
   end
 
   # GET /boats/1 or /boats/1.json
