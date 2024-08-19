@@ -7,4 +7,8 @@ class RecordingSerializer < ActiveModel::Serializer
   def boat
     BoatSerializer.new(object.boat).as_json
   end
+
+  def cache_key
+    object.cache_key
+  end
 end
