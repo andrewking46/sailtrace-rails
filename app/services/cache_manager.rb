@@ -2,8 +2,10 @@ class CacheManager
   CACHE_VERSION = 1
 
   class << self
-    def fetch(key, expires_in: 1.week, &block)
-      SolidCache.fetch("#{CACHE_VERSION}/#{key}", expires_in: expires_in, &block)
+    def self.fetch(key, expires_in: 1.week, &block)
+      result = SolidCache.fetch("#{CACHE_VERSION}/#{key}", expires_in: expires_in, &block)
+      Rails.logger.info "Cache #{result.nil? ? 'MISS' : 'HIT'} for key: #{key}"
+      result
     end
 
     def delete(key)
