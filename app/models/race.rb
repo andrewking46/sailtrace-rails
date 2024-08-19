@@ -1,4 +1,5 @@
 class Race < ApplicationRecord
+  include Cacheable
   include Geocodable
 
   belongs_to :boat_class, optional: true
@@ -7,6 +8,8 @@ class Race < ApplicationRecord
   validates :started_at, :start_latitude, :start_longitude, presence: true
 
   scope :empty, -> { left_joins(:recordings).where(recordings: { id: nil }) }
+
+  after_commit :invalidate_cache, on: [:update, :destroy]
 
   def ended_at
     recordings.maximum(:ended_at)
@@ -19,6 +22,17 @@ class Race < ApplicationRecord
 
   def destroy_if_empty
     destroy if recordings.empty?
+  end
+
+  def invalidate_cache
+    CacheManager.delete("#{cache_key}/json")
+    CacheManager.delete("#{cache_key}/recording_ids")
+  end
+
+  def cached_recording_ids
+    CacheManager.fetch("#{cache_key}/recording_ids") do
+      recordings.pluck(:id)
+    end
   end
 
   private

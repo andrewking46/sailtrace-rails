@@ -46,6 +46,7 @@ gem "rack-attack"
 gem "rack-mini-profiler"
 gem "ruby-prof"
 gem "scout_apm"
+gem "solid_cache"
 gem "solid_queue"
 
 # Reduces boot times through caching; required in config/boot.rb
