@@ -1,8 +1,7 @@
 class SessionsController < ApplicationController
-  allow_unauthenticated_access only: %i[ new create ]
+  allow_unauthenticated_access only: %i[new create]
 
-  def new
-  end
+  def new; end
 
   def create
     if user = User.authenticate_by(email_address: params[:email_address], password: params[:password])
@@ -19,8 +18,9 @@ class SessionsController < ApplicationController
   end
 
   private
-    def render_rejection(status)
-      flash.now[:alert] = "Not authorized"
-      render :new, status: status
-    end
+
+  def render_rejection(status)
+    flash.now[:alert] = "Not authorized"
+    render :new, status:
+  end
 end

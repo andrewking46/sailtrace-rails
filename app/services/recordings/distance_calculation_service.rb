@@ -8,7 +8,7 @@ module Recordings
       total_distance = 0
       previous_location = nil
 
-      @recording.recorded_locations.order(:created_at).each_with_index do |location, index|
+      @recording.recorded_locations.order(:created_at).each_with_index do |location, _index|
         if previous_location
           distance = Gps::DistanceCalculator.distance_in_meters(
             previous_location.adjusted_latitude, previous_location.adjusted_longitude,
@@ -19,7 +19,7 @@ module Recordings
         previous_location = location
       end
 
-      nautical_miles = total_distance / 1852.0  # Convert meters to nautical miles
+      nautical_miles = total_distance / 1852.0 # Convert meters to nautical miles
       nautical_miles.round(2)
     end
   end

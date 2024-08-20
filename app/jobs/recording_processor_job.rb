@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class RecordingProcessorJob < ApplicationJob
   queue_as :default
   retry_on ActiveRecord::Deadlocked, wait: 5.seconds, attempts: 3
@@ -21,7 +23,7 @@ class RecordingProcessorJob < ApplicationJob
   end
 
   def self.processing?(recording_id)
-    job = SolidQueue::Job.where(class_name: name, arguments: [recording_id].to_json)
+    job = SolidQueue::Job.where(class_name: name, arguments: [ recording_id ].to_json)
                          .where.not(finished_at: nil)
                          .order(created_at: :desc)
                          .first
@@ -30,7 +32,7 @@ class RecordingProcessorJob < ApplicationJob
 
   private
 
-  def handle_error(error, recording_id, message)
-    ErrorNotifierService.notify(error, context: { recording_id: recording_id })
+  def handle_error(error, recording_id, _message)
+    ErrorNotifierService.notify(error, context: { recording_id: })
   end
 end

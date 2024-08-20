@@ -1,6 +1,6 @@
 # test/models/recorded_location_test.rb
 
-require 'test_helper'
+require "test_helper"
 
 class RecordedLocationTest < ActiveSupport::TestCase
   def setup

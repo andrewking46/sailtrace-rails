@@ -1,7 +1,7 @@
 module Api
   module V1
     class SessionsController < BaseController
-      skip_before_action :authenticate_user!, only: [:create, :refresh]
+      skip_before_action :authenticate_user!, only: %i[create refresh]
 
       def create
         user = User.find_by(email_address: params[:email])
@@ -10,8 +10,8 @@ module Api
           render json: { access_token: token.token, refresh_token: token.refresh_token, expires_at: token.expires_at }
         else
           # Mimic the response time of a successful login
-          sleep((rand(1000) + 500) / 1000.0)  # Sleep for 500-1500ms
-          render json: { error: 'Invalid email or password' }, status: :unauthorized
+          sleep(rand(500..1499) / 1000.0) # Sleep for 500-1500ms
+          render json: { error: "Invalid email or password" }, status: :unauthorized
         end
       end
 
@@ -21,16 +21,15 @@ module Api
           old_token = token
           new_token = token.user.access_tokens.create!
           old_token.destroy
-          render json: { access_token: new_token.token, refresh_token: new_token.refresh_token, expires_at: new_token.expires_at }
+          render json: { access_token: new_token.token, refresh_token: new_token.refresh_token,
+                         expires_at: new_token.expires_at }
         else
-          render json: { error: 'Invalid or expired refresh token' }, status: :unauthorized
+          render json: { error: "Invalid or expired refresh token" }, status: :unauthorized
         end
       end
 
       def destroy
-        if @access_token
-          @access_token.destroy
-        end
+        @access_token.destroy if @access_token
         head :no_content
       end
     end

@@ -10,7 +10,7 @@ module MetaTags
         title: "#{user.full_name} - SailTrace Sailor Profile",
         description: user_description(user),
         image: user_image(user),
-        type: 'profile',
+        type: "profile",
         schema_type: :user,
         entity: user,
         url: user_url(user)
@@ -29,7 +29,7 @@ module MetaTags
 
     def user_image(user)
       # Assuming you have ActiveStorage set up for user avatars
-      user.avatar.attached? ? user.avatar : 'default_user_image.jpg'
+      user.avatar.attached? ? user.avatar : "default_user_image.jpg"
     end
 
     def total_sailing_distance(user)

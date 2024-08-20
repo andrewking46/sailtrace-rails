@@ -87,13 +87,13 @@ module MetaTags
         "name" => user.full_name,
         "nationality" => user.country,
         "knowsAbout" => "Sailing",
-        "owns" => user.boats.map { |boat|
+        "owns" => user.boats.map do |boat|
           {
             "@type" => "Vehicle",
             "name" => boat.name,
             "model" => boat.boat_class.name
           }
-        }
+        end
       }
     end
 

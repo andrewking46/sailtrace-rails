@@ -4,5 +4,4 @@ module Geocodable
   included do
     reverse_geocoded_by :start_latitude, :start_longitude
   end
-
 end

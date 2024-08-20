@@ -6,7 +6,8 @@ class User < ApplicationRecord
   has_many :password_resets, dependent: :destroy
 
   validates :username, presence: true, uniqueness: true
-  validates :email_address, presence: true, uniqueness: { case_sensitive: false }, format: { with: URI::MailTo::EMAIL_REGEXP }
+  validates :email_address, presence: true, uniqueness: { case_sensitive: false },
+                            format: { with: URI::MailTo::EMAIL_REGEXP }
   validates :first_name, presence: true
   validates :last_name, presence: true
 

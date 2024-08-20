@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Gps
   class KalmanFilter
     attr_reader :timestamp, :latitude, :longitude, :variance
@@ -37,7 +39,7 @@ module Gps
     private
 
     def default_accuracy(accuracy)
-      [accuracy.to_f, MIN_ACCURACY].max
+      [ accuracy.to_f, MIN_ACCURACY ].max
     end
 
     def valid_input?(*values)

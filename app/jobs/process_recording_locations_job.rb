@@ -18,7 +18,7 @@ class ProcessRecordingLocationsJob < ApplicationJob
           time_diff
         )
 
-        filter.q_metres_per_second = [instant_speed, BASE_PROCESS_NOISE].max
+        filter.q_metres_per_second = [ instant_speed, BASE_PROCESS_NOISE ].max
         filter.process(location.latitude, location.longitude, location.accuracy, location.created_at.to_f * 1000)
 
         location.update(

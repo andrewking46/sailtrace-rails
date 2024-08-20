@@ -1,5 +1,5 @@
 class BoatsController < ApplicationController
-  before_action :set_boat, only: %i[ show edit update destroy ]
+  before_action :set_boat, only: %i[show edit update destroy]
 
   # GET /boats or /boats.json
   def index
@@ -7,8 +7,7 @@ class BoatsController < ApplicationController
   end
 
   # GET /boats/1 or /boats/1.json
-  def show
-  end
+  def show; end
 
   # GET /boats/new
   def new
@@ -16,8 +15,7 @@ class BoatsController < ApplicationController
   end
 
   # GET /boats/1/edit
-  def edit
-  end
+  def edit; end
 
   # POST /boats or /boats.json
   def create
@@ -58,17 +56,19 @@ class BoatsController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_boat
-      if boat = Current.user.boats.find(params[:id])
-        @boat = boat
-      else
-        redirect_to recordings_url, alert: "Boat not found"
-      end
-    end
 
-    # Only allow a list of trusted parameters through.
-    def boat_params
-      params.require(:boat).compact_blank.permit(:name, :registration_country, :sail_number, :hull_color, :boat_class_id)
+  # Use callbacks to share common setup or constraints between actions.
+  def set_boat
+    if boat = Current.user.boats.find(params[:id])
+      @boat = boat
+    else
+      redirect_to recordings_url, alert: "Boat not found"
     end
+  end
+
+  # Only allow a list of trusted parameters through.
+  def boat_params
+    params.require(:boat).compact_blank.permit(:name, :registration_country, :sail_number, :hull_color,
+                                               :boat_class_id)
+  end
 end

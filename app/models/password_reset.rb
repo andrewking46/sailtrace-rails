@@ -10,8 +10,8 @@ class PasswordReset < ApplicationRecord
   validate :no_recent_reset, on: :create
   validate :max_active_resets_per_user, on: :create
 
-  scope :recent, -> { where('created_at > ?', 15.minutes.ago) }
-  scope :pending, -> { where(used_at: nil).where('expires_at > ?', Time.current) }
+  scope :recent, -> { where("created_at > ?", 15.minutes.ago) }
+  scope :pending, -> { where(used_at: nil).where("expires_at > ?", Time.current) }
 
   def expired?
     expires_at < Time.current
@@ -32,14 +32,14 @@ class PasswordReset < ApplicationRecord
   end
 
   def no_recent_reset
-    if user.password_resets.recent.exists?
-      errors.add(:base, "Please wait before requesting another password reset")
-    end
+    return unless user.password_resets.recent.exists?
+
+    errors.add(:base, "Please wait before requesting another password reset")
   end
 
   def max_active_resets_per_user
-    if user.password_resets.pending.count >= 3
-      errors.add(:base, "Too many active reset requests")
-    end
+    return unless user.password_resets.pending.count >= 3
+
+    errors.add(:base, "Too many active reset requests")
   end
 end

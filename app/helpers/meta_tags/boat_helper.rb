@@ -10,7 +10,7 @@ module MetaTags
         title: "#{boat.name} - SailTrace Boat Profile",
         description: boat_description(boat),
         image: boat_image(boat),
-        type: 'profile',
+        type: "profile",
         schema_type: :boat,
         entity: boat,
         url: boat_url(boat)
@@ -29,7 +29,7 @@ module MetaTags
 
     def boat_image(boat)
       # Assuming you have ActiveStorage set up for boat images
-      boat.photo.attached? ? boat.photo : 'default_boat_image.jpg'
+      boat.photo.attached? ? boat.photo : "default_boat_image.jpg"
     end
   end
 end

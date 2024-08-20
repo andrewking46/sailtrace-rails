@@ -1,9 +1,11 @@
+# frozen_string_literal: true
+
 module Api
   module V1
     class RecordingsController < BaseController
       include UserOwnedResource
 
-      before_action :set_recording, only: [:end]
+      before_action :set_recording, only: [ :end ]
 
       def index
         @recordings = current_user.recordings.includes(:boat).order(created_at: :desc)
@@ -51,7 +53,8 @@ module Api
       end
 
       def recording_params
-        params.require(:recording).compact_blank.permit(:name, :started_at, :ended_at, :time_zone, :is_race, :boat_id, :race_id, :start_latitude, :start_longitude)
+        params.require(:recording).compact_blank.permit(:name, :started_at, :ended_at, :time_zone, :is_race, :boat_id,
+                                                        :race_id, :start_latitude, :start_longitude)
       end
     end
   end

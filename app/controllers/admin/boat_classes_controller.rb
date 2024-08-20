@@ -1,6 +1,6 @@
 module Admin
   class BoatClassesController < BaseController
-    before_action :set_boat_class, only: %i[ show edit update destroy ]
+    before_action :set_boat_class, only: %i[show edit update destroy]
 
     # GET /boat_classes or /boat_classes.json
     def index
@@ -8,8 +8,7 @@ module Admin
     end
 
     # GET /boat_classes/1 or /boat_classes/1.json
-    def show
-    end
+    def show; end
 
     # GET /boat_classes/new
     def new
@@ -17,8 +16,7 @@ module Admin
     end
 
     # GET /boat_classes/1/edit
-    def edit
-    end
+    def edit; end
 
     # POST /boat_classes or /boat_classes.json
     def create
@@ -59,14 +57,15 @@ module Admin
     end
 
     private
-      # Use callbacks to share common setup or constraints between actions.
-      def set_boat_class
-        @boat_class = BoatClass.find(params[:id])
-      end
 
-      # Only allow a list of trusted parameters through.
-      def boat_class_params
-        params.require(:boat_class).compact_blank.permit(:name, :is_one_design)
-      end
+    # Use callbacks to share common setup or constraints between actions.
+    def set_boat_class
+      @boat_class = BoatClass.find(params[:id])
+    end
+
+    # Only allow a list of trusted parameters through.
+    def boat_class_params
+      params.require(:boat_class).compact_blank.permit(:name, :is_one_design)
+    end
   end
 end

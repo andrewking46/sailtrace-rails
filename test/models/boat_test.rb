@@ -1,6 +1,6 @@
 # test/models/boat_test.rb
 
-require 'test_helper'
+require "test_helper"
 
 class BoatTest < ActiveSupport::TestCase
   def setup

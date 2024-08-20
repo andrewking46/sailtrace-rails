@@ -17,7 +17,9 @@ class RecordedLocationsControllerTest < ActionDispatch::IntegrationTest
 
   test "should create recorded_location" do
     assert_difference("RecordedLocation.count") do
-      post recorded_locations_url, params: { recorded_location: { heading: @recorded_location.heading, latitude: @recorded_location.latitude, longitude: @recorded_location.longitude, recording_id: @recorded_location.recording_id, velocity: @recorded_location.velocity } }
+      post recorded_locations_url,
+           params: { recorded_location: { heading: @recorded_location.heading, latitude: @recorded_location.latitude,
+                                          longitude: @recorded_location.longitude, recording_id: @recorded_location.recording_id, velocity: @recorded_location.velocity } }
     end
 
     assert_redirected_to recorded_location_url(RecordedLocation.last)
@@ -34,7 +36,9 @@ class RecordedLocationsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update recorded_location" do
-    patch recorded_location_url(@recorded_location), params: { recorded_location: { heading: @recorded_location.heading, latitude: @recorded_location.latitude, longitude: @recorded_location.longitude, recording_id: @recorded_location.recording_id, velocity: @recorded_location.velocity } }
+    patch recorded_location_url(@recorded_location),
+          params: { recorded_location: { heading: @recorded_location.heading, latitude: @recorded_location.latitude,
+                                         longitude: @recorded_location.longitude, recording_id: @recorded_location.recording_id, velocity: @recorded_location.velocity } }
     assert_redirected_to recorded_location_url(@recorded_location)
   end
 

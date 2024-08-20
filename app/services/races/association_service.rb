@@ -11,14 +11,14 @@ module Races
       return unless @recording.start_latitude && @recording.start_longitude
 
       race = find_or_create_race
-      @recording.update(race: race)
+      @recording.update(race:)
       race.finalize
     end
 
     private
 
     def find_or_create_race
-      Race.near([@recording.start_latitude, @recording.start_longitude], DISTANCE_THRESHOLD, units: :km)
+      Race.near([ @recording.start_latitude, @recording.start_longitude ], DISTANCE_THRESHOLD, units: :km)
           .where(started_at: time_range)
           .first_or_create(race_attributes)
     end

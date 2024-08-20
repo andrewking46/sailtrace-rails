@@ -10,7 +10,7 @@ module MetaTags
         title: "#{race.name} - SailTrace Race",
         # description: race_description(race),
         # image: race_image(race),
-        type: 'article',
+        type: "article",
         schema_type: :race,
         entity: race,
         url: race_url(race)
@@ -25,10 +25,10 @@ module MetaTags
       "#{race.boat_class ? "Boat class: #{race.boat_class.name}." : ''} "
     end
 
-    def race_image(race)
+    def race_image(_race)
       # Placeholder for race image. In the future, you might want to generate
       # a map image of the race course or use a photo from the event.
-      '/logos/sailtrace-logo.png'
+      "/logos/sailtrace-logo.png"
     end
   end
 end

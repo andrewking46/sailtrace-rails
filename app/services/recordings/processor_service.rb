@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Recordings
   class ProcessorService
     def initialize(recording)
@@ -11,10 +13,10 @@ module Recordings
         associate_with_race if @recording.is_race?
       end
     rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotFound => e
-      ErrorNotifierService.notify(e, context: { recording_id: @recording.id, error_type: 'database_error' })
+      ErrorNotifierService.notify(e, context: { recording_id: @recording.id, error_type: :database_error })
       raise
     rescue StandardError => e
-      ErrorNotifierService.notify(e, context: { recording_id: @recording.id, error_type: 'unexpected_error' })
+      ErrorNotifierService.notify(e, context: { recording_id: @recording.id, error_type: :unexpected_error })
       raise
     end
 
@@ -24,14 +26,15 @@ module Recordings
     end
 
     def optimize_gps_data
-      locations = @recording.recorded_locations.select(:adjusted_latitude, :adjusted_longitude, :accuracy, :created_at, :recorded_at).order(:recorded_at)
+      locations = @recording.recorded_locations.select(:adjusted_latitude, :adjusted_longitude, :accuracy, :created_at,
+                                                       :recorded_at).order(:recorded_at)
       processed_locations = Gps::DataProcessingService.new(locations).process
       update_locations(processed_locations)
     end
 
     def calculate_statistics
       distance = @recording.calculate_distance
-      @recording.update(distance: distance)
+      @recording.update(distance:)
     end
 
     def associate_with_race

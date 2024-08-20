@@ -9,7 +9,7 @@ module Api
         def set_recording
           @recording = current_user.recordings.find(params[:recording_id])
         rescue ActiveRecord::RecordNotFound
-          render json: { error: 'Recording not found' }, status: :not_found
+          render json: { error: "Recording not found" }, status: :not_found
         end
       end
     end

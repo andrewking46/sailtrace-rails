@@ -78,7 +78,7 @@ module Gps
 
     def catmull_rom(t, p0, p1, p2, p3)
       Rails.logger.info "catmull_rom"
-      0.5 * ((2 * p1) + (-p0 + p3) * t + (2*p0 - 5*p1 + 4*p2 - p3) * t**2 + (-p0 + 3*p1 - 3*p2 + p3) * t**3)
+      0.5 * ((2 * p1) + (-p0 + p3) * t + (2 * p0 - 5 * p1 + 4 * p2 - p3) * t**2 + (-p0 + 3 * p1 - 3 * p2 + p3) * t**3)
     end
 
     def interpolate_time(t, t1, t2)

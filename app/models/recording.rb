@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Recording < ApplicationRecord
   include Cacheable
   include Geocodable
@@ -15,8 +17,8 @@ class Recording < ApplicationRecord
   after_update :process_ending, if: :saved_change_to_ended_at?
   after_destroy :cleanup_race
 
-  after_commit :invalidate_cache, on: [:update, :destroy]
-  after_commit :cache_json, on: [:create, :update]
+  after_commit :invalidate_cache, on: %i[update destroy]
+  after_commit :cache_json, on: %i[create update]
 
   scope :in_progress, -> { where(ended_at: nil).where.not(started_at: nil) }
 
@@ -34,6 +36,7 @@ class Recording < ApplicationRecord
 
   def average_speed
     return 0 if duration_seconds.to_f <= 0 || calculate_distance.to_f <= 0
+
     (calculate_distance / (duration_seconds / 3600.0)).round(2)
   end
 
@@ -41,6 +44,7 @@ class Recording < ApplicationRecord
     return :not_started if started_at.nil?
     return :in_progress if ended_at.nil?
     return :processing if last_processed_at.nil?
+
     :processed
   end
 
@@ -61,6 +65,7 @@ class Recording < ApplicationRecord
 
   def process_ending
     return unless ended?
+
     set_start_location
     RecordingProcessorJob.perform_later(id)
   end
@@ -75,11 +80,12 @@ class Recording < ApplicationRecord
 
   def set_start_location
     return if start_latitude.present? && start_longitude.present?
+
     first_recorded_location = recorded_locations.order(recorded_at: :asc).first
-    if first_recorded_location.present?
-      self.start_latitude = first_recorded_location.latitude
-      self.start_longitude = first_recorded_location.longitude
-      save(validate: false)
-    end
+    return unless first_recorded_location.present?
+
+    self.start_latitude = first_recorded_location.latitude
+    self.start_longitude = first_recorded_location.longitude
+    save(validate: false)
   end
 end

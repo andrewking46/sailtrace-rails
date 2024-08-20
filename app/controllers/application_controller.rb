@@ -1,5 +1,6 @@
 class ApplicationController < ActionController::Base
-  include Authentication, Authorization
+  include Authorization
+  include Authentication
 
   before_action :authorize_mini_profiler
 end

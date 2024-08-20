@@ -17,7 +17,8 @@ class BoatClassesControllerTest < ActionDispatch::IntegrationTest
 
   test "should create boat_class" do
     assert_difference("BoatClass.count") do
-      post boat_classes_url, params: { boat_class: { is_one_design: @boat_class.is_one_design, name: @boat_class.name } }
+      post boat_classes_url,
+           params: { boat_class: { is_one_design: @boat_class.is_one_design, name: @boat_class.name } }
     end
 
     assert_redirected_to boat_class_url(BoatClass.last)
@@ -34,7 +35,8 @@ class BoatClassesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update boat_class" do
-    patch boat_class_url(@boat_class), params: { boat_class: { is_one_design: @boat_class.is_one_design, name: @boat_class.name } }
+    patch boat_class_url(@boat_class),
+          params: { boat_class: { is_one_design: @boat_class.is_one_design, name: @boat_class.name } }
     assert_redirected_to boat_class_url(@boat_class)
   end
 

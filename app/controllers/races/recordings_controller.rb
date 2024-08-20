@@ -6,7 +6,8 @@ class Races::RecordingsController < ApplicationController
   end
 
   private
-    def set_race
-      @race = Race.find(params[:race_id])
-    end
+
+  def set_race
+    @race = Race.find(params[:race_id])
+  end
 end

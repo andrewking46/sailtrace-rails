@@ -14,4 +14,3 @@ class CreateAccessTokens < ActiveRecord::Migration[7.1]
     add_index :access_tokens, :refresh_token, unique: true
   end
 end
-

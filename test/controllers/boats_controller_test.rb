@@ -17,7 +17,9 @@ class BoatsControllerTest < ActionDispatch::IntegrationTest
 
   test "should create boat" do
     assert_difference("Boat.count") do
-      post boats_url, params: { boat: { boat_class_id: @boat.boat_class_id, hull_color: @boat.hull_color, name: @boat.name, registration_country: @boat.registration_country, sail_number: @boat.sail_number, user_id: @boat.user_id } }
+      post boats_url,
+           params: { boat: { boat_class_id: @boat.boat_class_id, hull_color: @boat.hull_color, name: @boat.name,
+                             registration_country: @boat.registration_country, sail_number: @boat.sail_number, user_id: @boat.user_id } }
     end
 
     assert_redirected_to boat_url(Boat.last)
@@ -34,7 +36,9 @@ class BoatsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update boat" do
-    patch boat_url(@boat), params: { boat: { boat_class_id: @boat.boat_class_id, hull_color: @boat.hull_color, name: @boat.name, registration_country: @boat.registration_country, sail_number: @boat.sail_number, user_id: @boat.user_id } }
+    patch boat_url(@boat),
+          params: { boat: { boat_class_id: @boat.boat_class_id, hull_color: @boat.hull_color, name: @boat.name,
+                            registration_country: @boat.registration_country, sail_number: @boat.sail_number, user_id: @boat.user_id } }
     assert_redirected_to boat_url(@boat)
   end
 

@@ -23,7 +23,7 @@ module Api
 
       def update
         if @boat.nil?
-          render json: { error: 'Boat not found' }, status: :not_found
+          render json: { error: "Boat not found" }, status: :not_found
         elsif @boat.update(boat_params)
           render json: @boat, serializer: BoatSerializer
         else
@@ -39,7 +39,8 @@ module Api
       private
 
       def boat_params
-        params.require(:boat).compact_blank.permit(:name, :registration_country, :sail_number, :hull_color, :boat_class_id)
+        params.require(:boat).compact_blank.permit(:name, :registration_country, :sail_number, :hull_color,
+                                                   :boat_class_id)
       end
     end
   end

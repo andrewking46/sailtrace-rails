@@ -14,10 +14,10 @@ class ErrorNotifierService
       # end
 
       # For now, we'll just print to console in development
-      if Rails.env.development?
-        puts "Error: #{error.message}"
-        puts "Context: #{context}"
-      end
+      return unless Rails.env.development?
+
+      puts "Error: #{error.message}"
+      puts "Context: #{context}"
     end
   end
 end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class RecordingsController < ApplicationController
   before_action :set_recording, only: %i[show track edit update end destroy]
 
@@ -39,10 +41,10 @@ class RecordingsController < ApplicationController
 
   def end
     if @recording.ended?
-      render json: { error: 'Recording already ended' }, status: :unprocessable_entity
+      render json: { error: "Recording already ended" }, status: :unprocessable_entity
     else
       @recording.end!
-      render json: { message: 'Recording ended', redirect_url: processing_recording_path(@recording) }, status: :ok
+      render json: { message: "Recording ended", redirect_url: processing_recording_path(@recording) }, status: :ok
     end
   end
 

@@ -1,6 +1,6 @@
 # test/models/race_test.rb
 
-require 'test_helper'
+require "test_helper"
 
 class RaceTest < ActiveSupport::TestCase
   def setup
@@ -79,7 +79,7 @@ class RaceTest < ActiveSupport::TestCase
 
   test "destroy_if_empty destroys race if it has no recordings" do
     @race.save
-    assert_difference 'Race.count', -1 do
+    assert_difference "Race.count", -1 do
       @race.destroy_if_empty
     end
   end
@@ -87,7 +87,7 @@ class RaceTest < ActiveSupport::TestCase
   test "destroy_if_empty does not destroy race if it has recordings" do
     @race.save
     @race.recordings.create
-    assert_no_difference 'Race.count' do
+    assert_no_difference "Race.count" do
       @race.destroy_if_empty
     end
   end

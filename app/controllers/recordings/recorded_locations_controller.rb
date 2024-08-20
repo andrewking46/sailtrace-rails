@@ -7,7 +7,7 @@ module Recordings
 
     def create
       if @recording.ended?
-        render json: { error: 'Recording has already ended' }, status: :unprocessable_entity
+        render json: { error: "Recording has already ended" }, status: :unprocessable_entity
         return
       end
 

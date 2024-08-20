@@ -5,7 +5,8 @@ class Races::ReplaysController < ApplicationController
   def show; end
 
   private
-    def set_race
-      @race = Race.find(params[:race_id])
-    end
+
+  def set_race
+    @race = Race.find(params[:race_id])
+  end
 end

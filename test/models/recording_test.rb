@@ -1,6 +1,6 @@
-require 'test_helper'
-require 'active_job/test_helper'
-require 'minitest/mock'
+require "test_helper"
+require "active_job/test_helper"
+require "minitest/mock"
 
 class RecordingTest < ActiveSupport::TestCase
   include ActiveJob::TestHelper
@@ -93,10 +93,10 @@ class RecordingTest < ActiveSupport::TestCase
   end
 
   test "cleanup_race callback" do
-    assert_difference 'Race.count', -1 do
+    assert_difference "Race.count", -1 do
       @completed.destroy
     end
-    assert_no_difference 'Race.count' do
+    assert_no_difference "Race.count" do
       @in_progress.destroy
     end
   end
@@ -117,7 +117,8 @@ class RecordingTest < ActiveSupport::TestCase
     assert_nil new_recording.start_latitude
     assert_nil new_recording.start_longitude
 
-    location = new_recording.recorded_locations.create!(latitude: 40.7128, longitude: -74.0060, recorded_at: Time.current)
+    location = new_recording.recorded_locations.create!(latitude: 40.7128, longitude: -74.0060,
+                                                        recorded_at: Time.current)
     new_recording.send(:set_start_location)
     new_recording.reload
 

@@ -17,7 +17,9 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
 
   test "should create user" do
     assert_difference("User.count") do
-      post users_url, params: { user: { country: @user.country, date_of_birth: @user.date_of_birth, email_address: @user.email_address, first_name: @user.first_name, is_admin: @user.is_admin, last_name: @user.last_name, phone_number: @user.phone_number, time_zone: @user.time_zone, username: @user.username } }
+      post users_url,
+           params: { user: { country: @user.country, date_of_birth: @user.date_of_birth, email_address: @user.email_address,
+                             first_name: @user.first_name, is_admin: @user.is_admin, last_name: @user.last_name, phone_number: @user.phone_number, time_zone: @user.time_zone, username: @user.username } }
     end
 
     assert_redirected_to user_url(User.last)
@@ -34,7 +36,9 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update user" do
-    patch user_url(@user), params: { user: { country: @user.country, date_of_birth: @user.date_of_birth, email_address: @user.email_address, first_name: @user.first_name, is_admin: @user.is_admin, last_name: @user.last_name, phone_number: @user.phone_number, time_zone: @user.time_zone, username: @user.username } }
+    patch user_url(@user),
+          params: { user: { country: @user.country, date_of_birth: @user.date_of_birth, email_address: @user.email_address,
+                            first_name: @user.first_name, is_admin: @user.is_admin, last_name: @user.last_name, phone_number: @user.phone_number, time_zone: @user.time_zone, username: @user.username } }
     assert_redirected_to user_url(@user)
   end
 

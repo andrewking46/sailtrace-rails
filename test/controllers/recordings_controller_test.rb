@@ -17,7 +17,9 @@ class RecordingsControllerTest < ActionDispatch::IntegrationTest
 
   test "should create recording" do
     assert_difference("Recording.count") do
-      post recordings_url, params: { recording: { boat_id: @recording.boat_id, ended_at: @recording.ended_at, is_race: @recording.is_race, name: @recording.name, started_at: @recording.started_at, time_zone: @recording.time_zone, user_id: @recording.user_id } }
+      post recordings_url,
+           params: { recording: { boat_id: @recording.boat_id, ended_at: @recording.ended_at, is_race: @recording.is_race,
+                                  name: @recording.name, started_at: @recording.started_at, time_zone: @recording.time_zone, user_id: @recording.user_id } }
     end
 
     assert_redirected_to recording_url(Recording.last)
@@ -34,7 +36,9 @@ class RecordingsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update recording" do
-    patch recording_url(@recording), params: { recording: { boat_id: @recording.boat_id, ended_at: @recording.ended_at, is_race: @recording.is_race, name: @recording.name, started_at: @recording.started_at, time_zone: @recording.time_zone, user_id: @recording.user_id } }
+    patch recording_url(@recording),
+          params: { recording: { boat_id: @recording.boat_id, ended_at: @recording.ended_at, is_race: @recording.is_race,
+                                 name: @recording.name, started_at: @recording.started_at, time_zone: @recording.time_zone, user_id: @recording.user_id } }
     assert_redirected_to recording_url(@recording)
   end
 

@@ -3,7 +3,7 @@ source "https://rubygems.org"
 ruby "3.3.0"
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
-gem "rails", "~> 7.1"
+gem "rails", "~> 7.2"
 
 # The modern asset pipeline for Rails [https://github.com/rails/propshaft]
 gem "propshaft"
@@ -36,7 +36,7 @@ gem "jbuilder"
 gem "bcrypt"
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
-gem "tzinfo-data", platforms: %i[ windows jruby ]
+gem "tzinfo-data", platforms: %i[windows jruby]
 
 gem "active_model_serializers"
 gem "country_select", "~> 8.0"
@@ -57,9 +57,9 @@ gem "bootsnap", require: false
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
-  gem "debug", platforms: %i[ mri windows ]
-  gem "faker", require: false
   gem "brakeman", require: false
+  gem "debug", platforms: %i[mri windows]
+  gem "faker", require: false
 end
 
 group :development do
@@ -70,6 +70,7 @@ group :development do
   gem "binding_of_caller"
   gem "bullet"
   gem "letter_opener"
+  gem "rubocop-rails-omakase", require: false
 
   # Add speed badges [https://github.com/MiniProfiler/rack-mini-profiler]
   # gem "rack-mini-profiler"

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Recordings
   class LocationProcessorService
     WINDOW_SIZE = 10
@@ -14,8 +16,8 @@ module Recordings
       previous_location = nil
       updates = []
 
-      @recording.recorded_locations.find_in_batches(batch_size: BATCH_SIZE).with_index do |batch, batch_index|
-        batch.each_with_index do |location, index|
+      @recording.recorded_locations.find_in_batches(batch_size: BATCH_SIZE).with_index do |batch, _batch_index|
+        batch.each_with_index do |location, _index|
           result = process_location(location, previous_location)
           if result
             updates << result
@@ -27,7 +29,7 @@ module Recordings
 
         RecordedLocation.upsert_all(
           updates,
-          update_only: [:adjusted_latitude, :adjusted_longitude],
+          update_only: %i[adjusted_latitude adjusted_longitude],
           returning: false
         )
       end
@@ -54,8 +56,7 @@ module Recordings
       time_diff = (location.created_at - previous_location.created_at).to_f
       instant_speed = calculate_instant_speed(previous_location, location, time_diff)
 
-      result = apply_kalman_filter(location, instant_speed)
-      result
+      apply_kalman_filter(location, instant_speed)
     end
 
     def calculate_instant_speed(prev_loc, curr_loc, time_diff)
@@ -69,9 +70,10 @@ module Recordings
     end
 
     def apply_kalman_filter(location, instant_speed)
-      @filter.meters_per_second = [instant_speed, BASE_PROCESS_NOISE].max
+      @filter.meters_per_second = [ instant_speed, BASE_PROCESS_NOISE ].max
 
-      result = @filter.process(location.latitude, location.longitude, location.accuracy, location.created_at.to_f * 1000)
+      result = @filter.process(location.latitude, location.longitude, location.accuracy,
+                               location.created_at.to_f * 1000)
 
       if result && @filter.latitude.finite? && @filter.longitude.finite?
         {

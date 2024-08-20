@@ -9,7 +9,7 @@ class Race < ApplicationRecord
 
   scope :empty, -> { left_joins(:recordings).where(recordings: { id: nil }) }
 
-  after_commit :invalidate_cache, on: [:update, :destroy]
+  after_commit :invalidate_cache, on: %i[update destroy]
 
   def ended_at
     recordings.maximum(:ended_at)
@@ -51,10 +51,10 @@ class Race < ApplicationRecord
     return if recordings.count <= 1
 
     boat_class_ids = recordings
-      .joins(:boat)
-      .distinct
-      .pluck('boats.boat_class_id')
-      .compact
+                     .joins(:boat)
+                     .distinct
+                     .pluck("boats.boat_class_id")
+                     .compact
 
     if boat_class_ids.size == 1
       update(boat_class_id: boat_class_ids.first)
