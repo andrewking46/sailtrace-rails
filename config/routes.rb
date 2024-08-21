@@ -47,6 +47,10 @@ Rails.application.routes.draw do
       end
 
       resources :users, only: [ :show, :create, :update, :destroy ]
+
+      namespace :users do
+        resources :emails, only: %i[show], param: :email
+      end
     end
   end
 

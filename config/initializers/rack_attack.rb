@@ -27,4 +27,11 @@ class Rack::Attack
       req.ip
     end
   end
+
+  # Limit email existence checks to 5 per minute per IP address
+  throttle("check_email/ip", limit: 5, period: 60.seconds) do |req|
+    if req.path.start_with?("/api/v1/users/emails/") && req.get?
+      req.ip
+    end
+  end
 end
