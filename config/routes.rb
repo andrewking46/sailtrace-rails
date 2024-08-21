@@ -49,7 +49,7 @@ Rails.application.routes.draw do
       resources :users, only: [ :show, :create, :update, :destroy ]
 
       namespace :users do
-        resource :emails, only: %i[show]
+        resource :email, only: %i[show]
       end
     end
   end
