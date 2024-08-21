@@ -13,8 +13,24 @@ class PasswordReset < ApplicationRecord
   scope :recent, -> { where("created_at > ?", 15.minutes.ago) }
   scope :pending, -> { where(used_at: nil).where("expires_at > ?", Time.current) }
 
+  def self.find_by_token(token)
+    pending.find_by(reset_token: token)
+  end
+
   def expired?
     expires_at < Time.current
+  end
+
+  def update_password(password_params)
+    return false if expired?
+
+    if user.update(password_params)
+      use!
+      true
+    else
+      errors.add(:base, user.errors.full_messages)
+      false
+    end
   end
 
   def use!

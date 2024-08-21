@@ -32,7 +32,8 @@ Rails.application.routes.draw do
       delete :logout, to: "sessions#destroy"
 
       resources :boats
-      resources :boat_classes, only: [ :index ]
+      resources :boat_classes, only: %i[index]
+      resources :password_resets, only: %i[create update], param: :reset_token
 
       resources :recordings do
         member do
@@ -44,6 +45,8 @@ Rails.application.routes.draw do
           resources :recorded_locations, only: %i[index create]
         end
       end
+
+      resources :users, only: [ :show, :create, :update, :destroy ]
     end
   end
 

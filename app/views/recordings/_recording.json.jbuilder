@@ -1,4 +1,4 @@
-json.cache! [ "v#{CacheManager::CACHE_VERSION}", recording ] do
+json.cache! [ "v#{CacheManager::CACHE_VERSION}", recording ], expires_in: 1.day do
   json.extract! recording, :id, :started_at, :ended_at, :time_zone, :start_latitude, :start_longitude, :is_race,
                 :created_at
 
