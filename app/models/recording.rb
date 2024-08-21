@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 class Recording < ApplicationRecord
-  include Cacheable
   include Geocodable
   include Durationable
 
@@ -18,7 +17,6 @@ class Recording < ApplicationRecord
   after_destroy :cleanup_race
 
   after_commit :invalidate_cache, on: %i[update destroy]
-  after_commit :cache_json, on: %i[create update]
 
   scope :in_progress, -> { where(ended_at: nil).where.not(started_at: nil) }
 
@@ -53,10 +51,6 @@ class Recording < ApplicationRecord
   def invalidate_cache
     CacheManager.delete("#{cache_key}/json")
     race&.invalidate_cache if saved_change_to_race_id?
-  end
-
-  def cache_json
-    CacheRecordingJsonJob.perform_later(id) if ended?
   end
 
   def set_started_at

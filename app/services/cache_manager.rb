@@ -1,7 +1,7 @@
 class CacheManager
   CACHE_VERSION = 1
 
-  def self.fetch(key, expires_in: 1.week, &block)
+  def self.fetch(key, expires_in: 1.day, &block)
     result = Rails.cache.fetch("#{CACHE_VERSION}/#{key}", expires_in:, &block)
     Rails.logger.info "Cache #{result.nil? ? 'MISS' : 'HIT'} for key: #{key}"
     result

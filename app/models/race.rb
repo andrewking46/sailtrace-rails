@@ -1,5 +1,4 @@
 class Race < ApplicationRecord
-  include Cacheable
   include Geocodable
 
   belongs_to :boat_class, optional: true

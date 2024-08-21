@@ -1,4 +1,4 @@
-json.cache! [ "v#{CacheManager::CACHE_VERSION}", race.cache_key ] do
+json.cache! [ "v#{CacheManager::CACHE_VERSION}", race ] do
   json.extract! race, :id, :name, :started_at, :start_latitude, :start_longitude, :created_at, :updated_at
 
   json.boat_class do
