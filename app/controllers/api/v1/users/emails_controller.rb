@@ -6,6 +6,7 @@ module Api
 
         def show
           email = params[:email]&.downcase
+          Rails.logger.info "Received email parameter: #{email}"
 
           unless email.present? && email =~ URI::MailTo::EMAIL_REGEXP
             render json: { error: "Invalid email format" }, status: :unprocessable_entity
@@ -13,6 +14,7 @@ module Api
           end
 
           user_exists = User.exists?(email_address: email)
+          Rails.logger.info "User exists check result: #{user_exists}"
 
           render json: { exists: user_exists }, status: :ok
         end
