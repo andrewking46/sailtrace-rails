@@ -14,7 +14,6 @@ module Api
         if @user.save
           token = @user.access_tokens.create!
           render json: {
-            user: UserSerializer.new(@user),
             access_token: token.token,
             refresh_token: token.refresh_token,
             expires_at: token.expires_at
