@@ -35,6 +35,12 @@ Rails.application.routes.draw do
       resources :boat_classes, only: %i[index]
       resources :password_resets, only: %i[create update], param: :reset_token
 
+      resources :races, only: %i[show] do
+        scope module: :races do
+          resources :recordings, only: %i[index]
+        end
+      end
+
       resources :recordings do
         member do
           patch :end
