@@ -11,11 +11,17 @@ class User < ApplicationRecord
   validates :first_name, presence: true
   validates :last_name, presence: true
 
+  before_validation :set_username
   before_save :downcase_email
 
   has_secure_password
 
   private
+
+  def set_username
+    return if username.present?
+    self.username = "#{first_name.gsub(/(\W|\d)/, "").downcase}#{last_name.gsub(/(\W|\d)/, "").downcase}"
+  end
 
   def downcase_email
     self.email_address = email_address.downcase
