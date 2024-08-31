@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Recordings
   class RecordedLocationsController < BaseController
     def index

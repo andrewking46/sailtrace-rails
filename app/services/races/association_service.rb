@@ -1,7 +1,7 @@
 module Races
   class AssociationService
-    TIME_WINDOW = 5.minutes
-    DISTANCE_THRESHOLD = 0.5 # km
+    TIME_WINDOW = 10.minutes
+    DISTANCE_THRESHOLD = 0.75 # km
 
     def initialize(recording)
       @recording = recording

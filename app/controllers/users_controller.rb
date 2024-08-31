@@ -1,5 +1,5 @@
 class UsersController < ApplicationController
-  require_unauthenticated_access only: %i[new create]
+  require_unauthenticated_access only: %i[new create destroy]
 
   before_action :set_user, only: :show
 
@@ -20,6 +20,15 @@ class UsersController < ApplicationController
   end
 
   def show; end
+
+  def destroy
+    @user.destroy!
+
+    respond_to do |format|
+      format.html { redirect_to users_url, notice: "User deleted" }
+      format.json { head :no_content }
+    end
+  end
 
   private
 
