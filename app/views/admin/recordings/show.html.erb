@@ -1,0 +1,48 @@
+<% @page_title = "Recording" %>
+
+<% content_for :app_page_header do %>
+  <div class="flex-item-justify-start"><%= link_back_to(admin_recordings_path) %></div>
+<% end %>
+
+<div class="container">
+  <h1 class="text-xx-large text-bold margin-block-end">Recording</h1>
+
+  <div id="<%= dom_id @recording %>">
+    <p class="text-small text-muted margin-block-end-half"><%= @recording.created_at.in_time_zone(@recording.time_zone).strftime("%A, %b %d %Y %l:%M%p") %></p>
+    <p class="margin-block-end"><%= @recording.boat.name %> (<%= @recording.boat.registration_country %> <%= @recording.boat.sail_number %>)</p>
+    <dl class="flex flex-wrap gap margin-block-end">
+      <div>
+        <dt class="text-small text-muted">Distance</dt>
+        <dd><%= number_with_precision(@recording.distance, precision: 2) %> nm</dd>
+      </div>
+      <div>
+        <dt class="text-small text-muted">Time</dt>
+        <dd><%= @recording.duration %></dd>
+      </div>
+      <div>
+        <dt class="text-small text-muted">Average speed</dt>
+        <dd><%= @recording.average_speed %> knots</dd>
+      </div>
+    </dl>
+  </div>
+
+
+  <div class="flex gap margin-block">
+    <%= link_to "Delete", admin_recording_path(@recording), class: "btn", data: { turbo_method: :delete, turbo_confirm: 'Are you sure you want to delete this recording?' } %>
+  </div>
+
+  <% if @recording.race_id.present? %>
+    <div class="margin-block panel">
+      <div class="flex gap justify-space-between align-center">
+        <div>
+          <div class="text-orange">&#9873;</div>
+          <h3 class="text-large text-bold">Race</h3>
+          <div class="text-muted text-small"><%= pluralize(@recording.race.recordings.count, "boat") %></div>
+        </div>
+        <div class="flex gap">
+          <%= link_to "Replay", race_replay_path(@recording.race), class: "btn btn--reversed" %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>

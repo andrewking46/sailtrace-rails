@@ -24,7 +24,7 @@ module Admin
 
       respond_to do |format|
         if @boat_class.save
-          format.html { redirect_to boat_class_url(@boat_class), notice: "Boat class created" }
+          format.html { redirect_to admin_boat_class_url(@boat_class), notice: "Boat class created" }
           format.json { render :show, status: :created, location: @boat_class }
         else
           format.html { render :new, status: :unprocessable_entity }
@@ -37,7 +37,7 @@ module Admin
     def update
       respond_to do |format|
         if @boat_class.update(boat_class_params)
-          format.html { redirect_to boat_class_url(@boat_class), notice: "Boat class updated" }
+          format.html { redirect_to admin_boat_class_url(@boat_class), notice: "Boat class updated" }
           format.json { render :show, status: :ok, location: @boat_class }
         else
           format.html { render :edit, status: :unprocessable_entity }
@@ -51,7 +51,7 @@ module Admin
       @boat_class.destroy!
 
       respond_to do |format|
-        format.html { redirect_to boat_classes_url, notice: "Boat class deleted" }
+        format.html { redirect_to admin_boat_classes_url, notice: "Boat class deleted" }
         format.json { head :no_content }
       end
     end

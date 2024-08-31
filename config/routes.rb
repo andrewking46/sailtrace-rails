@@ -60,8 +60,9 @@ Rails.application.routes.draw do
     end
   end
 
-  scope module: :admin do
+  namespace :admin do
     resources :boat_classes
+    resources :recordings, only: %i[index show destroy]
   end
 
   # Route for the 'More' page

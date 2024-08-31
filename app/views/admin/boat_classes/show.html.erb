@@ -8,7 +8,7 @@
   <%= render @boat_class %>
 
   <div class="flex gap margin-block">
-    <%= link_to "Edit", edit_boat_class_path(@boat_class), class: "btn" %>
-    <%= button_to "Delete", @boat_class, method: :delete, class: "btn", data: { turbo_method: :delete, turbo_confirm: 'Are you sure you want to delete this boat class?' } %>
+    <%= link_to "Edit", edit_admin_boat_class_path(@boat_class), class: "btn" %>
+    <%= button_to "Delete", admin_boat_class_path(@boat_class), method: :delete, class: "btn", data: { turbo_method: :delete, turbo_confirm: 'Are you sure you want to delete this boat class?' } %>
   </div>
 </div>

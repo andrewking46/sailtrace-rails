@@ -3,11 +3,11 @@
 
   <div class="margin-block" id="boat_classes">
     <% @boat_classes.each do |boat_class| %>
-      <%= link_to boat_class do %>
+      <%= link_to admin_boat_class_path(boat_class) do %>
         <%= render boat_class %>
       <% end %>
     <% end %>
   </div>
 
-  <%= link_to "New boat class", new_boat_class_path, class: "btn btn--reversed" %>
+  <%= link_to "New boat class", new_admin_boat_class_path, class: "btn btn--reversed" %>
 </div>

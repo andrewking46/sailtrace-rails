@@ -1,7 +1,7 @@
 class UsersController < ApplicationController
   require_unauthenticated_access only: %i[new create destroy]
 
-  before_action :set_user, only: :show
+  before_action :set_user, only: %i[show destroy]
 
   def index
     @users = User.all

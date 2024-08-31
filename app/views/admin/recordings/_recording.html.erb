@@ -1,0 +1,19 @@
+<div class="panel margin-block" id="<%= dom_id recording %>">
+  <p class="text-small text-muted margin-block-end-half"><%= recording.created_at.in_time_zone(recording.time_zone).strftime("%A, %b %d %Y %l:%M%p") %></p>
+  <p><%= recording.boat.name %> (<%= recording.boat.registration_country %> <%= recording.boat.sail_number %>)</p>
+  <p class="text-small text-muted margin-block-end-half"><%= recording.user.first_name %> <%= recording.user.last_name %></p>
+  <dl class="flex flex-wrap gap margin-block-start">
+    <div>
+      <dt class="text-small text-muted">Distance</dt>
+      <dd><%= number_with_precision(recording.distance, precision: 2) %> nm</dd>
+    </div>
+    <div>
+      <dt class="text-small text-muted">Time</dt>
+      <dd><%= recording.duration %></dd>
+    </div>
+    <div>
+      <dt class="text-small text-muted">Average speed</dt>
+      <dd><%= recording.average_speed %> knots</dd>
+    </div>
+  </dl>
+</div>
