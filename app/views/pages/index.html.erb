@@ -1,12 +1,14 @@
-<div class="container full-height flex flex-column align-center justify-center">
-  <div class="margin-block-end">
-    <%= image_tag "logos/sailtrace-app-icon.png", role: "presentation", size: 72, class: "center shadow border-radius" %>
-  </div>
-
-  <p class="margin-block-double text-x-large text-bold">Welcome to SailTrace</p>
-
-  <div class="margin-block-double flex flex-wrap gap">
-    <%= link_to "Sign up", new_user_path, class: "btn btn--reversed full-width flex-item-grow" %>
-    <%= link_to "Log in", new_session_path, class: "btn full-width flex-item-grow" %>
+<div class="full-height">
+  <div class="container">
+    <div class="margin-block flex justify-space-between align-center">
+      <%= image_tag "logos/logo-transparent.svg", role: "presentation", height: 24 %>
+      <nav>
+        <%= link_to "Log in", new_session_path, class: "btn" %>
+      </nav>
+    </div>
+    <div class="text-align-center">
+      <h1 class="margin-block-double text-xx-large text-bold">Record, replay, and analyze your races</h1>
+      <%= link_to "Get early access", new_user_path, class: "btn btn--reversed" %>
+    </div>
   </div>
 </div>

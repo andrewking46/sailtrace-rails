@@ -3,7 +3,7 @@ import { Controller } from "@hotwired/stimulus"
 export default class extends Controller {
   static targets = ["pauseButton", "beacon", "gpsWarning", "consoleLog"]
   static values = { recordingId: Number }
-  static ACCEPTABLE_ACCURACY_THRESHOLD = 100;
+  static ACCEPTABLE_ACCURACY_THRESHOLD = 10;
   static BATCH_SIZE = 10;
   static BATCH_INTERVAL = 30000; // 30 seconds
   static MAX_QUEUE_SIZE = 1000; // Maximum number of locations to store
