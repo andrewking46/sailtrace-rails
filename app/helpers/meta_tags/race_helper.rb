@@ -28,7 +28,7 @@ module MetaTags
     def race_image(_race)
       # Placeholder for race image. In the future, you might want to generate
       # a map image of the race course or use a photo from the event.
-      "/logos/sailtrace-logo.png"
+      "/logos/logo-orange-background.png"
     end
   end
 end

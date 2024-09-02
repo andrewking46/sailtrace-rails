@@ -54,7 +54,7 @@ module MetaTags
       when ActiveStorage::Attached::One
         rails_blob_url(image)
       else
-        asset_url("logos/sailtrace-logo.png")
+        asset_url("logos/logo-orange-background.png")
       end
     end
 

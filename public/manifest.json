@@ -16,7 +16,7 @@
   "start_url": "/",
   "display": "standalone",
   "scope": "/",
-  "description": "A app for sailors to track, replay, and analyze their races.",
+  "description": "An app for sailors to record, replay, and analyze their races.",
   "shortcuts": [
     {
       "name": "New recording",
