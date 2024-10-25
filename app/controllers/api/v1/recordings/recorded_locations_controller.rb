@@ -5,8 +5,8 @@ module Api
     module Recordings
       class RecordedLocationsController < BaseController
         def index
-          @recorded_locations = @recording.recorded_locations.where.not(adjusted_latitude: nil,
-                                                                        adjusted_longitude: nil).order(recorded_at: :asc)
+          @recorded_locations = @recording.recorded_locations.not_simplified.chronological.where.not(adjusted_latitude: nil,
+                                                                        adjusted_longitude: nil)
           render json: @recorded_locations, each_serializer: RecordedLocationSerializer
         end
 
