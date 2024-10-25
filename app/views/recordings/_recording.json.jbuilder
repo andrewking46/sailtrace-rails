@@ -6,8 +6,8 @@ json.cache! [ "v#{CacheManager::CACHE_VERSION}", recording ], expires_in: 1.day 
     json.extract! recording.boat, :name, :registration_country, :sail_number, :hull_color
   end
 
-  json.recorded_locations recording.recorded_locations.order(:recorded_at) do |recorded_location|
-    json.extract! recorded_location, :id, :latitude, :longitude, :accuracy, :created_at, :adjusted_latitude,
+  json.recorded_locations recording.recorded_locations.not_simplified.chronological do |recorded_location|
+    json.extract! recorded_location, :id, :accuracy, :velocity, :heading, :adjusted_latitude,
                   :adjusted_longitude, :recorded_at
   end
 

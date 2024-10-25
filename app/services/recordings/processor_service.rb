@@ -1,57 +1,43 @@
 # frozen_string_literal: true
 
 module Recordings
+  # ProcessorService orchestrates the entire processing pipeline for a recording
   class ProcessorService
     def initialize(recording)
       @recording = recording
     end
 
     def process
+      # Wrap the entire process in a transaction to ensure data consistency
       ApplicationRecord.transaction do
-        process_locations
-        calculate_statistics
-        associate_with_race if @recording.is_race?
+        # Step 1: Apply Kalman filter to smooth the GPS data
+        # This step reduces noise and improves accuracy of the recorded locations
+        KalmanFilterService.new(@recording).process
+
+        # Step 2: Simplify the path using Visvalingam-Whyatt algorithm
+        # This step reduces the number of points while preserving the overall shape
+        SimplificationService.new(@recording).process
+
+        # Step 3: Calculate velocity and heading for each point
+        # This step computes speed and direction information for each location
+        VelocityHeadingService.new(@recording).process
+
+        # Step 4: Calculate overall statistics for the recording
+        # This step computes aggregate data like total distance, average speed, etc.
+        StatisticsService.new(@recording).process
+
+        # Step 5: Associate with a race if applicable
+        # This step links the recording to a race if it's part of one
+        Races::AssociationService.new(@recording).associate if @recording.is_race?
       end
     rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotFound => e
+      # Log any database-related errors that occur during processing
       ErrorNotifierService.notify(e, context: { recording_id: @recording.id, error_type: :database_error })
-      raise
+      raise # Re-raise the error to be handled by the caller
     rescue StandardError => e
+      # Log any unexpected errors that occur during processing
       ErrorNotifierService.notify(e, context: { recording_id: @recording.id, error_type: :unexpected_error })
-      raise
-    end
-
-    def process_locations
-      LocationProcessorService.new(@recording).process
-      # optimize_gps_data
-    end
-
-    def optimize_gps_data
-      locations = @recording.recorded_locations.select(:adjusted_latitude, :adjusted_longitude, :accuracy, :created_at,
-                                                       :recorded_at).order(:recorded_at)
-      processed_locations = Gps::DataProcessingService.new(locations).process
-      update_locations(processed_locations)
-    end
-
-    def calculate_statistics
-      distance = @recording.calculate_distance
-      @recording.update(distance:)
-    end
-
-    def associate_with_race
-      Races::AssociationService.new(@recording).associate if @recording.is_race?
-    end
-
-    private
-
-    def update_locations(processed_locations)
-      RecordedLocation.transaction do
-        @recording.recorded_locations.order(:recorded_at).each_with_index do |location, index|
-          location.update(
-            adjusted_latitude: processed_locations[index][:latitude],
-            adjusted_longitude: processed_locations[index][:longitude]
-          )
-        end
-      end
+      raise # Re-raise the error to be handled by the caller
     end
   end
 end

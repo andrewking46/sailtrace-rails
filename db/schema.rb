@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_08_20_014136) do
+ActiveRecord::Schema[7.2].define(version: 2024_09_07_202706) do
   create_schema "heroku_ext"
 
   # These are extensions that must be enabled in order to support this database
@@ -86,6 +86,8 @@ ActiveRecord::Schema[7.2].define(version: 2024_08_20_014136) do
     t.decimal "adjusted_latitude", precision: 10, scale: 6
     t.decimal "adjusted_longitude", precision: 10, scale: 6
     t.datetime "recorded_at"
+    t.boolean "is_simplified", default: false
+    t.index ["is_simplified"], name: "index_recorded_locations_on_is_simplified"
     t.index ["recorded_at"], name: "index_recorded_locations_on_recorded_at"
     t.index ["recording_id"], name: "index_recorded_locations_on_recording_id"
   end
