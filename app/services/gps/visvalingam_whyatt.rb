@@ -13,7 +13,7 @@ module Gps
 
     # Simplify the path to the target percentage of original points
     # @param target_percentage [Float] The desired percentage of points to keep (0.0 to 1.0)
-    def simplify(target_percentage: 0.25)
+    def simplify(target_percentage: 0.2)
       target_size = (@recording.recorded_locations.count * target_percentage).ceil
       areas = initialize_areas
 

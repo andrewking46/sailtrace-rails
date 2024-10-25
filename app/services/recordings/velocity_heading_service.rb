@@ -93,7 +93,7 @@ module Recordings
         recording_id: location.recording_id,
         latitude: location.latitude,
         longitude: location.longitude,
-        velocity: velocity,
+        velocity: velocity.round(2),
         heading: heading
       }
     end
