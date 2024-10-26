@@ -12,7 +12,7 @@ module Recordings
   # - Uses SQL select to load only required fields
   class VelocityHeadingService
     # Size of the sliding window for speed calculations
-    WINDOW_SIZE = 5
+    WINDOW_SIZE = 10
 
     # Number of locations to process in each batch
     BATCH_SIZE = 100

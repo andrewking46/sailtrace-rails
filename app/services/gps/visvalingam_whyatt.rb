@@ -4,7 +4,7 @@ module Gps
   # VisvalingamWhyatt implements the Visvalingam-Whyatt algorithm for path simplification
   # This version works directly with the database to minimize memory usage
   class VisvalingamWhyatt
-    BATCH_SIZE = 180  # Number of points to process in each batch
+    BATCH_SIZE = 200  # Number of points to process in each batch
 
     # @param recording [Recording] The recording object containing the path to simplify
     def initialize(recording)
@@ -13,7 +13,7 @@ module Gps
 
     # Simplify the path to the target percentage of original points
     # @param target_percentage [Float] The desired percentage of points to keep (0.0 to 1.0)
-    def simplify(target_percentage: 0.3)
+    def simplify(target_percentage: 0.5)
       target_size = (@recording.recorded_locations.count * target_percentage).ceil
       areas = initialize_areas
 
