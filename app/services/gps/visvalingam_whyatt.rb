@@ -1,102 +1,142 @@
 # frozen_string_literal: true
 
 module Gps
-  # VisvalingamWhyatt implements the Visvalingam-Whyatt algorithm for path simplification
-  # This version works directly with the database to minimize memory usage
+  # VisvalingamWhyatt implements the Visvalingam-Whyatt algorithm for path simplification.
+  # It processes a list of GPS points and returns a simplified list based on the target reduction.
   class VisvalingamWhyatt
-    BATCH_SIZE = 200  # Number of points to process in each batch
-
-    # @param recording [Recording] The recording object containing the path to simplify
-    def initialize(recording)
-      @recording = recording
+    # Initialize with a list of points and target reduction percentage.
+    #
+    # @param points [Array<Hash>] Array of points, each with :latitude, :longitude, and :id.
+    # @param target_reduction [Float] Fraction of points to remove (0.0 to 1.0).
+    def initialize(points, target_reduction: 0.5)
+      @points = points.dup  # Duplicate to prevent side-effects
+      @target_reduction = target_reduction
+      initialize_linked_list
+      initialize_areas
     end
 
-    # Simplify the path to the target percentage of original points
-    # @param target_percentage [Float] The desired percentage of points to keep (0.0 to 1.0)
-    def simplify(target_percentage: 0.5)
-      target_size = (@recording.recorded_locations.count * target_percentage).ceil
-      areas = initialize_areas
+    # Executes the simplification algorithm.
+    #
+    # @return [Array<Hash>] Simplified array of points.
+    def simplify
+      return @points if @points.size <= 2
 
-      # Continue removing points until we reach the target size
-      while areas.size > target_size
-        min_area = areas.min_by(&:area)
-        areas.delete(min_area)
-        update_adjacent_areas(areas, min_area.index)
+      points_to_remove = (@points.size * @target_reduction).ceil
+
+      points_to_remove.times do
+        min_area_node = find_min_area_node
+        break unless min_area_node
+
+        # Remove the node with the smallest area.
+        min_area_node.remove
+
+        # Recalculate areas for the neighbors.
+        min_area_node.prev_node.recalculate_area if min_area_node.prev_node
+        min_area_node.next_node.recalculate_area if min_area_node.next_node
       end
 
-      mark_simplified_points(areas)
+      # Extract the remaining points from the linked list.
+      extract_points
     end
 
     private
 
-    # Initialize area calculations for all points
-    # @return [Array<Area>] Array of Area objects for each point
+    # Represents a node in the doubly linked list, holding a point and its area.
+    class Node
+      attr_accessor :point, :area, :prev_node, :next_node
+
+      # Initialize with a point.
+      #
+      # @param point [Hash] Point data with :latitude, :longitude, and :id.
+      def initialize(point)
+        @point = point
+        @area = nil
+        @prev_node = nil
+        @next_node = nil
+      end
+
+      # Calculates the triangle area formed by this node and its immediate neighbors.
+      #
+      # @return [Float] Absolute area of the triangle, or nil if neighbors are missing.
+      def calculate_area
+        return nil unless @prev_node && @next_node
+        return nil if @prev_node.point.nil? || @next_node.point.nil?
+
+        p1 = @prev_node.point
+        p2 = @point
+        p3 = @next_node.point
+
+        ((p2[:longitude] - p1[:longitude]) * (p3[:latitude] - p1[:latitude]) -
+         (p3[:longitude] - p1[:longitude]) * (p2[:latitude] - p1[:latitude])).abs / 2.0
+      end
+
+      # Recalculates the area based on current neighbors.
+      #
+      # @return [Float] Updated area value.
+      def recalculate_area
+        @area = calculate_area
+      end
+
+      # Removes this node from the linked list.
+      def remove
+        @prev_node.next_node = @next_node
+        @next_node.prev_node = @prev_node
+        @prev_node = nil
+        @next_node = nil
+      end
+    end
+
+    # Initializes a doubly linked list for the points.
+    def initialize_linked_list
+      @head = Node.new(nil)  # Dummy head
+      @tail = Node.new(nil)  # Dummy tail
+      @head.next_node = @tail
+      @tail.prev_node = @head
+
+      @points.each do |point|
+        node = Node.new(point)
+        node.prev_node = @tail.prev_node
+        node.next_node = @tail
+        @tail.prev_node.next_node = node
+        @tail.prev_node = node
+      end
+    end
+
+    # Initializes area calculations for all applicable nodes.
     def initialize_areas
-      areas = []
-      @recording.recorded_locations
-                .select(:id, :adjusted_latitude, :adjusted_longitude)
-                .order(:recorded_at)
-                .find_in_batches(batch_size: BATCH_SIZE).with_index do |batch, batch_index|
-        batch.each_with_index do |curr, index|
-          next if index == 0 || index == batch.size - 1
-          prev = batch[index - 1]
-          nxt = batch[index + 1]
-          area = calculate_triangle_area(prev, curr, nxt)
-          areas << Area.new(curr.id, area, (batch_index * BATCH_SIZE) + index, curr.adjusted_latitude, curr.adjusted_longitude)
+      current = @head.next_node
+      while current && current.next_node != @tail
+        current.recalculate_area
+        current = current.next_node
+      end
+    end
+
+    # Finds the node with the smallest area.
+    #
+    # @return [Node, nil] The node with the smallest area, or nil if none found.
+    def find_min_area_node
+      min_node = nil
+      current = @head.next_node
+      while current && current.next_node != @tail
+        if current.area && (min_node.nil? || current.area < min_node.area)
+          min_node = current
         end
+        current = current.next_node
       end
-      areas
+      min_node
     end
 
-    # Update areas of adjacent points after removing a point
-    # @param areas [Array<Area>] Current array of Area objects
-    # @param index [Integer] Index of the removed point
-    def update_adjacent_areas(areas, index)
-      [ -1, 0, 1 ].each do |offset|
-        adj_index = index + offset
-        next if adj_index.negative? || adj_index >= areas.size
-
-        prev = areas[adj_index - 1]
-        curr = areas[adj_index]
-        nxt = areas[adj_index + 1]
-
-        next if prev.nil? || nxt.nil?
-
-        new_area = calculate_triangle_area(prev, curr, nxt)
-        curr.area = new_area
+    # Extracts the remaining points from the linked list into an array.
+    #
+    # @return [Array<Hash>] Simplified array of points.
+    def extract_points
+      simplified = []
+      current = @head.next_node
+      while current && current != @tail
+        simplified << current.point
+        current = current.next_node
       end
-    end
-
-    # Calculate the area of the triangle formed by three points
-    # @param p1 [RecordedLocation] First point
-    # @param p2 [RecordedLocation] Second point
-    # @param p3 [RecordedLocation] Third point
-    # @return [Float] Area of the triangle
-    def calculate_triangle_area(p1, p2, p3)
-      # Use Floats for better performance
-      ((p2.adjusted_longitude.to_f - p1.adjusted_longitude.to_f) * (p3.adjusted_latitude.to_f - p1.adjusted_latitude.to_f) -
-       (p3.adjusted_longitude.to_f - p1.adjusted_longitude.to_f) * (p2.adjusted_latitude.to_f - p1.adjusted_latitude.to_f)).abs / 2.0
-    end
-
-    # Mark points as simplified in the database
-    # @param areas [Array<Area>] Array of Area objects for points to keep
-    def mark_simplified_points(areas)
-      kept_ids = areas.map(&:id)
-      @recording.recorded_locations.where.not(id: kept_ids).update_all(is_simplified: true)
-    end
-  end
-
-  # Simple class to hold area information for a point
-  class Area
-    attr_reader :id, :index, :adjusted_latitude, :adjusted_longitude
-    attr_accessor :area
-
-    def initialize(id, area, index, adjusted_latitude, adjusted_longitude)
-      @id = id
-      @area = area
-      @index = index
-      @adjusted_latitude = adjusted_latitude
-      @adjusted_longitude = adjusted_longitude
+      simplified
     end
   end
 end

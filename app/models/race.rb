@@ -47,7 +47,7 @@ class Race < ApplicationRecord
   end
 
   def update_boat_class
-    return if recordings.count <= 1
+    return if recordings.count < 3
 
     boat_class_ids = recordings
                      .joins(:boat)
