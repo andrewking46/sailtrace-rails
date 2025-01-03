@@ -41,16 +41,10 @@ gem "tzinfo-data", platforms: %i[windows jruby]
 gem "active_model_serializers"
 gem "country_select", "~> 8.0"
 gem "geocoder"
-gem "memory_profiler"
 gem "rack-attack"
-gem "rack-mini-profiler"
-gem "ruby-prof"
 gem "scout_apm"
 gem "solid_cache"
 gem "solid_queue"
-
-gem "get_process_mem"
-gem "stackprof"
 
 # Reduces boot times through caching; required in config/boot.rb
 gem "bootsnap", require: false
@@ -73,8 +67,9 @@ group :development do
   gem "binding_of_caller"
   gem "bullet"
   gem "letter_opener"
+  gem "memory_profiler"
   gem "rubocop-rails-omakase", require: false
-  # gem "stackprof"
+  gem "stackprof"
 
   # Add speed badges [https://github.com/MiniProfiler/rack-mini-profiler]
   # gem "rack-mini-profiler"

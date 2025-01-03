@@ -129,21 +129,12 @@ GEM
       tzinfo
     faker (3.4.2)
       i18n (>= 1.8.11, < 2)
-    ffi (1.17.1-aarch64-linux-gnu)
-    ffi (1.17.1-arm-linux-gnu)
-    ffi (1.17.1-arm64-darwin)
-    ffi (1.17.1-x86-linux-gnu)
-    ffi (1.17.1-x86_64-darwin)
-    ffi (1.17.1-x86_64-linux-gnu)
     fugit (1.11.1)
       et-orbi (~> 1, >= 1.2.11)
       raabro (~> 1.4)
     geocoder (1.8.3)
       base64 (>= 0.1.0)
       csv (>= 3.0.0)
-    get_process_mem (1.0.0)
-      bigdecimal (>= 2.0)
-      ffi (~> 1.0)
     globalid (1.2.1)
       activesupport (>= 6.1)
     i18n (1.14.5)
@@ -224,8 +215,6 @@ GEM
     rack (3.1.7)
     rack-attack (6.7.0)
       rack (>= 1.0, < 4)
-    rack-mini-profiler (3.3.1)
-      rack (>= 1.2.0)
     rack-session (2.0.0)
       rack (>= 3.0.0)
     rack-test (2.1.0)
@@ -301,7 +290,6 @@ GEM
       rubocop-minitest
       rubocop-performance
       rubocop-rails
-    ruby-prof (1.7.0)
     ruby-progressbar (1.13.0)
     rubyzip (2.3.2)
     scout_apm (5.3.8)
@@ -375,7 +363,6 @@ DEPENDENCIES
   debug
   faker
   geocoder
-  get_process_mem
   importmap-rails
   jbuilder
   letter_opener
@@ -384,10 +371,8 @@ DEPENDENCIES
   propshaft
   puma (~> 6.4)
   rack-attack
-  rack-mini-profiler
   rails (~> 7.2)
   rubocop-rails-omakase
-  ruby-prof
   scout_apm
   selenium-webdriver
   solid_cache
