@@ -6,8 +6,6 @@ class RecordingProcessorJob < ApplicationJob
   retry_on Net::OpenTimeout, Timeout::Error, wait: 10.seconds, attempts: 3
 
   def perform(recording_id)
-    return unless instrumentation_enabled?
-
     recording = Recording.find(recording_id)
 
     # 1) Log baseline GC stats:
@@ -27,8 +25,11 @@ class RecordingProcessorJob < ApplicationJob
     log_memory_stats(label: "Job End", recording_id:)
 
     # 4) Print out the overall report
-    @overall_report.pretty_print(to_file: memory_report_file_path("overall", recording_id))
-    Rails.logger.info("MemoryProfiler overall job results saved to #{memory_report_file_path('overall', recording_id)}")
+    # @overall_report.pretty_print(to_file: memory_report_file_path("overall", recording_id))
+    @overall_report.pretty_print do |line|
+      Rails.logger.info(line)
+    end
+    # Rails.logger.info("MemoryProfiler overall job results saved to #{memory_report_file_path('overall', recording_id)}")
   rescue ActiveRecord::RecordNotFound => e
     handle_error(e, recording_id, "Recording not found")
   rescue ActiveRecord::RecordInvalid => e
@@ -51,20 +52,21 @@ class RecordingProcessorJob < ApplicationJob
     ErrorNotifierService.notify(error, context: { recording_id: })
   end
 
-  # Utility method to check if instrumentation is turned on.
-  def instrumentation_enabled?
-    # e.g. we only run instrumentation in dev/staging
-    Rails.env.development? || Rails.env.staging?
-  end
-
   def log_memory_stats(label:, recording_id:)
     stats = GC.stat
     mem = memory_for_process
     Rails.logger.info("[MemoryStats] [Recording=#{recording_id}] [#{label}] " \
-      "Heap Used: #{stats[:heap_used]}, " \
-      "Heap Length: #{stats[:heap_length]}, " \
-      "Total Allocated: #{stats[:total_allocated_objects]}, " \
-      "Live Objects: #{stats[:heap_live_slots]}, " \
+      "Total Allocated Objects: #{stats[:total_allocated_objects]}, " \
+      "Total Freed Objects: #{stats[:total_freed_objects]}, " \
+      "Live Slots: #{stats[:heap_live_slots]}, " \
+      "Free Slots: #{stats[:heap_free_slots]}, " \
+      "Marked Slots: #{stats[:heap_marked_slots]}, " \
+      "Malloc Increase Bytes: #{stats[:malloc_increase_bytes]}, " \
+      "Minor GC Count: #{stats[:minor_gc_count]}, " \
+      "Major GC Count: #{stats[:major_gc_count]}, " \
+      "Old Objects: #{stats[:old_objects]}, " \
+      "Total Allocated Pages: #{stats[:total_allocated_pages]}, " \
+      "Total Freed Pages: #{stats[:total_freed_pages]}, " \
       "Process Memory MB: #{(mem / 1024.0 / 1024.0).round(2)}")
   end
 

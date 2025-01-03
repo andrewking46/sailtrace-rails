@@ -72,27 +72,31 @@ module Recordings
       GC.start
       log_gc_stats("AFTER-#{step_name}")
 
-      # 4) Output the step report to file
-      filename = step_file_name(step_name)
-      step_report.pretty_print(to_file: filename)
-      Rails.logger.info("MemoryProfiler step results for '#{step_name}' saved to #{filename}")
+      # 4) Output the step report to logs instead of files
+      step_report.pretty_print do |line|
+        Rails.logger.info("MemoryProfiler [#{step_name}]: #{line}")
+      end
+      Rails.logger.info("MemoryProfiler step results for '#{step_name}' logged.")
     end
 
     def instrumentation_enabled?
-      Rails.env.development? || Rails.env.staging?
+      true
     end
 
     def log_gc_stats(label)
       stats = GC.stat
       Rails.logger.info("[ProcessorService:MemoryStats] #{@recording.id} - #{label} " \
-        "Heap Used: #{stats[:heap_used]}, " \
-        "Total Allocated: #{stats[:total_allocated_objects]}, " \
-        "Live Slots: #{stats[:heap_live_slots]}")
-    end
-
-    def step_file_name(step)
-      FileUtils.mkdir_p("/tmp/memory_profiles")
-      "/tmp/memory_profiles/recording_#{@recording.id}_#{step}.txt"
+        "Total Allocated Objects: #{stats[:total_allocated_objects]}, " \
+        "Total Freed Objects: #{stats[:total_freed_objects]}, " \
+        "Live Slots: #{stats[:heap_live_slots]}, " \
+        "Free Slots: #{stats[:heap_free_slots]}, " \
+        "Marked Slots: #{stats[:heap_marked_slots]}, " \
+        "Malloc Increase Bytes: #{stats[:malloc_increase_bytes]}, " \
+        "Minor GC Count: #{stats[:minor_gc_count]}, " \
+        "Major GC Count: #{stats[:major_gc_count]}, " \
+        "Old Objects: #{stats[:old_objects]}, " \
+        "Total Allocated Pages: #{stats[:total_allocated_pages]}, " \
+        "Total Freed Pages: #{stats[:total_freed_pages]}")
     end
   end
 end
