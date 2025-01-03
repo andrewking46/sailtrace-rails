@@ -49,6 +49,9 @@ gem "scout_apm"
 gem "solid_cache"
 gem "solid_queue"
 
+gem "get_process_mem"
+gem "stackprof"
+
 # Reduces boot times through caching; required in config/boot.rb
 gem "bootsnap", require: false
 
@@ -71,7 +74,7 @@ group :development do
   gem "bullet"
   gem "letter_opener"
   gem "rubocop-rails-omakase", require: false
-  gem "stackprof"
+  # gem "stackprof"
 
   # Add speed badges [https://github.com/MiniProfiler/rack-mini-profiler]
   # gem "rack-mini-profiler"

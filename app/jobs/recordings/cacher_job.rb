@@ -11,5 +11,15 @@ module Recordings
     rescue ActiveRecord::RecordNotFound => e
       Rails.logger.error "Could not find Recording #{recording_id} for caching: #{e.message}"
     end
+
+    def self.already_queued_for?(recording_id)
+      concurrency_key = "recording_cacher_#{recording_id}"
+      job_exists = SolidQueue::Job
+                    .where(class_name: name, arguments: [recording_id].to_json)
+                    .where.not(finished_at: nil)
+                    .exists?
+
+      job_exists
+    end
   end
 end
