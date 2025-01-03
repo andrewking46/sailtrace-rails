@@ -31,26 +31,53 @@ module Recordings
       # Early exit conditions.
       return if target_size >= total_points || total_points <= 2
 
-      # Fetch all recorded_locations ordered chronologically.
-      locations = @recording.recorded_locations.order(:recorded_at).pluck(:adjusted_latitude, :adjusted_longitude, :id)
-
-      # Process in overlapping chunks.
+      # We will accumulate simplified IDs across all batches
       simplified_ids = []
-      (0...locations.size).step(CHUNK_SIZE) do |start_index|
-        # Determine the end index with overlap.
-        end_index = [ start_index + CHUNK_SIZE + OVERLAP_SIZE, locations.size ].min
-        chunk = locations[start_index...end_index]
 
-        # Ensure the chunk has enough points to simplify (at least 3)
-        next if chunk.size < 3
+      # We need to keep leftover points from one batch to the next so we can maintain the overlap logic.
+      leftover = []
 
-        # Apply Visvalingam-Whyatt on the current chunk.
-        chunk_simplified_ids = simplify_chunk(chunk, target_size - simplified_ids.size)
+      @recording.recorded_locations
+                .order(:recorded_at)
+                .select(:adjusted_latitude, :adjusted_longitude, :id)
+                .in_batches(of: CHUNK_SIZE) do |relation_batch|
 
-        # Accumulate simplified point IDs.
-        simplified_ids.concat(chunk_simplified_ids)
+        # Pluck only the fields we need
+        current_batch = relation_batch.pluck(:adjusted_latitude, :adjusted_longitude, :id)
 
-        # Break if target size is met.
+        # Combine leftover from previous iteration with current batch
+        combined = leftover + current_batch
+
+        # If the combined chunk is too small to process, store it for the next round
+        if combined.size < 3
+          leftover = combined
+          next
+        end
+
+        # Build local chunks from `combined` with overlap.
+        # Because we process in smaller chunks, we ensure that we
+        # never load the entire dataset into memory at once.
+        local_start = 0
+        while local_start < combined.size
+          local_end = [ local_start + CHUNK_SIZE + OVERLAP_SIZE, combined.size ].min
+          chunk     = combined[local_start...local_end]
+          break if chunk.size < 3  # Not enough points to simplify
+
+          # Simplify the chunk
+          chunk_simplified_ids = simplify_chunk(chunk, target_size - simplified_ids.size)
+          simplified_ids.concat(chunk_simplified_ids)
+
+          # Break if we've simplified enough
+          break if simplified_ids.size >= target_size
+
+          # Move forward by CHUNK_SIZE (not the entire chunk length) to maintain overlap
+          local_start += CHUNK_SIZE
+        end
+
+        # Prepare leftover = the last few points from the batch so we can overlap
+        # with the next batch iteration. We use the tail end of the combined array.
+        # Usually you'd keep `OVERLAP_SIZE` or a small region that ensures continuity.
+        leftover = combined.last(OVERLAP_SIZE)
         break if simplified_ids.size >= target_size
       end
 
