@@ -5,10 +5,12 @@ class RecordedLocation < ApplicationRecord
 
   scope :not_simplified, -> { where(is_simplified: false) }
   scope :chronological, -> { order(:recorded_at) }
+  scope :processed, -> { where.not(heading: nil, velocity: nil, adjusted_latitude: nil, adjusted_longitude: nil) }
 
   validates :latitude, :longitude, :recorded_at, presence: true
   validates :latitude, numericality: { greater_than_or_equal_to: -90.0, less_than_or_equal_to: 90.0 }
   validates :longitude, numericality: { greater_than_or_equal_to: -180.0, less_than_or_equal_to: 180.0 }
+  validates :velocity, numericality: { greater_than_or_equal_to: 0.0 }, allow_blank: true
   validates :heading, numericality: { greater_than_or_equal_to: 0.0, less_than_or_equal_to: 360.0 }, allow_blank: true
   validates :adjusted_latitude, numericality: { greater_than_or_equal_to: -90.0, less_than_or_equal_to: 90.0 },
                                 allow_blank: true

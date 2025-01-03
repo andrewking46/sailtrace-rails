@@ -5,7 +5,7 @@ module Api
     module Races
       class RecordingsController < BaseController
         def index
-          @recordings = @race.recordings.includes(:boat, :recorded_locations)
+          @recordings = @race.recordings.includes(:boat)
           render json: @recordings, each_serializer: RecordingSerializer
         end
       end

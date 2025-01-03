@@ -1,13 +1,20 @@
 # frozen_string_literal: true
 
+require "zlib"
+
 module Api
   module V1
     module Recordings
       class RecordedLocationsController < BaseController
         def index
-          @recorded_locations = @recording.recorded_locations.not_simplified.chronological.where.not(adjusted_latitude: nil,
-                                                                        adjusted_longitude: nil)
-          render json: @recorded_locations, each_serializer: RecordedLocationSerializer
+          compressed_data = CacheManager.read("#{@recording.cache_key}/recorded_locations")
+
+          if compressed_data
+            json_string = Zlib::Inflate.inflate(compressed_data)
+            render json: json_string
+          else
+            render json: { message: "Location data has not been cached yet. Please try again later." }, status: :accepted
+          end
         end
 
         def create
@@ -16,15 +23,15 @@ module Api
             return
           end
 
-          locations_to_create = build_locations
+          new_locations = build_locations
 
-          if locations_to_create.all? { |loc| loc.valid? }
+          if new_locations.all?(&:valid?)
             RecordedLocation.transaction do
-              locations_to_create.each(&:save!)
+              new_locations.each(&:save!)
             end
-            render json: locations_to_create, each_serializer: RecordedLocationSerializer, status: :created
+            render json: new_locations, each_serializer: RecordedLocationSerializer, status: :created
           else
-            render json: { errors: locations_to_create.map(&:errors) }, status: :unprocessable_entity
+            render json: { errors: new_locations.map(&:errors) }, status: :unprocessable_entity
           end
         end
 

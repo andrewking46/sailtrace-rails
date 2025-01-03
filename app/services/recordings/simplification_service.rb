@@ -8,7 +8,7 @@ module Recordings
     # Defines the number of points per chunk and overlap size.
     CHUNK_SIZE = 200
     OVERLAP_SIZE = 2
-    TARGET_PERCENTAGE = 0.4 # Target to eliminate 50% of points.
+    TARGET_PERCENTAGE = 0.4 # Target to eliminate 40% of points.
 
     # Initialize with a specific Recording instance.
     #
@@ -38,7 +38,7 @@ module Recordings
       simplified_ids = []
       (0...locations.size).step(CHUNK_SIZE) do |start_index|
         # Determine the end index with overlap.
-        end_index = [start_index + CHUNK_SIZE + OVERLAP_SIZE, locations.size].min
+        end_index = [ start_index + CHUNK_SIZE + OVERLAP_SIZE, locations.size ].min
         chunk = locations[start_index...end_index]
 
         # Ensure the chunk has enough points to simplify (at least 3)
@@ -88,7 +88,7 @@ module Recordings
       simplified_ids = chunk.map { |_, _, id| id } - simplified_points.map { |p| p[:id] }
 
       # Limit the number of points to not exceed the remaining target.
-      simplified_ids.first([simplified_ids.size, remaining].min)
+      simplified_ids.first([ simplified_ids.size, remaining ].min)
     end
 
     # Calculates the reduction percentage for a chunk based on remaining simplifications.
@@ -100,7 +100,7 @@ module Recordings
       return 0.0 if remaining <= 0
 
       # Determine the reduction needed in this chunk without exceeding the remaining target.
-      reduction = [remaining.to_f / chunk_size, TARGET_PERCENTAGE].min  # Limit to the same target percentage per chunk for consistency.
+      reduction = [ remaining.to_f / chunk_size, TARGET_PERCENTAGE ].min  # Limit to the same target percentage per chunk for consistency.
       reduction
     end
 

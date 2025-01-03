@@ -23,11 +23,11 @@ module Recordings
     end
 
     def calculate_average_speed
-      @recording.recorded_locations.not_simplified.average(:velocity).to_f.round(2)
+      @recording.recorded_locations.not_simplified.processed.average(:velocity).to_f.round(2)
     end
 
     def calculate_max_speed
-      @recording.recorded_locations.not_simplified.maximum(:velocity).to_f.round(2)
+      @recording.recorded_locations.not_simplified.processed.maximum(:velocity).to_f.round(2)
     end
   end
 end

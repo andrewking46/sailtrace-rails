@@ -51,9 +51,9 @@ module Races
     def find_best_race_or_create
       potential_races = Race
         .where(started_at: time_range)
-        .where(boat_class_id: [nil, @recording.boat.boat_class_id])
+        .where(boat_class_id: [ nil, @recording.boat.boat_class_id ])
         .near(
-          [@recording.start_latitude, @recording.start_longitude],
+          [ @recording.start_latitude, @recording.start_longitude ],
           DISTANCE_THRESHOLD_KM,
           units: :km
         )

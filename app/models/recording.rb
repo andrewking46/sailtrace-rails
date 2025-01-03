@@ -16,7 +16,7 @@ class Recording < ApplicationRecord
   after_update :process_ending, if: :saved_change_to_ended_at?
   after_destroy :cleanup_race
 
-  after_commit :invalidate_cache, on: %i[update destroy]
+  after_commit :invalidate_recorded_locations_cache, on: %i[destroy]
 
   scope :in_progress, -> { where(ended_at: nil).where.not(started_at: nil) }
 
@@ -48,9 +48,8 @@ class Recording < ApplicationRecord
 
   private
 
-  def invalidate_cache
-    CacheManager.delete("#{cache_key}/json")
-    race&.invalidate_cache if saved_change_to_race_id?
+  def invalidate_recorded_locations_cache
+    CacheManager.delete("#{cache_key}/recorded_locations")
   end
 
   def set_started_at
@@ -62,6 +61,7 @@ class Recording < ApplicationRecord
 
     set_start_location
     RecordingProcessorJob.perform_later(id)
+    Recordings::CacherJob.perform_later(id)
   end
 
   def cleanup_race

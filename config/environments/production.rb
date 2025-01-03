@@ -62,7 +62,11 @@ Rails.application.configure do
   config.log_level = ENV.fetch("RAILS_LOG_LEVEL", "info")
 
   # Use a different cache store in production.
-  config.cache_store = :solid_cache_store
+  config.cache_store = :solid_cache_store, {
+    expires_in: 28.days,
+    compress: true,
+    compress_threshold: 4.kilobytes
+  }
 
   # Use a real queuing backend for Active Job (and separate queues per environment).
   config.active_job.queue_adapter = :solid_queue
