@@ -1,38 +1,76 @@
 # app/services/recordings/maneuver_detection_service.rb
 # frozen_string_literal: true
 
-# This service scans through a Recording's RecordedLocations to detect maneuvers based on
-# the *cumulative* heading change in a sliding window of time.
-#
-# For example:
-#  - If a boat does a penalty spin in 15 seconds, the net heading change might be 0
-#    (ends on the same heading it started), but the *cumulative* is 360 => a spin.
-#  - If a boat does random wobbles that add up to zero, the cumulative change will
-#    fluctuate but eventually end near zero => no maneuver.
-#
-# Each identified maneuver is stored in the `maneuvers` table with:
-#   - cumulative_heading_change: e.g. +360 or -180
-#   - latitude/longitude: the point in time where half of that change was completed
-#   - occurred_at: the timestamp of that point
-#   - maneuver_type: "tack", "jibe", "penalty_spin", "rounding", etc.
-#   - confidence: for possible future weighting or filtering
-#
-# Implementation details:
-#   - We process the boat track in ascending recorded_at order.
-#   - Keep a small time-based window of points (up to 15s).
-#   - Keep track of consecutive heading deltas for each pair of adjacent points in the window.
-#   - If the absolute cumulative sum crosses a threshold, we record a maneuver,
-#     locate the "halfway" point to store lat/lon, remove that portion from the window.
-#
 module Recordings
+  ##
+  # ManeuverDetectionService scans through a Recording's RecordedLocations to detect maneuvers.
+  #
+  # ### Performance & Memory
+  #
+  #  - Uses `find_in_batches` to retrieve RecordedLocations in chunks (batch_size=100 by default).
+  #    This prevents loading the entire dataset into memory at once.
+  #  - Maintains a small in‐memory array of "turn points" (`turn_points`) to represent the current
+  #    ongoing turn. We drop old points that fall outside a time window (`WINDOW_SECONDS`).
+  #  - We finalize exactly one Maneuver when the boat stops turning or reverses turning direction
+  #    for a sustained period, thus preventing multiple false‐alarm maneuvers in a single turn.
+  #
+  # ### Key Features
+  #
+  #  - **Consecutive Sign‐Flips**: We don't finalize a turn on a single sign flip of the heading‐delta,
+  #    to avoid random sensor noise. Instead, we require sign changes across several consecutive
+  #    points (`TURN_DIRECTION_FLIP_REQUIRED_COUNT`) or the boat going stable to finalize the turn.
+  #  - **Stable Heading**: If the heading change is below a small threshold (`STABLE_DELTA_THRESHOLD`)
+  #    for enough consecutive points (`STABLE_CONSECUTIVE_PTS`), we consider the turn ended.
+  #  - **Configurable Thresholds**: All thresholds (angle, stable counts, etc.) are constants,
+  #    so we can tune them quickly in production.
+  #
+  # ### Data Flow
+  #
+  # For each batch of RecordedLocations:
+  #   1. If no turn is in progress, we initialize one.
+  #   2. Accumulate heading deltas for each new location.
+  #   3. If turning direction changes consistently or we go stable, finalize the turn
+  #      if it exceeds the minimum heading change threshold (`MIN_ABS_CUMULATIVE`).
+  #   4. Write out exactly one Maneuver to the `maneuvers` table.
+  #
+  # ### Classification
+  #
+  # Classification is done with `classify_maneuver(total_change)`. By default:
+  #   - >= 315° => "penalty_spin"
+  #   - >= 120° => "rounding"
+  #   - >= 70°  => "tack"
+  #   - >= 30°  => "jibe"
+  #   - else    => "unknown"
+  #
   class ManeuverDetectionService
-    WINDOW_SECONDS = 10
-    MIN_ABS_CUMULATIVE = 45 # e.g. 60 degrees to consider an actual maneuver
+    # -------------------------
+    #   CONFIGURABLE CONSTANTS
+    # -------------------------
 
+    # The maximum size of the rolling time window for points we keep in memory for the current turn
+    WINDOW_SECONDS = 15
+
+    # Degrees difference below which heading changes are considered "stable"
+    STABLE_DELTA_THRESHOLD = 5.0
+
+    # Number of consecutive stable heading deltas needed to conclude "the turn has ended"
+    STABLE_CONSECUTIVE_PTS = 3
+
+    # The minimum total absolute heading change (deg) required to create a maneuver
+    MIN_ABS_CUMULATIVE = 30
+
+    # Number of consecutive sign flips needed to confirm we really reversed turning direction
+    # (helps avoid random sign flips from noise)
+    TURN_DIRECTION_FLIP_REQUIRED_COUNT = 3
+
+    # -------------------------
+    #        INITIALIZATION
+    # -------------------------
     def initialize(recording_id)
       @recording = Recording.find(recording_id)
     end
 
+    # Main entry point
     def call
       return unless @recording
 
@@ -46,12 +84,19 @@ module Recordings
 
     private
 
-    # We'll store a small structure for each location in the current window:
-    #  { loc: <RecordedLocation>, cumulative: <Float> }
-    # "cumulative" is the cumulative heading change from the first point in the window to that point.
+    ##
+    # The primary detection routine, implemented with a streaming / batch approach
+    # to avoid reading all RecordedLocations into memory at once.
+    #
     def detect_maneuvers
-      buffer = [] # array of {loc: <RecordedLocation>, cumulative: Float}
-      prev_heading = nil
+      # We'll keep a small array describing the boat's ongoing turn:
+      #   turn_points: [ { loc, heading, cumulative }, ... ]
+      # plus some counters for detecting sign flips, stable counts, etc.
+      turn_points      = []
+      prev_heading     = nil
+      stable_count     = 0
+      current_sign     = 0
+      sign_flip_count  = 0
 
       @recording.recorded_locations
                 .processed
@@ -59,104 +104,145 @@ module Recordings
                 .chronological
                 .find_in_batches(batch_size: 100) do |batch|
         batch.each do |loc|
-          if buffer.empty?
-            # If empty, this is the start of a new window
-            buffer << { loc: loc, cumulative: 0.0 }
+          # If no points yet, initialize the current turn
+          if turn_points.empty?
+            turn_points << build_turn_point(loc, 0.0)
             prev_heading = loc.heading.to_f
             next
           end
 
-          # 1) Calculate incremental heading delta from prev_heading to current
-          incremental = signed_heading_delta(prev_heading, loc.heading.to_f)
+          # 1) Compute heading delta from the previous heading
+          new_heading = loc.heading.to_f
+          delta       = signed_heading_delta(prev_heading, new_heading)
+          prev_heading = new_heading
 
-          # 2) The new "cumulative" = last cumulative + incremental
-          last_cumulative = buffer.last[:cumulative]
-          new_cumulative = last_cumulative + incremental
+          # 2) Accumulate in 'turn_points'
+          new_cumulative = turn_points.last[:cumulative] + delta
+          turn_points << build_turn_point(loc, new_cumulative)
 
-          # 3) Append to the buffer
-          buffer << { loc: loc, cumulative: new_cumulative }
+          # 3) Trim old points outside the rolling time window
+          trim_old_points(turn_points, loc.recorded_at)
 
-          # 4) Trim old data outside the WINDOW_SECONDS threshold
-          trim_old_points(buffer, loc.recorded_at)
+          # 4) Detect turning sign
+          this_sign = delta <=> 0  # -1 if negative, 0 if zero, +1 if positive
+          unless this_sign == 0
+            if current_sign == 0
+              # first nonzero sign
+              current_sign = this_sign
+            elsif this_sign != current_sign
+              # the sign differs from last known turning direction
+              sign_flip_count += 1
+            else
+              # same sign as before => reset sign_flip_count
+              sign_flip_count = 0
+            end
+          end
 
-          # 5) Check if we cross the threshold
-          check_and_extract_maneuver(buffer)
+          # 5) Track "stable heading" if delta < STABLE_DELTA_THRESHOLD
+          if delta.abs < STABLE_DELTA_THRESHOLD
+            stable_count += 1
+          else
+            stable_count = 0
+          end
 
-          prev_heading = loc.heading.to_f
+          # 6) If we have enough sign flips to confirm a real direction reversal, finalize
+          #    or if we've gone stable for enough consecutive points, finalize
+          if sign_flip_count >= TURN_DIRECTION_FLIP_REQUIRED_COUNT || stable_count >= STABLE_CONSECUTIVE_PTS
+            finalize_turn(turn_points)
+            # Reset the arrays and counters for a fresh turn
+            turn_points      = [ turn_points.last ] # keep the last point as the start of a new turn
+            stable_count     = 0
+            sign_flip_count  = 0
+            current_sign     = 0
+          end
         end
       end
 
-      # End of all data. If there's a partial leftover buffer, we do one last check:
-      check_and_extract_maneuver(buffer)
+      # End of data => finalize any leftover turn
+      finalize_turn(turn_points) if turn_points.size >= 2
     end
 
-    # Remove leading points from buffer if they're older than current_time - WINDOW_SECONDS
-    def trim_old_points(buffer, current_time)
+    ##
+    # Build a lightweight struct for each turn point to reduce memory usage.
+    #
+    def build_turn_point(loc, cumulative)
+      {
+        loc:        loc,
+        heading:    loc.heading.to_f,
+        cumulative: cumulative
+      }
+    end
+
+    ##
+    # Trim old points from the front if they're older than current_time - WINDOW_SECONDS
+    #
+    def trim_old_points(points, current_time)
       cutoff = current_time - WINDOW_SECONDS
-      while buffer.size > 1 && buffer.first[:loc].recorded_at < cutoff
-        buffer.shift
+      while points.size > 1 && points.first[:loc].recorded_at < cutoff
+        points.shift
       end
     end
 
-    # Evaluate if the absolute cumulative heading change (from first to last in buffer)
-    # is above threshold. If so, we create a Maneuver record and remove that portion from buffer.
-    def check_and_extract_maneuver(buffer)
-      return if buffer.size < 2
+    ##
+    # Finalizes the ongoing turn by measuring total heading change and, if large enough,
+    # writing exactly one Maneuver row to the DB.
+    # We interpret "halfway" in the turn for lat/long/time to store in the Maneuver record.
+    #
+    def finalize_turn(points)
+      return if points.size < 2
 
-      total_change = buffer.last[:cumulative] - buffer.first[:cumulative]
-      if total_change.abs >= MIN_ABS_CUMULATIVE
-        # We have a maneuver; let's find "halfway" point in cumulative heading
-        half_target = buffer.first[:cumulative] + (total_change / 2.0)
+      # net heading change from first->last in the turn
+      total_change = points.last[:cumulative] - points.first[:cumulative]
+      return if total_change.abs < MIN_ABS_CUMULATIVE
 
-        # 1) find the point in buffer that crosses half_target
-        #    We'll do a simple linear interpolation if needed.
-        half_index = find_halfway_index(buffer, half_target)
-        half_entry = interpolate_halfway_position(buffer, half_index, half_target)
+      # find halfway
+      half_target = points.first[:cumulative] + (total_change / 2.0)
+      half_index  = find_halfway_index(points, half_target)
+      half_entry  = interpolate_halfway_position(points, half_index, half_target)
 
-        # 2) Create the maneuver
-        create_maneuver(buffer, total_change, half_entry)
-
-        # 3) Remove up to that half_index from the buffer to avoid double-counting
-        #    We'll keep points after that because a new maneuver could start.
-        buffer.slice!(0..half_index)
-      end
+      # persist
+      create_maneuver(points, total_change, half_entry)
     end
 
-    # Locates the index in the buffer that crosses half_target in cumulative heading
-    def find_halfway_index(buffer, half_target)
-      buffer.each_with_index do |entry, idx|
-        return idx if entry[:cumulative] >= half_target && half_target >= 0
-        return idx if entry[:cumulative] <= half_target && half_target < 0
+    ##
+    # Find the array index within +points+ where the cumulative crosses +half_target+
+    #
+    def find_halfway_index(points, half_target)
+      points.each_with_index do |entry, idx|
+        return idx if half_target >= 0 && entry[:cumulative] >= half_target
+        return idx if half_target <  0 && entry[:cumulative] <= half_target
       end
-      buffer.size - 1
+      points.size - 1
     end
 
-    # Interpolate lat/lon if the half_target lies between two points
-    def interpolate_halfway_position(buffer, index, half_target)
-      return buffer[index] if index == 0 || index >= buffer.size
+    ##
+    # Interpolate between points[index-1] and points[index] for exact halfway time/position
+    #
+    def interpolate_halfway_position(points, index, half_target)
+      return build_interpolated(points[index], half_target) if index <= 0 || index >= points.size
 
-      prev_entry = buffer[index - 1]
-      current_entry = buffer[index]
+      prev_entry    = points[index - 1]
+      current_entry = points[index]
 
       prev_cum = prev_entry[:cumulative]
       curr_cum = current_entry[:cumulative]
-      # If they are the same, just pick current
-      return current_entry if (curr_cum - prev_cum).abs < 1e-5
+      delta_cum = (curr_cum - prev_cum).abs
+      return build_interpolated(current_entry, half_target) if delta_cum < 1e-5
 
-      # Linear fraction
+      # linear fraction
       frac = (half_target - prev_cum) / (curr_cum - prev_cum)
 
-      # Interpolate time
-      prev_time = prev_entry[:loc].recorded_at.to_f
-      curr_time = current_entry[:loc].recorded_at.to_f
-      occurred_at = Time.at(prev_time + frac * (curr_time - prev_time))
+      # times
+      t0          = prev_entry[:loc].recorded_at.to_f
+      t1          = current_entry[:loc].recorded_at.to_f
+      occurred_at = Time.at(t0 + frac * (t1 - t0))
 
-      # Interpolate lat/lon (simple linear interpolation)
-      lat = lerp(prev_entry[:loc].adjusted_latitude.to_f, current_entry[:loc].adjusted_latitude.to_f, frac)
+      # lat/lon
+      lat = lerp(prev_entry[:loc].adjusted_latitude.to_f,  current_entry[:loc].adjusted_latitude.to_f,  frac)
       lon = lerp(prev_entry[:loc].adjusted_longitude.to_f, current_entry[:loc].adjusted_longitude.to_f, frac)
 
       {
-        loc: nil, # we made an interpolated point, not an actual location
+        loc:        nil,
         cumulative: half_target,
         occurred_at: occurred_at,
         lat: lat,
@@ -164,12 +250,27 @@ module Recordings
       }
     end
 
-    def create_maneuver(buffer, total_change, half_entry)
-      maneuver_type = classify_maneuver(total_change)
-      conf          = compute_confidence(buffer, total_change)
+    ##
+    # If we can't interpolate, just wrap the existing point's data for the "halfway" placeholder
+    #
+    def build_interpolated(entry, half_target)
+      {
+        loc: entry[:loc],
+        cumulative: half_target,
+        occurred_at: entry[:loc].recorded_at,
+        lat: entry[:loc].adjusted_latitude.to_f,
+        lon: entry[:loc].adjusted_longitude.to_f
+      }
+    end
 
-      # If half_entry[:loc] is nil => we used interpolation
-      # Otherwise we can just read from half_entry[:loc]
+    ##
+    # Actually create a Maneuver record in the DB
+    #
+    def create_maneuver(points, total_change, half_entry)
+      # classify the turn type
+      maneuver_type = classify_maneuver(total_change)
+      conf          = compute_confidence(points, total_change)
+
       if half_entry[:loc]
         lat = half_entry[:loc].adjusted_latitude.to_f
         lon = half_entry[:loc].adjusted_longitude.to_f
@@ -181,42 +282,51 @@ module Recordings
       end
 
       Maneuver.create!(
-        recording: @recording,
+        recording:  @recording,
         cumulative_heading_change: total_change.round(2),
-        latitude:  lat.round(6),
-        longitude: lon.round(6),
+        latitude:   lat.round(6),
+        longitude:  lon.round(6),
         occurred_at: t,
         maneuver_type: maneuver_type,
         confidence: conf
       )
     end
 
-    # Example classification: 360 => penalty_spin, 140 => rounding, ~80 => tack/jibe
+    ##
+    # Classify a maneuver based on the magnitude of heading change
+    #
     def classify_maneuver(total_change)
-      abs = total_change.abs
-      return "penalty_spin" if abs >= 315
-      return "rounding"     if abs >= 120
-      return "tack"         if abs >= 70
-      return "jibe"         if abs >= 30
+      abs_change = total_change.abs
+      return "penalty_spin" if abs_change >= 315
+      return "rounding"     if abs_change >= 120
+      return "tack"         if abs_change >= 70
+      return "jibe"         if abs_change >= 30
       "unknown"
     end
 
-    def compute_confidence(buffer, total_change)
-      # A naive approach: more points + bigger heading => higher confidence
-      # E.g.  (# points / 10) + (abs(total_change)/180)
-      # clamp from 0..1
-      points_factor = [ buffer.size.to_f / 10.0, 1.0 ].min
+    ##
+    # Confidence metric: bigger arcs + more data points => higher confidence
+    #
+    def compute_confidence(points, total_change)
+      # clamp to [0..1]
+      points_factor  = [ points.size.to_f / 15.0, 1.0 ].min
       heading_factor = [ total_change.abs / 180.0, 1.0 ].min
-      raw_conf = points_factor + heading_factor
+      raw_conf       = points_factor + heading_factor
       [ raw_conf, 1.0 ].min.round(3)
     end
 
+    ##
+    # Returns heading difference in range -180..180, so turning from
+    # heading 350 -> 10 returns +20, not +360
+    #
     def signed_heading_delta(h1, h2)
-      # We want a delta in -180..+180
       diff = (h2 - h1) % 360
       diff > 180 ? diff - 360 : diff
     end
 
+    ##
+    # Linear interpolation
+    #
     def lerp(a, b, fraction)
       a + (b - a) * fraction
     end
