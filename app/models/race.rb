@@ -5,6 +5,7 @@ class Race < ApplicationRecord
 
   belongs_to :boat_class, optional: true
   has_many :recordings
+  has_many :course_marks, dependent: :destroy
 
   validates :started_at, :start_latitude, :start_longitude, presence: true
 

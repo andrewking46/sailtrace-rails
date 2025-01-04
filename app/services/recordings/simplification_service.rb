@@ -41,7 +41,6 @@ module Recordings
                 .order(:recorded_at)
                 .select(:adjusted_latitude, :adjusted_longitude, :id)
                 .in_batches(of: CHUNK_SIZE) do |relation_batch|
-
         # Pluck only the fields we need
         current_batch = relation_batch.pluck(:adjusted_latitude, :adjusted_longitude, :id)
 

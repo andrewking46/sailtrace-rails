@@ -48,6 +48,7 @@ Rails.application.routes.draw do
 
         scope module: :recordings do
           resource  :status, only: :show
+          resources :maneuvers, only: :index
           resources :recorded_locations, only: %i[index create]
         end
       end

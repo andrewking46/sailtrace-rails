@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_09_07_202706) do
+ActiveRecord::Schema[7.2].define(version: 2025_01_04_060438) do
   create_schema "heroku_ext"
 
   # These are extensions that must be enabled in order to support this database
@@ -49,6 +49,33 @@ ActiveRecord::Schema[7.2].define(version: 2024_09_07_202706) do
     t.datetime "updated_at", null: false
     t.index ["boat_class_id"], name: "index_boats_on_boat_class_id"
     t.index ["user_id"], name: "index_boats_on_user_id"
+  end
+
+  create_table "course_marks", force: :cascade do |t|
+    t.bigint "race_id", null: false
+    t.decimal "latitude", precision: 10, scale: 6, null: false
+    t.decimal "longitude", precision: 10, scale: 6, null: false
+    t.decimal "confidence", precision: 5, scale: 4, default: "0.5", null: false
+    t.string "mark_type", default: "unknown", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["mark_type"], name: "index_course_marks_on_mark_type"
+    t.index ["race_id"], name: "index_course_marks_on_race_id"
+  end
+
+  create_table "maneuvers", force: :cascade do |t|
+    t.bigint "recording_id", null: false
+    t.decimal "cumulative_heading_change", precision: 6, scale: 2, default: "0.0", null: false
+    t.decimal "latitude", precision: 10, scale: 6
+    t.decimal "longitude", precision: 10, scale: 6
+    t.datetime "occurred_at", null: false
+    t.string "maneuver_type", default: "unknown", null: false
+    t.decimal "confidence", precision: 5, scale: 4, default: "1.0", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["maneuver_type"], name: "index_maneuvers_on_maneuver_type"
+    t.index ["occurred_at"], name: "index_maneuvers_on_occurred_at"
+    t.index ["recording_id"], name: "index_maneuvers_on_recording_id"
   end
 
   create_table "password_resets", force: :cascade do |t|
@@ -276,6 +303,8 @@ ActiveRecord::Schema[7.2].define(version: 2024_09_07_202706) do
   add_foreign_key "access_tokens", "users"
   add_foreign_key "boats", "boat_classes"
   add_foreign_key "boats", "users"
+  add_foreign_key "course_marks", "races"
+  add_foreign_key "maneuvers", "recordings"
   add_foreign_key "password_resets", "users"
   add_foreign_key "races", "boat_classes"
   add_foreign_key "recorded_locations", "recordings"

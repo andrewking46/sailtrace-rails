@@ -15,7 +15,7 @@ module Recordings
     def self.already_queued_for?(recording_id)
       concurrency_key = "recording_cacher_#{recording_id}"
       job_exists = SolidQueue::Job
-                    .where(class_name: name, arguments: [recording_id].to_json)
+                    .where(class_name: name, arguments: [ recording_id ].to_json)
                     .where.not(finished_at: nil)
                     .exists?
 

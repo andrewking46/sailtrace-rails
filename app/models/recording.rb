@@ -8,6 +8,7 @@ class Recording < ApplicationRecord
   belongs_to :user, default: -> { Current.user }
   belongs_to :race, optional: true
   has_many :recorded_locations, dependent: :destroy
+  has_many :maneuvers, dependent: :destroy
 
   validates :started_at, :time_zone, :boat_id, :user_id, presence: true
   validate :end_after_start
