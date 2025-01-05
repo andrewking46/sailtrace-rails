@@ -1,4 +1,3 @@
-# app/services/recordings/wind_direction_inference_service.rb
 # frozen_string_literal: true
 
 module Recordings
@@ -7,72 +6,56 @@ module Recordings
   # for a given Recording purely from the boat's heading data. Its logic is heuristic:
   #
   # ### The High‐Level Heuristic:
-  #   1. Identify times when the boat was "close hauled" on starboard tack
-  #      (meaning the boat's heading is somewhat consistent and possibly ~40–50° off
-  #      the wind, but we don't know the wind yet, so we approximate).
-  #
-  #   2. Identify times when the boat was close hauled on port tack
-  #      (which should be roughly ~180° different from the starboard heading, or
-  #      ~90° if factoring the actual geometry and the boat's pointing ability).
-  #
-  #   3. Gather these starboard vs. port headings in small "clusters" of stable,
-  #      consistent headings. We do this with a streaming, memory‐light approach:
-  #        - We'll look for runs of headings that remain fairly stable
-  #        - We'll separate runs that differ by ~80–100° from starboard vs. port
-  #
-  #   4. Average out the starboard close‐hauled cluster and the port close‐hauled cluster.
-  #      The wind direction is roughly halfway between them plus or minus the boat's
-  #      normal close‐hauled offset (~45°). For instance, if the starboard heading
-  #      cluster is ~ 45°, and port cluster is ~ 225°, that suggests the boat is
-  #      sailing about 45° off the wind on each side, so wind is ~ 0° (North).
-  #
-  #   5. We then round to the nearest 5 or 10 degrees. In the real world, you can refine
-  #      this logic or gather more advanced data (e.g. velocity, real‐time tacks).
+  #   1. Identify times when the boat was "close hauled" (stable heading) on starboard tack.
+  #   2. Identify times when the boat was close hauled on port tack (roughly ~80–110° difference
+  #      from the starboard heading, or ~180° from starboard if you consider the geometry).
+  #   3. Collect **multiple** stable runs for each possible starboard heading or port heading.
+  #   4. Instead of picking the single largest run, we pick whichever starboard‐port pair
+  #      yields the maximum **number** of stable runs (i.e. the pair that appears most frequently),
+  #      which is more likely a genuine upwind scenario repeated across tacks.
+  #   5. Compute final wind direction from the selected starboard & port headings, factoring in
+  #      a typical close‐hauled offset (CLOSE_HAULED_ANGLE). Then round the result to the nearest
+  #      NEAREST_DEGREE (e.g. 5 or 10).
   #
   # ### Memory & Performance:
-  #   - We use `.find_in_batches` to read RecordedLocations in increments (batch_size=200).
-  #   - We keep a small rolling "stability" buffer to detect close‐hauled segments,
-  #     discarding older data once we've recognized a stable run or once it's too old.
-  #   - The final output is either an integer from 0..359 or nil if we cannot deduce it.
+  #   - Uses `.find_in_batches` to read RecordedLocations in increments (batch_size=200).
+  #   - Accumulates "stable runs" in memory, but each run is just a few fields (avg_heading, etc.).
+  #   - Circular averaging is used to handle wraparound near 0..359 boundaries.
   #
   # ### Implementation Outline:
-  #   - We build "stable runs" of headings (where the heading doesn't vary by more than
+  #   - We build "stable runs" (where the heading doesn't vary by more than
   #     STABLE_HEADING_DIFFERENCE) for at least MIN_STABLE_POINTS in a row.
-  #   - We label each stable run as "starboard cluster" or "port cluster" if we see
-  #     that it’s ~90–110° different from an opposite cluster (heuristic).
-  #   - We then pick the largest starboard cluster and the largest port cluster and
-  #     compute the approximate wind direction from them. Finally, we round to the
-  #     nearest NEAREST_DEGREE multiple.
+  #   - We cluster these stable runs (like “starboard cluster #1,” “starboard cluster #2,” etc.)
+  #     by grouping them if they’re within CLUSTER_HEADING_TOLERANCE of each other.
+  #   - We then find pairs of these starboard vs. port clusters that differ ~80–110°,
+  #     picking the pair that yields the *largest total count of stable runs*.
+  #   - Finally, we compute the approximate wind direction from those clusters (midpoint minus
+  #     or plus the CLOSE_HAULED_ANGLE) and round it.
   #
   class WindDirectionInferenceService
     # -----------------------------
     #       CONFIGURABLE CONSTANTS
     # -----------------------------
 
-    # The maximum heading difference within a "stable run"
+    # The maximum heading difference within a single stable run
     STABLE_HEADING_DIFFERENCE = 5.0
 
-    # The minimum number of consecutive points needed to form a "stable run"
-    MIN_STABLE_POINTS = 10
+    # The minimum number of consecutive points needed to form one stable run
+    MIN_STABLE_POINTS = 15
 
-    # For cluster classification: starboard vs. port headings should differ ~90°.
-    # We allow some wiggle. E.g., ~80–110° difference is typical if the boat doesn't
-    # point very close. You can tweak these as needed.
+    # When grouping stable runs into “clusters,” runs whose average headings differ
+    # by < CLUSTER_HEADING_TOLERANCE are considered the *same* cluster (e.g. starboard #1).
+    CLUSTER_HEADING_TOLERANCE = 10.0
+
+    # For starboard vs. port classification, we consider stable run headings
+    # that differ by ~80..110 degrees as being on opposite tacks.
     MIN_STARBOARD_PORT_DIFF = 80
     MAX_STARBOARD_PORT_DIFF = 110
 
-    # Boat's approximate close-hauled angle: e.g. ~45° off the wind.
-    # We'll apply a basic formula: wind_dir = (avg_heading - CLOSE_HAULED_ANGLE)
-
+    # Typical close‐hauled offset from the wind, e.g. ~45°
     CLOSE_HAULED_ANGLE = 45
 
-    # If we find stable starboard vs stable port headings, we guess the wind
-    # is about halfway between them minus or plus this angle. E.g.:
-    #   starboard heading = 10°, port heading = 190°, midpoint=100°,
-    #   wind= (100° - 45°)=55°, or something.
-    # We'll do a formula.
-
-    # Finally, we round the resulting wind direction to NEAREST_DEGREE
+    # Final rounding increment for wind direction
     NEAREST_DEGREE = 5
 
     def initialize(recording_id)
@@ -85,38 +68,35 @@ module Recordings
       recording = Recording.find_by(id: @recording_id)
       return unless recording
 
-      # We'll store "stable runs" in an Array of { avg_heading:, count:, start_at:, end_at: }
+      # Step 1: Gather stable runs
       stable_runs = collect_stable_runs(recording)
+      return nil if stable_runs.empty?
 
-      # Now, separate stable runs roughly into "starboard" or "port" close‐hauled
-      # if their headings differ by ~180° or if we find pairs ~90° from each other.
-      # This is heuristic. We'll pick the two biggest stable runs that differ ~90-110°.
-      # In actual practice, you might have a more advanced approach.
+      # Step 2: Group stable runs into clusters of similar headings (± CLUSTER_HEADING_TOLERANCE).
+      # Example: if we have runs with headings 10°, 12°, 14°, they become one “starboard cluster #1.”
+      # If we have runs with headings 190°, 187°, 193°, that might be “port cluster #2.”
+      clusters = cluster_stable_runs(stable_runs)
 
-      s_cluster, p_cluster = find_best_starboard_port(stable_runs)
+      # Step 3: Among these clusters, find the starboard vs. port pair that differs ~80..110°,
+      # and yields the largest total number of stable runs. This is an attempt to pick
+      # the “most frequently used” upwind headings (the boat likely tacked multiple times).
+      best_pair = find_best_pair(clusters)
 
-      Rails.logger.info "Starboard cluster: #{s_cluster}."
-      Rails.logger.info "Port cluster: #{p_cluster}."
+      return nil unless best_pair
+      s_cluster, p_cluster = best_pair
 
-      return nil unless s_cluster && p_cluster
-
-      # 1) Let's say starboard heading ~ s_cluster[:avg_heading]
-      # 2) port heading ~ p_cluster[:avg_heading]
-      # 3) The boat is probably pointing ~CLOSE_HAULED_ANGLE off the wind on either side.
-      #    So if starboard heading is Hs, we guess wind ~ Hs + CLOSE_HAULED_ANGLE
-      #    or if port heading is Hp, we guess wind ~ Hp - CLOSE_HAULED_ANGLE
-      # We'll unify them by taking the midpoint between those two guesses.
-
-      s_guess = (s_cluster[:avg_heading] + CLOSE_HAULED_ANGLE) % 360
-      p_guess = (p_cluster[:avg_heading] - CLOSE_HAULED_ANGLE) % 360
+      # Step 4: Compute approximate wind direction. Suppose starboard heading ~HS, port heading ~HP.
+      # We'll do a simple formula:
+      #   starboard guess = HS + CLOSE_HAULED_ANGLE
+      #   port guess      = HP - CLOSE_HAULED_ANGLE
+      # Then average them with a circular midpoint.
+      s_guess = (s_cluster[:heading] + CLOSE_HAULED_ANGLE) % 360
+      p_guess = (p_cluster[:heading] - CLOSE_HAULED_ANGLE) % 360
       raw_wind = midpoint_degree(s_guess, p_guess)
 
-      # Round to nearest 10 deg by default
+      # Step 5: Round to nearest NEAREST_DEGREE
       final_wind = round_to_nearest(raw_wind, NEAREST_DEGREE)
-      Rails.logger.info "Wind direction: #{final_wind}."
-
-      return unless final_wind.is_a? Integer
-      recording.update!(wind_direction_degrees: final_wind)
+      final_wind
     rescue => e
       ErrorNotifierService.notify(e, recording_id: @recording_id)
       nil
@@ -124,143 +104,187 @@ module Recordings
 
     private
 
+    # --------------------------------------------------------------------------
+    #  1) Collect stable runs
+    # --------------------------------------------------------------------------
+
     ##
-    # collect_stable_runs streams over all headings, building "stable runs."
-    # A stable run is a sequence of consecutive headings that do not differ from
-    # the run's average by more than STABLE_HEADING_DIFFERENCE. Once we break that
-    # threshold, we finalize the run and start a new one.
+    # Streams over headings in batches, building stable runs (≥ MIN_STABLE_POINTS).
     #
-    # @return [Array<Hash>] each hash has :avg_heading, :count, :start_at, :end_at
+    # @param recording [Recording]
+    # @return [Array<Hash>] each hash: { avg_heading:, count:, start_at:, end_at: }
     #
     def collect_stable_runs(recording)
       runs = []
       current_run = []
-      last_avg    = nil
+      last_avg = nil
 
       recording.recorded_locations
                .processed
                .chronological
-               .find_in_batches(batch_size: 100) do |batch|
+               .find_in_batches(batch_size: 200) do |batch|
         batch.each do |loc|
           next unless loc.heading
 
           heading = loc.heading.to_f
           if current_run.empty?
-            # start new run
+            # start new stable run
             current_run << { heading: heading, time: loc.recorded_at }
-            last_avg    = heading
+            last_avg = heading
             next
           end
 
-          # check if this heading fits the "stable" definition w.r.t. last_avg
+          # check if this heading fits stable definition w.r.t. last_avg
           if heading_difference(last_avg, heading).abs <= STABLE_HEADING_DIFFERENCE
             current_run << { heading: heading, time: loc.recorded_at }
-            # update last_avg
-            last_avg = recompute_avg(current_run, last_avg, heading)
+            last_avg = reaverage_run(current_run)
           else
             # finalize if big enough
             finalize_if_sizable(runs, current_run)
-            # start new run
+            # start new
             current_run = [ { heading: heading, time: loc.recorded_at } ]
-            last_avg    = heading
+            last_avg = heading
           end
         end
       end
 
-      # end of data => finalize any leftover run
+      # finalize any leftover
       finalize_if_sizable(runs, current_run)
 
       runs
     end
 
     ##
-    # finalize_if_sizable takes the array of points in a run. If it's >= MIN_STABLE_POINTS,
-    # we compute the average heading and store it. Otherwise, discard it.
+    # If a run has >= MIN_STABLE_POINTS, we store it with average heading.
+    # Otherwise discard it as too small / ephemeral.
     #
-    def finalize_if_sizable(runs, arr)
-      return if arr.size < MIN_STABLE_POINTS
+    def finalize_if_sizable(runs, array_of_points)
+      return if array_of_points.size < MIN_STABLE_POINTS
 
-      # average heading in a naive sense (We have to do circular averaging though!)
-      # For small angles, a naive average is fine. But if headings cross 0..359 boundary,
-      # we should do a sine/cosine approach. For brevity, let's do the naive approach
-      # and hope we don't cross 359->0 boundary too often.
-
-      # A more robust approach is to convert each heading to a vector (sin/cos),
-      # average them, then convert back to degrees.
-
-      avg = average_heading_circular(arr.map { |p| p[:heading] })
+      avg = average_heading_circular(array_of_points.map { |p| p[:heading] })
       runs << {
         avg_heading: normalize_degree(avg),
-        count:       arr.size,
-        start_at:    arr.first[:time],
-        end_at:      arr.last[:time]
+        count: array_of_points.size,
+        start_at: array_of_points.first[:time],
+        end_at: array_of_points.last[:time]
       }
     end
 
     ##
-    # average_heading_circular does a proper vector-based average to avoid issues
-    # around 359->0 wrap.
+    # Recomputes the average heading of a run.
+    # We do a circular average of the entire run for correctness.
+    #
+    def reaverage_run(run_points)
+      headings = run_points.map { |p| p[:heading] }
+      average_heading_circular(headings)
+    end
+
+    # --------------------------------------------------------------------------
+    #  2) Group stable runs into heading clusters
+    # --------------------------------------------------------------------------
+
+    ##
+    # Groups stable runs by their avg_heading if they are within ±CLUSTER_HEADING_TOLERANCE.
+    # Example: runs with avg_heading=10°,12°,14° => single cluster with heading ~12°,
+    # containing 3 runs total. We store how many runs are in each cluster, etc.
+    #
+    # @param stable_runs [Array<Hash>]
+    # @return [Array<Hash>] each cluster: { heading:, runs_count:, run_headings:[], ... }
+    #
+    def cluster_stable_runs(stable_runs)
+      clusters = []
+
+      stable_runs.each do |run|
+        h = run[:avg_heading]
+
+        # Attempt to find an existing cluster within ±CCLUSTER_HEADING_TOLERANCE of h
+        found_cluster = nil
+        clusters.each do |c|
+          if heading_difference(c[:heading], h).abs <= CLUSTER_HEADING_TOLERANCE
+            found_cluster = c
+            break
+          end
+        end
+
+        if found_cluster
+          # add this run to that cluster
+          found_cluster[:runs_count] += 1
+          found_cluster[:all_headings] << h
+          # update cluster's heading to reflect new average
+          found_cluster[:heading] = average_heading_circular(found_cluster[:all_headings])
+        else
+          # create a new cluster
+          clusters << {
+            heading: h,
+            runs_count: 1,
+            all_headings: [ h ]
+          }
+        end
+      end
+
+      # finalize cluster headings properly
+      clusters.each do |c|
+        c[:heading] = normalize_degree(average_heading_circular(c[:all_headings]))
+      end
+
+      clusters
+    end
+
+    # --------------------------------------------------------------------------
+    #  3) Find the best starboard‐port pair by # of stable runs
+    # --------------------------------------------------------------------------
+
+    ##
+    # Finds two clusters that differ by ~80..110° and yields the *largest total runs_count*.
+    # This approach picks the starboard vs. port headings that the boat used the **most** times.
+    #
+    # @param clusters [Array<Hash>] each: { heading:, runs_count:, all_headings:[] }
+    # @return [Array<Hash>, nil] e.g. [ { heading: X, runs_count: N }, { heading: Y, runs_count: M } ]
+    #
+    def find_best_pair(clusters)
+      return nil if clusters.size < 2
+
+      best_pair = nil
+      best_sum = 0
+
+      clusters.combination(2).each do |c1, c2|
+        diff = heading_difference(c1[:heading], c2[:heading]).abs
+        if diff >= MIN_STARBOARD_PORT_DIFF && diff <= MAX_STARBOARD_PORT_DIFF
+          pair_sum = c1[:runs_count] + c2[:runs_count]
+          if pair_sum > best_sum
+            best_sum = pair_sum
+            # Sort by heading so smaller heading is first
+            best_pair = c1[:heading] < c2[:heading] ? [ c1, c2 ] : [ c2, c1 ]
+          end
+        end
+      end
+
+      best_pair
+    end
+
+    # --------------------------------------------------------------------------
+    #  4) Utilities (heading math)
+    # --------------------------------------------------------------------------
+
+    ##
+    # average_heading_circular uses a vector-based approach to handle wrap properly
     #
     def average_heading_circular(headings)
+      return 0 if headings.empty?
+
       sum_x = 0.0
       sum_y = 0.0
       headings.each do |h|
-        rad = (h * Math::PI / 180.0)
+        rad = h * Math::PI / 180.0
         sum_x += Math.cos(rad)
         sum_y += Math.sin(rad)
       end
       avg_rad = Math.atan2(sum_y, sum_x)
-      deg     = (avg_rad * 180.0 / Math::PI) % 360
-      deg
+      (avg_rad * 180.0 / Math::PI) % 360
     end
 
     ##
-    # recompute_avg is a cheap incremental approach when we add one heading at a time
-    # to a stable run. We do the “exact” approach by re-summing. For better performance,
-    # you could do a vector-based approach incrementally, but let's keep it simple for clarity.
-    #
-    def recompute_avg(run, old_avg, new_heading)
-      # naive approach: re-average everything
-      headings = run.map { |p| p[:heading] }
-      average_heading_circular(headings)
-    end
-
-    ##
-    # find_best_starboard_port picks two stable runs that differ by ~180°, or ~90° for the
-    # half-angle approach. This is the big heuristic. We’ll try a simpler approach:
-    #   - We loop through each pair of stable runs
-    #   - If they differ by ~ (180 ± something) or we see them as starboard vs. port
-    #   - We pick the pair that has the largest total .count sum
-    #
-    # We'll do a simplified approach checking ~80..110 difference from "starboard" to "port"
-    # if we assume close-hauled is ~ 90° difference.
-    #
-    def find_best_starboard_port(runs)
-      best_pair     = [ nil, nil ]
-      best_combined = 0
-      # naive pairwise approach
-      runs.combination(2).each do |r1, r2|
-        diff = heading_difference(r1[:avg_heading], r2[:avg_heading]).abs
-        # e.g. 85..95 might be a good starboard vs port difference
-        if diff >= MIN_STARBOARD_PORT_DIFF && diff <= MAX_STARBOARD_PORT_DIFF
-          combined = r1[:count] + r2[:count]
-          if combined > best_combined
-            best_combined = combined
-            # We’ll label the smaller heading as "starboard" just arbitrarily
-            # or we can keep the original order. Let's do it by which heading < which.
-            if r1[:avg_heading] < r2[:avg_heading]
-              best_pair = [ r1, r2 ]
-            else
-              best_pair = [ r2, r1 ]
-            end
-          end
-        end
-      end
-      best_pair
-    end
-
-    ##
-    # heading_difference returns minimal difference in -180..180
+    # heading_difference => minimal difference in -180..180
     #
     def heading_difference(h1, h2)
       diff = (h2 - h1) % 360
@@ -268,10 +292,9 @@ module Recordings
     end
 
     ##
-    # midpoint_degree is a simple function that finds the circular midpoint of two angles
+    # midpoint_degree => circular midpoint of two angles
     #
     def midpoint_degree(a, b)
-      # vector approach again
       a_rad = a * Math::PI / 180
       b_rad = b * Math::PI / 180
       x = (Math.cos(a_rad) + Math.cos(b_rad)) / 2.0
@@ -281,17 +304,18 @@ module Recordings
     end
 
     ##
-    # normalizes an angle to 0..359
+    # round_to_nearest => round an angle to nearest multiple (e.g. NEAREST_DEGREE=5)
     #
-    def normalize_degree(d)
-      d % 360
+    def round_to_nearest(d, bucket)
+      angle = (d / bucket).round * bucket
+      angle % 360
     end
 
     ##
-    # round_to_nearest rounds an angle `d` to the nearest multiple of `bucket` (e.g. 10°).
+    # normalize_degree => ensures angle is in 0..359
     #
-    def round_to_nearest(d, bucket)
-      (d / bucket).round * bucket % 360
+    def normalize_degree(d)
+      d % 360
     end
   end
 end
