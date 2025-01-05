@@ -38,7 +38,7 @@ module Recordings
     # -----------------------------
 
     # The maximum heading difference within a single stable run
-    STABLE_HEADING_DIFFERENCE = 5.0
+    STABLE_HEADING_DIFFERENCE = 10.0
 
     # The minimum number of consecutive points needed to form one stable run
     MIN_STABLE_POINTS = 30
@@ -50,7 +50,7 @@ module Recordings
     # For starboard vs. port classification, we consider stable run headings
     # that differ by ~80..100 degrees as being on opposite tacks.
     MIN_STARBOARD_PORT_DIFF = 80
-    MAX_STARBOARD_PORT_DIFF = 100
+    MAX_STARBOARD_PORT_DIFF = 110
 
     # Typical close‐hauled offset from the wind, e.g. ~45°
     CLOSE_HAULED_ANGLE = 45
