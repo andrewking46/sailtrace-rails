@@ -13,8 +13,8 @@ module Api
             json_string = Zlib::Inflate.inflate(compressed_data)
             render json: json_string
           else
-            unless Recordings::CacherJob.already_queued_for?(@recording.id)
-              Recordings::CacherJob.perform_later(@recording.id)
+            unless ::Recordings::CacherJob.already_queued_for?(@recording.id)
+              ::Recordings::CacherJob.perform_later(@recording.id)
             end
 
             render json: { message: "Location data has not been cached yet. Please try again shortly." }, status: :accepted
