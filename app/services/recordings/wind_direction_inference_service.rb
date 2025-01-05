@@ -7,7 +7,7 @@ module Recordings
   #
   # ### The High‐Level Heuristic:
   #   1. Identify times when the boat was "close hauled" (stable heading) on starboard tack.
-  #   2. Identify times when the boat was close hauled on port tack (roughly ~80–110° difference
+  #   2. Identify times when the boat was close hauled on port tack (roughly ~80–100° difference
   #      from the starboard heading, or ~180° from starboard if you consider the geometry).
   #   3. Collect **multiple** stable runs for each possible starboard heading or port heading.
   #   4. Instead of picking the single largest run, we pick whichever starboard‐port pair
@@ -27,7 +27,7 @@ module Recordings
   #     STABLE_HEADING_DIFFERENCE) for at least MIN_STABLE_POINTS in a row.
   #   - We cluster these stable runs (like “starboard cluster #1,” “starboard cluster #2,” etc.)
   #     by grouping them if they’re within CLUSTER_HEADING_TOLERANCE of each other.
-  #   - We then find pairs of these starboard vs. port clusters that differ ~80–110°,
+  #   - We then find pairs of these starboard vs. port clusters that differ ~80–100°,
   #     picking the pair that yields the *largest total count of stable runs*.
   #   - Finally, we compute the approximate wind direction from those clusters (midpoint minus
   #     or plus the CLOSE_HAULED_ANGLE) and round it.
@@ -41,16 +41,16 @@ module Recordings
     STABLE_HEADING_DIFFERENCE = 5.0
 
     # The minimum number of consecutive points needed to form one stable run
-    MIN_STABLE_POINTS = 15
+    MIN_STABLE_POINTS = 30
 
     # When grouping stable runs into “clusters,” runs whose average headings differ
     # by < CLUSTER_HEADING_TOLERANCE are considered the *same* cluster (e.g. starboard #1).
     CLUSTER_HEADING_TOLERANCE = 10.0
 
     # For starboard vs. port classification, we consider stable run headings
-    # that differ by ~80..110 degrees as being on opposite tacks.
+    # that differ by ~80..100 degrees as being on opposite tacks.
     MIN_STARBOARD_PORT_DIFF = 80
-    MAX_STARBOARD_PORT_DIFF = 110
+    MAX_STARBOARD_PORT_DIFF = 100
 
     # Typical close‐hauled offset from the wind, e.g. ~45°
     CLOSE_HAULED_ANGLE = 45
