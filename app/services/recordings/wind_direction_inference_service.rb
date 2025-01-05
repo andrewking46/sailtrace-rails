@@ -96,7 +96,9 @@ module Recordings
 
       # Step 5: Round to nearest NEAREST_DEGREE
       final_wind = round_to_nearest(raw_wind, NEAREST_DEGREE)
-      final_wind
+
+      return unless final_wind.is_a? Integer
+      recording.update!(wind_direction_degrees: final_wind)
     rescue => e
       ErrorNotifierService.notify(e, recording_id: @recording_id)
       nil
