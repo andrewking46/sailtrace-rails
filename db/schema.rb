@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_01_04_060438) do
+ActiveRecord::Schema[7.2].define(version: 2025_01_05_000105) do
   create_schema "heroku_ext"
 
   # These are extensions that must be enabled in order to support this database
@@ -134,6 +134,9 @@ ActiveRecord::Schema[7.2].define(version: 2025_01_04_060438) do
     t.decimal "start_longitude", precision: 10, scale: 6
     t.decimal "distance"
     t.datetime "last_processed_at"
+    t.integer "wind_direction_degrees"
+    t.string "wind_direction_cardinal"
+    t.decimal "wind_speed", precision: 5, scale: 2
     t.index ["boat_id"], name: "index_recordings_on_boat_id"
     t.index ["last_processed_at"], name: "index_recordings_on_last_processed_at"
     t.index ["race_id"], name: "index_recordings_on_race_id"
