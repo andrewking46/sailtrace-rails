@@ -177,7 +177,7 @@ module Races
         distinct_recs = pts.map { |p| p[:recording_id] }.uniq.size
         coverage = distinct_recs.to_f / total_recordings.to_f
 
-        next if coverage < MIN_SHARE_OF_RECORDINGS
+        next if coverage < MIN_SHARE_OF_RECORDINGS || distinct_recs < 3
 
         final_clusters << {
           lat:      avg_lat,

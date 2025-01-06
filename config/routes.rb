@@ -37,6 +37,7 @@ Rails.application.routes.draw do
 
       resources :races, only: %i[show] do
         scope module: :races do
+          resources :course_marks, only: %i[index]
           resources :recordings, only: %i[index]
         end
       end
