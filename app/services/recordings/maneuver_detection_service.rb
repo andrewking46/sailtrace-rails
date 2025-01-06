@@ -19,27 +19,27 @@ module Recordings
     # --------------------------------
 
     # Window of time (seconds) to keep headings in our rolling buffer:
-    WINDOW_SECONDS           = 25
+    WINDOW_SECONDS           = 20
 
     # Margins used to detect crossing the wind or dead downwind (with extra leeway):
-    HEAD_TO_WIND_MARGIN      = 55
+    HEAD_TO_WIND_MARGIN      = 50
     DEAD_DOWNWIND_MARGIN     = 30
 
     # Numeric thresholds if we can't use wind direction or as a fallback:
-    MIN_ABS_CUMULATIVE       = 30   # ignore small turns < N°
+    MIN_ABS_CUMULATIVE       = 30   # ignore small turns < 30°
     TACK_ANGLE               = 70
     JIBE_ANGLE               = 30
     ROUNDING_ANGLE           = 120
     SPIN_ANGLE               = 315  # ~360°, might be a penalty spin
 
     # Stability / sign-flip thresholds:
-    STABLE_DELTA_THRESHOLD   = 10.0  # headings changing <N° are "stable"
+    STABLE_DELTA_THRESHOLD   = 5.0  # headings changing <5° are "stable"
     STABLE_CONSECUTIVE_PTS   = 3    # need 3 stable points
     REVERSE_FLIP_COUNT       = 2    # consecutive sign flips => turn is done
 
     # Timing constraints for penalty spin:
     SPIN_MAX_SECONDS         = 20   # ~360° must happen quickly => penalty spin
-    SPIN_MIN_SECONDS         = 8    # ~360 must not happen too quickly
+    SPIN_MIN_SECONDS         = 8   # ~360 must not happen too quickly
 
     ##
     # Constructor
