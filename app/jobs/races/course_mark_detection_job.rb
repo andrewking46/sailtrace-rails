@@ -6,7 +6,7 @@ module Races
     queue_as :default
 
     def perform(race_id:)
-      Races::CourseMarkDetectionService.new(race_id).call
+      Races::CourseMarkDetectionService.new(race_id: race_id).call
     end
   end
 end
