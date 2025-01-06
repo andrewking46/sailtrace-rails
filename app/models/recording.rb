@@ -62,7 +62,6 @@ class Recording < ApplicationRecord
 
     set_start_location
     RecordingProcessorJob.perform_later(id)
-    Recordings::CacherJob.perform_later(id)
   end
 
   def cleanup_race

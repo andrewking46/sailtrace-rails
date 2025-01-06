@@ -5,8 +5,11 @@ module Recordings
   class ManeuverDetectionJob < ApplicationJob
     queue_as :default
 
-    def perform(recording_id:)
-      Recordings::ManeuverDetectionService.new(recording_id).call
+    def perform(recording_id:, wind_direction_degrees:)
+      Recordings::ManeuverDetectionService.new(
+        recording_id: recording_id,
+        wind_direction_degrees: wind_direction_degrees
+      ).call
     end
   end
 end

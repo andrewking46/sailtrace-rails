@@ -7,9 +7,16 @@ module Recordings
 
     def perform(recording_id)
       recording = Recording.find(recording_id)
+
+      unless recording.last_processed_at.present?
+        raise "ProcessorJob has not completed for Recording ID #{recording_id}"
+      end
+
       Recordings::CacherService.new(recording).cache_recorded_locations
     rescue ActiveRecord::RecordNotFound => e
       Rails.logger.error "Could not find Recording #{recording_id} for caching: #{e.message}"
+    rescue StandardError => e
+      ErrorNotifierService.notify(e, context: { recording_id: })
     end
 
     def self.already_queued_for?(recording_id)

@@ -13,6 +13,8 @@ class RecordingProcessorJob < ApplicationJob
       recording.update!(last_processed_at: Time.current)
     end
 
+    Recordings::CacherJob.perform_later(recording_id)
+
     GC.start
 
   rescue ActiveRecord::RecordNotFound => e
