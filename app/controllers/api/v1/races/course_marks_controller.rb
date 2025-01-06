@@ -9,7 +9,7 @@ module Api
         #
         # Returns a JSON array of CourseMarks for the given Race
         def index
-          @course_marks = @race.course_marks
+          @course_marks = @race.course_marks.high_confidence
           render json: @course_marks, each_serializer: CourseMarkSerializer
         end
       end

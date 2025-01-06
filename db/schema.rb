@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_01_05_000105) do
+ActiveRecord::Schema[7.2].define(version: 2025_01_06_054918) do
   create_schema "heroku_ext"
 
   # These are extensions that must be enabled in order to support this database
@@ -55,7 +55,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_01_05_000105) do
     t.bigint "race_id", null: false
     t.decimal "latitude", precision: 10, scale: 6, null: false
     t.decimal "longitude", precision: 10, scale: 6, null: false
-    t.decimal "confidence", precision: 5, scale: 4, default: "0.5", null: false
+    t.decimal "confidence", precision: 5, scale: 4, default: "0.0", null: false
     t.string "mark_type", default: "unknown", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -70,7 +70,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_01_05_000105) do
     t.decimal "longitude", precision: 10, scale: 6
     t.datetime "occurred_at", null: false
     t.string "maneuver_type", default: "unknown", null: false
-    t.decimal "confidence", precision: 5, scale: 4, default: "1.0", null: false
+    t.decimal "confidence", precision: 5, scale: 4, default: "0.0", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["maneuver_type"], name: "index_maneuvers_on_maneuver_type"
