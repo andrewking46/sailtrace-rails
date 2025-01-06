@@ -6,9 +6,9 @@ module Recordings
   # memory efficiency.
   class SimplificationService
     # Defines the number of points per chunk and overlap size.
-    CHUNK_SIZE = 200
+    CHUNK_SIZE = 100
     OVERLAP_SIZE = 2
-    TARGET_PERCENTAGE = 0.4 # Target to eliminate 40% of points.
+    TARGET_PERCENTAGE = 0.3 # Target to eliminate 30% of points.
 
     # Initialize with a specific Recording instance.
     #

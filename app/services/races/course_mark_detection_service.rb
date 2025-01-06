@@ -22,7 +22,7 @@ module Races
     # -----------------------------
     CLUSTER_RADIUS_METERS   = 15.0   # cluster size threshold
     MIN_SHARE_OF_RECORDINGS = 0.3    # fraction of Race recordings for a valid mark
-    TURN_OFFSET_METERS      = 3.0    # distance "inside" the turn
+    TURN_OFFSET_METERS      = 4.0    # distance "inside" the turn
     ABS_DELTA_THRESHOLD     = 80.0   # only maneuvers with abs heading change >= 80
     WINDWARD_THRESHOLD      = 135.0  # threshold for "windward" classification
     LAT_PER_METER           = 1.0 / 111_111.0
