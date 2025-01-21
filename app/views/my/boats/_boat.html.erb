@@ -1,0 +1,6 @@
+<%= link_to my_boat_path(boat), id: (dom_id boat), class: "panel margin-block flex" do %>
+  <div>
+    <p class="text-small text-muted margin-block-end-half"><%= boat.boat_class.name %></p>
+    <p><%= boat.name %> (<%= boat.registration_country %> <%= boat.sail_number %>)</p>
+  </div>
+<% end %>

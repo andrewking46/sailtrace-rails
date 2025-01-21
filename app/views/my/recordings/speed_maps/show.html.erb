@@ -1,0 +1,90 @@
+<div class="relative w-full h-full"
+     data-controller="recordings--speed-map"
+     data-recordings--speed-map-recording-id-value="<%= @recording.id %>"
+     data-recordings--speed-map-wind-direction-value="<%= @recording.wind_direction_degrees.presence || 0 %>">
+
+  <!-- Loading overlay sits on top until the data + map are ready -->
+  <div data-recordings--speed-map-target="loadingOverlay"
+       class="absolute inset-0 flex items-center justify-center bg-white dark:bg-zinc-900 z-50">
+    <div class="text-gray-600 dark:text-zinc-300 animate-pulse">
+      Loading map...
+    </div>
+  </div>
+
+  <!-- Map container (hidden until data is loaded) -->
+  <div data-recordings--speed-map-target="mapContainer"
+       class="w-full h-full">
+    <!-- Actual Mapbox container -->
+    <div data-recordings--speed-map-target="map" class="w-full h-full"></div>
+  </div>
+
+  <!-- Overlays / Fixed UI -->
+
+  <!-- Recording details overlay (top-right) -->
+  <div class="absolute top-2 right-2 z-10 w-64 p-4 backdrop-blur-lg bg-white/60 dark:bg-black/40 text-zinc-800 dark:text-zinc-100 rounded-lg shadow divide-y divide-zinc-200 dark:divide-white/10">
+    <div>
+      <div class="text-sm font-semibold">
+        <%= @recording.started_at.in_time_zone(@recording.time_zone).strftime("%A, %B %-d, %Y") %>
+      </div>
+      <div class="text-xs text-gray-500 dark:text-zinc-400 mt-1">
+        <%= @recording.started_at.in_time_zone(@recording.time_zone).strftime("%l:%M%P %Z") %> –
+        <% if @recording.ended_at %>
+          <%= @recording.ended_at.in_time_zone(@recording.time_zone).strftime("%l:%M%P %Z") %>
+        <% else %>
+          Present
+        <% end %>
+      </div>
+      <div class="text-xs text-gray-500 dark:text-zinc-400 mt-2 mb-3">
+        <span>Wind:</span>
+        <% if @recording.wind_speed.present? && @recording.wind_direction_degrees.present? %>
+          <span>
+            <%= @recording.wind_speed %> knots
+            <%= @recording.wind_direction_cardinal "(#{@recording.wind_direction_degrees}°)" %>
+          </span>
+        <% else %>
+          <span>N/A</span>
+        <% end %>
+      </div>
+    </div>
+    <div class="flex items-center justify-between gap-x-2 mt-3">
+      <div class="text-xs dark:text-white flex font-medium items-center gap-x-1.5">
+        <!-- Camera icon -->
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+             stroke-width="1.5" class="size-4 stroke-zinc-500 dark:stroke-zinc-400">
+          <path stroke-linecap="round" stroke-linejoin="round"
+                d="m15.75 10.5 4.72-4.72a.75.75 0 0 1 1.28.53v11.38a.75.75 0 0 1-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 0 0 2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25h-9A2.25 2.25 0 0 0 2.25 7.5v9a2.25 2.25 0 0 0 2.25 2.25Z" />
+        </svg>
+        <span>Camera</span>
+      </div>
+      <!-- Follow Mode toggle button -->
+      <button data-action="recordings--speed-map#toggleFollowMode"
+              data-recordings--speed-map-target="followModeButton"
+              class="px-2 py-1 bg-white ring-1 ring-black/5 dark:ring-white/25
+                     dark:bg-zinc-700 text-xs rounded shadow cursor-pointer">
+        Enable Follow Mode
+      </button>
+    </div>
+  </div>
+
+  <!-- Time slider / controls (bottom-center) -->
+  <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-10
+              w-2/3 px-4 py-3 backdrop-blur-lg bg-white/75 dark:bg-black/40
+              text-zinc-700 dark:text-zinc-100 rounded-lg shadow">
+    <div class="text-center">
+      <!-- Time display -->
+      <span data-recordings--speed-map-target="timeDisplay"
+            class="text-sm font-medium font-mono tracking-wide tabular-nums
+                   px-3 py-1 rounded-sm bg-black/5 dark:bg-white/10
+                   ring-1 ring-black/15 dark:ring-white/15 shadow-inner">
+        00:00:00
+      </span>
+    </div>
+
+    <!-- Slider -->
+    <input type="range"
+           data-recordings--speed-map-target="slider"
+           data-action="input->recordings--speed-map#onSliderInput"
+           min="0" max="0" value="0"
+           class="w-full mt-3 accent-black dark:accent-white" />
+  </div>
+</div>

@@ -1,0 +1,14 @@
+<% content_for :app_page_header do %>
+  <div class="flex-item-justify-start"><%= link_back %></div>
+<% end %>
+
+<div class="container">
+  <h1 class="text-xx-large text-bold margin-block-end">Boat</h1>
+
+  <%= render @boat %>
+
+  <div class="flex gap margin-block">
+    <%= link_to "Edit", edit_my_boat_path(@boat), class: "btn" %>
+    <%= button_to "Delete", my_boat_path(@boat), method: :delete, class: "btn", data: { turbo_method: :delete, turbo_confirm: 'Are you sure you want to delete this boat?' } %>
+  </div>
+</div>

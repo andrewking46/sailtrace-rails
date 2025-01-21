@@ -1,79 +1,119 @@
+<%# app/views/races/replays/show.html.erb %>
 <% @page_title = @race.name %>
 
-<% content_for :meta_tags do %>
-  <%= race_meta_tags(@race) %>
-<% end %>
+<% if signed_in? %>
 
-<% content_for :app_page_header do %>
-  <div class="flex-item-justify-start"><%= link_back %></div>
-<% end %>
+  <div class="relative w-full h-full"
+       data-controller="races--replay"
+       data-races--replay-race-id-value="<%= @race.id %>">
 
-<div class="position-fixed" data-controller="races--replay"
-       data-races--replay-race-id-value="<%= @race.id %>"
-       data-races--replay-race-started-at-value="<%= @race.started_at.to_i * 1000 %>"
-       data-races--replay-race-start-latitude-value="<%= @race.start_latitude %>"
-       data-races--replay-race-start-longitude-value="<%= @race.start_longitude %>"
-       style="inset: 0">
-  <div id="replay-map-container">
-    <div id="replay-map" data-races--replay-target="map"></div>
-  </div>
+    <!-- Loading Overlay -->
+    <div data-races--replay-target="loadingOverlay"
+         class="absolute inset-0 flex items-center justify-center bg-white dark:bg-zinc-900 z-50">
+      <div class="text-gray-600 dark:text-gray-300 animate-pulse">
+        Loading map...
+      </div>
+    </div>
 
-  <!-- Time Display -->
-  <div id="time-display" class="flex align-center overflow-hidden border-radius shadow text-small text-semibold text-tight-lines">
-    <div data-races--replay-target="timeDisplay" class="padding-inline-double padding-block-half fill text-primary" style="font-variant-numeric: tabular-nums;">00:00:00</div>
-    <button hidden class="padding-inline-double padding-block-half borderless border-left fill text-primary" data-action="races--replay#togglePlayPause" data-races--replay-target="playPauseButton" style="width: 5rem">Play</button>
-  </div>
+    <!-- Map container: hidden until data loads -->
+    <div data-races--replay-target="mapContainer"
+         class="w-full h-full">
+      <div data-races--replay-target="map" class="w-full h-full"></div>
+    </div>
 
-  <!-- Slider for scrubbing through the recorded locations -->
-  <div class="slider-wrapper">
-    <div class="container">
-      <div class="padding-inline-double fill border-radius shadow">
-        <input type="range" data-action="input->races--replay#sliderValueChanged"
-               data-races--replay-target="slider" min="<%= @race.started_at.to_i * 1000 %>" max="<%= @race.ended_at.to_i * 1000 %>" value="<%= @race.started_at.to_i * 1000 %>" step="5000"
-               class="slider" id="replay-slider">
+    <!-- Overlays -->
+
+    <!-- Race conditions / boat stats panel -->
+    <div class="absolute top-2 right-2 z-10 w-64 p-4 backdrop-blur-lg bg-white/60 dark:bg-black/40 text-zinc-800 dark:text-zinc-100 rounded-lg shadow divide-y divide-zinc-200 dark:divide-white/10"
+         data-races--replay-target="infoPanel">
+      <div>
+        <div class="text-sm font-semibold">
+          <%= @race.started_at.in_time_zone(@race.time_zone).strftime("%A, %B %-d, %Y") %>
+        </div>
+        <div class="text-xs text-gray-500 dark:text-zinc-400 mt-1">
+          <%= @race.started_at.in_time_zone(@race.time_zone).strftime("%l:%M%P %Z") %> –
+          <% if @race.respond_to?(:ended_at) && @race.ended_at.present? %>
+            <%= @race.ended_at.in_time_zone(@race.time_zone).strftime("%l:%M%P %Z") %>
+          <% else %>
+            Present
+          <% end %>
+        </div>
+        <div class="text-xs text-gray-500 dark:text-zinc-400 mt-2 mb-3">
+          <span>Wind:</span>
+          <% if @race.wind_speed.present? && @race.wind_direction_degrees.present? %>
+            <span>
+              <%= @race.wind_speed %> knots
+              <%= @race.wind_direction_cardinal %> (<%= @race.wind_direction_degrees %>°)
+            </span>
+          <% else %>
+            <span>N/A</span>
+          <% end %>
+        </div>
+      </div>
+
+      <!-- Boat stats container -->
+      <div class="text-xs divide-y divide-zinc-200 dark:divide-white/10"
+           data-races--replay-target="boatStatsContainer">
+        <% @race.recordings.includes(:boat).each do |rec| %>
+          <div class="flex justify-between py-2" data-boat-id="<%= rec.id %>">
+            <div class="basis-1/2 flex gap-x-2 items-center">
+              <!-- Simple color circle referencing the boat's hull color -->
+              <svg class="size-2 fill-<%= rec.boat.hull_color.downcase %>-500" viewBox="0 0 6 6" aria-hidden="true">
+                <circle cx="3" cy="3" r="3" />
+              </svg>
+              <div class="font-semibold">
+                <%= rec.boat&.registration_country %> <%= rec.boat&.sail_number %>
+              </div>
+            </div>
+            <div class="basis-1/2 flex items-center tabular-nums">
+              <div class="basis-1/2" data-speed-target="<%= rec.id %>">N/A</div>
+              <div class="basis-1/2" data-heading-target="<%= rec.id %>">N/A</div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Bottom control bar for time slider & play/pause -->
+    <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-10
+                w-2/3 px-4 py-3 backdrop-blur-lg bg-white/75 dark:bg-black/40
+                text-zinc-700 dark:text-zinc-100 rounded-lg shadow">
+      <div class="text-center">
+        <!-- Time display -->
+        <span data-races--replay-target="timeDisplay"
+              class="text-sm font-medium font-mono tracking-wide tabular-nums
+                     px-3 py-1 rounded-sm bg-black/5 dark:bg-white/10
+                     ring-1 ring-black/15 dark:ring-white/15 shadow-inner">
+          00:00:00
+        </span>
+      </div>
+
+      <div class="flex items-center gap-x-3 mt-3">
+        <!-- Play / Pause button -->
+        <button data-action="races--replay#togglePlayPause"
+                data-races--replay-target="playPauseButton"
+                class="px-2 py-1 w-10 leading-none bg-white ring-1 ring-black/5
+                       dark:ring-white/25 dark:bg-zinc-700 text-xl rounded
+                       shadow cursor-pointer">
+          ⏵
+        </button>
+
+        <!-- Slider -->
+        <input type="range"
+               data-races--replay-target="slider"
+               data-action="input->races--replay#onSliderInput"
+               min="0" max="0" value="0"
+               class="w-full accent-black dark:accent-white" />
       </div>
     </div>
   </div>
-</div>
 
-<!-- The following style block is just an example. Adapt and move to your asset pipeline or CSS files as needed. -->
-<style>
-  #replay-map-container {
-    height: 100%;
-  }
-
-  #replay-map {
-    height: 100%;
-  }
-
-  #time-display {
-    position: fixed;
-    bottom: 5rem;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 1000;
-  }
-
-  .slider-wrapper {
-    position: fixed;
-    bottom: 1rem;
-    width: 100%;
-    z-index: 401;
-  }
-
-  .slider {
-    display: block;
-    width: 100%;
-  }
-
-  .boat-marker {
-    min-width: fit-content;
-    min-height: fit-content;
-    line-height: normal;
-    border: 1px solid #fff;
-    padding: 2px 6px;
-    font-weight: 700;
-    border-radius: 15px;
-  }
-</style>
-
+<% else %>
+  <!-- Fallback if user isn’t signed in -->
+  <div class="w-full h-full flex items-center justify-center p-4 text-zinc-900 dark:text-white">
+    <p>
+      You must <%= link_to "log in", new_session_path %>
+      or <%= link_to "create a SailTrace account", new_user_path %> to view the race.
+    </p>
+  </div>
+<% end %>

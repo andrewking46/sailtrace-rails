@@ -1,11 +1,5 @@
 class UsersController < ApplicationController
-  require_unauthenticated_access only: %i[new create]
-
-  before_action :set_user, only: %i[show destroy]
-
-  def index
-    @users = User.all
-  end
+  require_unauthenticated_access
 
   def new
     @user = User.new
@@ -19,22 +13,7 @@ class UsersController < ApplicationController
     redirect_to new_session_url(email_address: user_params[:email_address])
   end
 
-  def show; end
-
-  def destroy
-    @user.destroy!
-
-    respond_to do |format|
-      format.html { redirect_to users_url, notice: "User deleted" }
-      format.json { head :no_content }
-    end
-  end
-
   private
-
-  def set_user
-    @user = User.find(params[:id])
-  end
 
   def user_params
     params.require(:user).permit(:first_name, :last_name, :username, :email_address, :password,

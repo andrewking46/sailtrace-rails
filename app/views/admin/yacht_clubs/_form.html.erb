@@ -1,0 +1,115 @@
+<%= form_with(model: [:admin, yacht_club], class: "full-width margin-block") do |form| %>
+  <% if yacht_club.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(yacht_club.errors.count, "error") %> prevented this Yacht Club from being saved:</h2>
+      <ul>
+        <% yacht_club.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <fieldset class="flex flex-column gap">
+    <div class="input-group">
+      <div class="input-wrapper">
+        <%= form.label :name %>
+        <div class="input">
+          <%= form.text_field :name, required: true %>
+        </div>
+      </div>
+      <div class="input-wrapper">
+        <%= form.label :abbreviation %>
+        <div class="input">
+          <%= form.text_field :abbreviation %>
+        </div>
+      </div>
+    </div>
+
+    <div class="input-group">
+      <div class="input-wrapper">
+        <%= form.label :street_address %>
+        <div class="input">
+          <%= form.text_field :street_address %>
+        </div>
+      </div>
+      <div class="input-wrapper">
+        <%= form.label :city %>
+        <div class="input">
+          <%= form.text_field :city %>
+        </div>
+      </div>
+      <div class="input-wrapper">
+        <%= form.label :subdivision %>
+        <div class="input">
+          <%= form.text_field :subdivision %>
+        </div>
+      </div>
+      <div class="input-wrapper">
+        <%= form.label :postal_code %>
+        <div class="input">
+          <%= form.text_field :postal_code %>
+        </div>
+      </div>
+    </div>
+
+    <div class="input-group">
+      <div class="input-wrapper">
+        <%= form.label :country %>
+        <div class="input">
+          <%= form.text_field :country %>
+        </div>
+      </div>
+      <div class="input-wrapper">
+        <%= form.label :time_zone %>
+        <div class="input">
+          <%= form.text_field :time_zone %>
+        </div>
+      </div>
+      <div class="input-wrapper">
+        <%= form.label :latitude %>
+        <div class="input">
+          <%= form.number_field :latitude, step: :any %>
+        </div>
+      </div>
+      <div class="input-wrapper">
+        <%= form.label :longitude %>
+        <div class="input">
+          <%= form.number_field :longitude, step: :any %>
+        </div>
+      </div>
+    </div>
+
+    <div class="input-group">
+      <div class="input-wrapper">
+        <%= form.label :phone %>
+        <div class="input">
+          <%= form.telephone_field :phone %>
+        </div>
+      </div>
+      <div class="input-wrapper">
+        <%= form.label :email %>
+        <div class="input">
+          <%= form.email_field :email %>
+        </div>
+      </div>
+      <div class="input-wrapper">
+        <%= form.label :is_active %>
+        <div class="input">
+          <%= form.check_box :is_active %>
+        </div>
+      </div>
+    </div>
+
+    <div class="input-group">
+      <div class="input-wrapper">
+        <%= form.label :burgee, "Burgee Image" %>
+        <div class="input">
+          <%= form.file_field :burgee, direct_upload: true %>
+        </div>
+      </div>
+    </div>
+
+    <%= form.submit "Save Yacht Club", class: "btn btn--reversed fit-content" %>
+  </fieldset>
+<% end %>

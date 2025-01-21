@@ -1,0 +1,19 @@
+<div class="container">
+  <h1 class="text-xx-large text-bold"><%= @yacht_club.name %></h1>
+
+  <% if @yacht_club.burgee.attached? %>
+    <%= image_tag @yacht_club.burgee, class: "border block my-4", alt: "#{@yacht_club.name} Burgee" %>
+  <% end %>
+
+  <p><strong>City:</strong> <%= @yacht_club.city %></p>
+  <p><strong>Phone:</strong> <%= @yacht_club.phone %></p>
+  <p><strong>Email:</strong> <%= @yacht_club.email %></p>
+
+  <div class="flex gap margin-block">
+    <%= link_to "Edit", edit_admin_yacht_club_path(@yacht_club), class: "btn" %>
+    <%= button_to "Delete", admin_yacht_club_path(@yacht_club),
+        method: :delete,
+        data: { turbo_confirm: "Are you sure?" },
+        class: "btn" %>
+  </div>
+</div>

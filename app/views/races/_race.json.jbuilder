@@ -1,13 +1,38 @@
-json.cache! [ "v#{CacheManager::CACHE_VERSION}", race ], expires_in: 1.day do
-  json.extract! race, :id, :name, :started_at, :start_latitude, :start_longitude, :created_at, :updated_at
+# frozen_string_literal: true
 
+# File: app/views/races/show.json.jbuilder
+#
+
+json.extract! @race,
+  :id,
+  :name,
+  :started_at,
+  :start_latitude,
+  :start_longitude,
+  :created_at
+
+if @race.boat_class
   json.boat_class do
-    json.extract! race.boat_class, :name, :is_one_design
-  end
-
-  json.recordings race.cached_recording_ids do |recording_id|
-    json.partial! "recordings/recording", recording: Recording.find(recording_id)
+    json.extract! @race.boat_class,
+      :id,
+      :name,
+      :is_one_design
   end
 end
 
-json.url race_url(race, format: :json)
+# Return the minimal data for each recording
+json.recordings @race.recordings do |recording|
+  json.extract! recording,
+    :id,
+    :started_at,
+    :ended_at,
+    :wind_direction_degrees,
+    :wind_direction_cardinal,
+    :wind_speed
+
+  json.boat do
+    json.extract! recording.boat, :id, :name, :registration_country, :sail_number, :hull_color
+  end
+end
+
+json.url race_url(@race, format: :json)

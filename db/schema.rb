@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_01_06_054918) do
+ActiveRecord::Schema[7.2].define(version: 2025_01_20_194952) do
   create_schema "heroku_ext"
 
   # These are extensions that must be enabled in order to support this database
@@ -30,6 +30,34 @@ ActiveRecord::Schema[7.2].define(version: 2025_01_06_054918) do
     t.index ["user_id"], name: "index_access_tokens_on_user_id"
   end
 
+  create_table "active_storage_attachments", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "record_type", null: false
+    t.bigint "record_id", null: false
+    t.bigint "blob_id", null: false
+    t.datetime "created_at", null: false
+    t.index ["blob_id"], name: "index_active_storage_attachments_on_blob_id"
+    t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
+  end
+
+  create_table "active_storage_blobs", force: :cascade do |t|
+    t.string "key", null: false
+    t.string "filename", null: false
+    t.string "content_type"
+    t.text "metadata"
+    t.string "service_name", null: false
+    t.bigint "byte_size", null: false
+    t.string "checksum"
+    t.datetime "created_at", null: false
+    t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
+  end
+
+  create_table "active_storage_variant_records", force: :cascade do |t|
+    t.bigint "blob_id", null: false
+    t.string "variation_digest", null: false
+    t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
   create_table "boat_classes", force: :cascade do |t|
     t.string "name", null: false
     t.boolean "is_one_design", default: false, null: false
@@ -47,7 +75,10 @@ ActiveRecord::Schema[7.2].define(version: 2025_01_06_054918) do
     t.bigint "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "organization_type"
+    t.bigint "organization_id"
     t.index ["boat_class_id"], name: "index_boats_on_boat_class_id"
+    t.index ["organization_type", "organization_id"], name: "index_boats_on_organization_type_and_organization_id"
     t.index ["user_id"], name: "index_boats_on_user_id"
   end
 
@@ -76,6 +107,17 @@ ActiveRecord::Schema[7.2].define(version: 2025_01_06_054918) do
     t.index ["maneuver_type"], name: "index_maneuvers_on_maneuver_type"
     t.index ["occurred_at"], name: "index_maneuvers_on_occurred_at"
     t.index ["recording_id"], name: "index_maneuvers_on_recording_id"
+  end
+
+  create_table "memberships", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "organization_type", null: false
+    t.bigint "organization_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["organization_type", "organization_id"], name: "index_memberships_on_organization_type_and_organization_id"
+    t.index ["user_id", "organization_type", "organization_id"], name: "idx_on_user_id_organization_type_organization_id_98b66fded2", unique: true
+    t.index ["user_id"], name: "index_memberships_on_user_id"
   end
 
   create_table "password_resets", force: :cascade do |t|
@@ -142,6 +184,27 @@ ActiveRecord::Schema[7.2].define(version: 2025_01_06_054918) do
     t.index ["race_id"], name: "index_recordings_on_race_id"
     t.index ["start_latitude", "start_longitude"], name: "index_recordings_on_start_latitude_and_start_longitude"
     t.index ["user_id"], name: "index_recordings_on_user_id"
+  end
+
+  create_table "sailing_teams", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "abbreviation"
+    t.string "street_address"
+    t.string "city"
+    t.string "subdivision_code"
+    t.string "subdivision"
+    t.string "postal_code"
+    t.string "country_code"
+    t.string "country"
+    t.string "time_zone"
+    t.decimal "latitude", precision: 10, scale: 6
+    t.decimal "longitude", precision: 10, scale: 6
+    t.string "phone"
+    t.string "email"
+    t.boolean "is_active", default: false, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_sailing_teams_on_name"
   end
 
   create_table "sessions", force: :cascade do |t|
@@ -303,11 +366,35 @@ ActiveRecord::Schema[7.2].define(version: 2025_01_06_054918) do
     t.index ["username"], name: "index_users_on_username", unique: true
   end
 
+  create_table "yacht_clubs", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "abbreviation"
+    t.string "street_address"
+    t.string "city"
+    t.string "subdivision_code"
+    t.string "subdivision"
+    t.string "postal_code"
+    t.string "country_code"
+    t.string "country"
+    t.string "time_zone"
+    t.decimal "latitude", precision: 10, scale: 6
+    t.decimal "longitude", precision: 10, scale: 6
+    t.string "phone"
+    t.string "email"
+    t.boolean "is_active", default: false, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_yacht_clubs_on_name"
+  end
+
   add_foreign_key "access_tokens", "users"
+  add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "boats", "boat_classes"
   add_foreign_key "boats", "users"
   add_foreign_key "course_marks", "races"
   add_foreign_key "maneuvers", "recordings"
+  add_foreign_key "memberships", "users"
   add_foreign_key "password_resets", "users"
   add_foreign_key "races", "boat_classes"
   add_foreign_key "recorded_locations", "recordings"

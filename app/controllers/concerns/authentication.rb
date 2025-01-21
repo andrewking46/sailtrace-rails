@@ -48,7 +48,7 @@ module Authentication
   end
 
   def redirect_signed_in_user_to_default_url
-    redirect_to recordings_url if signed_in?
+    redirect_to my_recordings_url if signed_in?
   end
 
   def start_new_session_for(user)
@@ -68,7 +68,7 @@ module Authentication
   end
 
   def post_authenticating_url
-    session.delete(:return_to_after_authenticating) || recordings_url
+    session.delete(:return_to_after_authenticating) || my_recordings_url
   end
 
   def reset_authentication

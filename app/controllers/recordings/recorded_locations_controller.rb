@@ -2,40 +2,31 @@
 
 module Recordings
   class RecordedLocationsController < BaseController
+    #
+    # GET /recordings/:recording_id/recorded_locations.json
+    #
+    # Returns compressed JSON data of all (non-simplified) recorded locations for
+    # this Recording, if it's already cached by Recordings::CacherService.
+    # If not cached yet, schedules a CacherJob (unless already queued) and returns
+    # an HTTP 202 "Please wait" response to the front end.
+    #
     def index
-      @recorded_locations = @recording.recorded_locations.order(recorded_at: :asc)
-      render json: @recorded_locations
-    end
+      compressed_data = CacheManager.read("#{@recording.cache_key}/recorded_locations")
 
-    def create
-      if @recording.ended?
-        render json: { error: "Recording has already ended" }, status: :unprocessable_entity
-        return
-      end
-
-      locations_to_create = build_locations
-
-      if locations_to_create.all? { |loc| loc.valid? }
-        RecordedLocation.transaction do
-          locations_to_create.each(&:save!)
-        end
-        render json: locations_to_create, status: :created
+      if compressed_data
+        # Decompress and render
+        json_string = Zlib::Inflate.inflate(compressed_data)
+        # Note: We can safely render the string as JSON since we built it in the CacherService.
+        render json: json_string
       else
-        render json: { errors: locations_to_create.map(&:errors) }, status: :unprocessable_entity
-      end
-    end
+        # If not already queued, queue a job to cache
+        unless ::Recordings::CacherJob.already_queued_for?(@recording.id)
+          ::Recordings::CacherJob.perform_later(@recording.id)
+        end
 
-    private
-
-    def build_locations
-      recorded_location_params.map do |location_params|
-        @recording.recorded_locations.build(location_params)
-      end
-    end
-
-    def recorded_location_params
-      params.require(:recorded_locations).map do |location|
-        location.compact_blank.permit(:latitude, :longitude, :accuracy, :recorded_at)
+        render json: {
+          message: "Location data has not been cached yet. Please try again shortly."
+        }, status: :accepted
       end
     end
   end

@@ -5,7 +5,7 @@ module Recordings
     private
 
     def set_recording
-      @recording = Current.user.recordings.find(params[:recording_id])
+      @recording = Recording.find(params[:recording_id])
     rescue ActiveRecord::RecordNotFound
       render json: { error: "Recording not found" }, status: :not_found
     end

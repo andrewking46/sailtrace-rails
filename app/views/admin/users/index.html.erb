@@ -1,0 +1,11 @@
+<div class="container">
+  <h1 class="text-xx-large text-bold">Users</h1>
+
+  <div class="margin-block" id="users">
+    <% @users.each do |user| %>
+      <%= link_to admin_user_path(user), class: "panel margin-block flex" do %>
+        <%= render user %>
+      <% end %>
+    <% end %>
+  </div>
+</div>

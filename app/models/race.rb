@@ -24,6 +24,37 @@ class Race < ApplicationRecord
     destroy if recordings.empty?
   end
 
+  def time_zone
+    CacheManager.fetch("#{cache_key}/time_zone") do
+      time_zone_counts = recordings.group(:time_zone).count
+      if time_zone_counts.any?
+        time_zone_counts.max_by { |_time_zone, count| count }&.first
+      else
+        nil
+      end
+    end
+  end
+
+  def wind_direction_degrees
+    CacheManager.fetch("#{cache_key}/wind_direction_degrees") do
+      recordings.where.not(wind_direction_degrees: nil).average(:wind_direction_degrees).to_f.round
+    end
+  end
+
+  def wind_direction_cardinal
+    CacheManager.fetch("#{cache_key}/wind_direction_cardinal") do
+      directions = [ "N", "NE", "E", "SE", "S", "SW", "W", "NW" ]
+      idx = ((wind_direction_degrees + 22.5) / 45).floor % 8
+      directions[idx]
+    end
+  end
+
+  def wind_speed
+    CacheManager.fetch("#{cache_key}/wind_speed") do
+      recordings.where.not(wind_speed: nil).average(:wind_speed).to_f.round(2)
+    end
+  end
+
   private
 
   def recalculate_attributes

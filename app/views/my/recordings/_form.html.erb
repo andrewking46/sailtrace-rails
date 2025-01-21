@@ -1,0 +1,38 @@
+<%= form_with(model: [:my, recording], local: true, class: "full-width margin-block") do |form| %>
+  <% if recording.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(recording.errors.count, "error") %> prohibited this recording from being saved:</h2>
+
+      <ul>
+        <% recording.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <fieldset class="flex flex-column gap <%= "shake" if flash[:alert] %>">
+    <div class="input-group">
+      <div class="input-wrapper">
+        <%= form.label :boat_id %>
+        <div class="input">
+          <%= form.collection_select :boat_id, Current.user.boats, :id, :name, required: true %>
+        </div>
+      </div>
+    </div>
+    <div class="input-group">
+      <div class="input-wrapper">
+        <div class="input">
+          <%= form.check_box :is_race %>
+          <%= form.label :is_race, "This is a race" %>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <%= form.button class: "btn btn--reversed start-button", type: :submit do %>
+        <span class="for-screen-reader">Update</span>
+      <% end %>
+    </div>
+  </fieldset>
+<% end %>

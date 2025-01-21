@@ -4,8 +4,8 @@
   <h1 class="text-xx-large text-bold">More</h1>
 
   <section class="flex flex-column margin-block gap">
-    <%= link_to "Recordings", recordings_path %>
-    <%= link_to "Boats", boats_path %>
+    <%= link_to "Recordings", my_recordings_path %>
+    <%= link_to "Boats", my_boats_path %>
     <% if can_administer? %>
       <hr>
       <div class="text-bold">Admin</div>

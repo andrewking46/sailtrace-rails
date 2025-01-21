@@ -1,199 +1,273 @@
 import { Controller } from "@hotwired/stimulus";
 import mapboxgl from "mapbox-gl";
 
+/**
+ * Recordings::StaticMapController
+ *
+ * This Stimulus controller displays a static, non-interactive map for a single
+ * Recording. It fetches:
+ *   1) Recording metadata (start coords, wind direction, etc.).
+ *   2) All recorded_locations for that recording (via a cached endpoint).
+ *
+ * Then it:
+ *   - Creates a Mapbox GL map (read-only / no interaction).
+ *   - Draws a "halo" line plus a primary route line (in red).
+ *   - Places green/red "start"/"end" points.
+ *   - Automatically fits the map bounds around the route.
+ *
+ * Targets:
+ *   - (none; the entire element is used as the map container)
+ *
+ * Values:
+ *   - recordingId (Number): The numeric ID of the Recording to show.
+ *
+ * Lifecycle:
+ *   - connect(): Called once when the controller is attached. Loads data then
+ *     initializes the map if data is present.
+ */
 export default class extends Controller {
   static values = {
-    recordingId: Number,
-    replayPath: String,
+    recordingId: Number
   };
 
+  /**
+   * connect()
+   * Called automatically when this controller is placed on the DOM.
+   * Loads the required data in sequence, then sets up the map.
+   */
   connect() {
-    mapboxgl.accessToken = 'pk.eyJ1IjoiYW5kcmV3a2luZzQ2IiwiYSI6ImNsdGozang0MTBsbDgya21kNGsybGNvODkifQ.-2ds5rFYjTBPgTYc7EG0-A'
-    this.fetchRecordingData();
+    // Public Mapbox token (could be in ENV vars in production).
+    mapboxgl.accessToken = "pk.eyJ1IjoiYW5kcmV3a2luZzQ2IiwiYSI6ImNsdGozang0MTBsbDgya21kNGsybGNvODkifQ.-2ds5rFYjTBPgTYc7EG0-A";
+
+    // Decide map style based on user’s system preference (light/dark).
+    this.isDarkMode = window.matchMedia?.("(prefers-color-scheme: dark)")?.matches || false;
+
+    // Placeholder for the recording metadata, including recorded_locations.
+    this.recording = null;
+
+    // 1) Fetch basic recording metadata
+    this.fetchRecordingMetadata()
+      .then(() => {
+        // 2) Then fetch all recorded locations
+        return this.fetchRecordingLocations();
+      })
+      .then((locations) => {
+        if (!locations) {
+          // Possibly data isn’t ready or an error occurred; bail out.
+          console.warn("No recorded locations to display.");
+          return;
+        }
+        // Attach to our local recording object
+        this.recording.recorded_locations = locations;
+
+        // 3) Finally, create the map now that we have all data
+        this.createMap();
+      })
+      .catch((error) => {
+        console.error("Error loading recording data:", error);
+      });
   }
 
-  async fetchRecordingData() {
-    this.recording = {}
+  /**
+   * fetchRecordingMetadata()
+   * Loads top-level info for this.recordingIdValue.
+   */
+  async fetchRecordingMetadata() {
+    if (!Number.isFinite(this.recordingIdValue)) return;
 
-    try {
-      if (!Number.isFinite(this.recordingIdValue)) return;
-
-      const response = await fetch(`/recordings/${this.recordingIdValue}.json`);
-      const recording = await response.json();
-      this.recording = recording;
-
-      this.initializeMap();
-    } catch (error) {
-      console.error(error);
+    const response = await fetch(`/my/recordings/${this.recordingIdValue}.json`);
+    if (!response.ok) {
+      throw new Error(`Failed to load recording metadata: ${response.statusText}`);
     }
+    this.recording = await response.json();
   }
 
-  initializeMap() {
-    const map = new mapboxgl.Map({
-      container: this.element,
-      style: 'mapbox://styles/mapbox/standard', // This can be changed to other map styles
-      center: [this.recording.start_longitude, this.recording.start_latitude], // Will be set dynamically
+  /**
+   * fetchRecordingLocations()
+   * Loads the recording’s location data from /recordings/:id/recorded_locations.json.
+   * Returns null if a 202 status indicates the data isn’t yet cached.
+   */
+  async fetchRecordingLocations() {
+    const response = await fetch(`/recordings/${this.recordingIdValue}/recorded_locations.json`);
+
+    if (response.status === 202) {
+      // Not yet cached
+      console.warn("Recording location data not cached yet. Please try again later.");
+      return null;
+    }
+    if (!response.ok) {
+      throw new Error(`Failed to load recording locations: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data.recorded_locations || [];
+  }
+
+  /**
+   * createMap()
+   * Builds the non-interactive map, sets style, bearing, etc. Then adds the route layer once loaded.
+   */
+  createMap() {
+    // Choose style based on dark mode
+    const styleUrl = this.isDarkMode
+      ? "mapbox://styles/mapbox/standard"
+      : "mapbox://styles/mapbox/standard";
+
+    // Use wind_direction_degrees or fallback to 0
+    const initialBearing = this.recording.wind_direction_degrees || 0;
+
+    this.map = new mapboxgl.Map({
+      container: this.element, // The <div> our controller is attached to
+      style: styleUrl,
+      center: [
+        this.recording.start_longitude,
+        this.recording.start_latitude
+      ],
       zoom: 14,
-      interactive: false
+      bearing: initialBearing,
+      interactive: false, // static, no user interaction
+      fadeDuration: 0
     });
 
-    map.on('style.load', () => {
-      map.setConfigProperty('basemap', 'showRoadLabels', false);
-      map.setConfigProperty('basemap', 'showPointOfInterestLabels', false);
-      map.setConfigProperty('basemap', 'showTransitLabels', false);
+    // Optionally configure style properties
+    this.map.on("style.load", () => {
+      // If your plan supports these calls, you can hide labels, etc.
+      this.map.setConfigProperty?.("basemap", "lightPreset", !this.isDarkMode ? "day" : "dusk");
+      this.map.setConfigProperty?.("basemap", "showRoadLabels", false);
+      this.map.setConfigProperty?.("basemap", "showTransitLabels", false);
+      this.map.setConfigProperty?.("basemap", "showPointOfInterestLabels", false);
+      this.map.setConfigProperty?.("basemap", "showPedestrianRoads", false);
     });
 
-    if (this.recording.recorded_locations.length > 0) {
-      this.drawColoredPath(map, this.recording.recorded_locations);
-    }
+    // Once fully loaded, add the route lines + start/end points
+    this.map.on("load", () => {
+      this.addRouteLayer();
+    });
   }
 
-  drawColoredPath(map, locations) {
-    if (locations.length > 0) {
-      const path = locations.map(loc => [loc.adjusted_longitude || loc.longitude, loc.adjusted_latitude || loc.latitude]);
-      map.on('load', () => {
-        map.addSource('route', {
-          'type': 'geojson',
-          'data': {
-            'type': 'Feature',
-            'properties': {},
-            'geometry': {
-              'type': 'LineString',
-              'coordinates': path
+  /**
+   * addRouteLayer()
+   * Draws a "halo" line plus a primary red route. Also places start/end points, then fits the map.
+   */
+  addRouteLayer() {
+    const locations = this.recording.recorded_locations;
+    if (!locations || locations.length === 0) {
+      console.warn("No locations available—cannot draw route.");
+      return;
+    }
+
+    // Convert to array of [lng, lat]
+    const coordinates = locations.map((loc) => [
+      loc.adjusted_longitude ?? loc.longitude,
+      loc.adjusted_latitude  ?? loc.latitude
+    ]);
+
+    const startPoint = coordinates[0];
+    const endPoint   = coordinates[coordinates.length - 1];
+
+    // Add route as a GeoJSON source
+    this.map.addSource("route", {
+      type: "geojson",
+      data: {
+        type: "Feature",
+        geometry: {
+          type: "LineString",
+          coordinates
+        }
+      }
+    });
+
+    // "Halo" line layer beneath the main route
+    this.map.addLayer({
+      id: "lineBase",
+      type: "line",
+      source: "route",
+      layout: {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      paint: {
+        "line-width": 10,
+        "line-emissive-strength": 1,
+        "line-color": this.isDarkMode ? "#000000" : "#ffffff",
+        "line-opacity": 0.2,
+        "line-blur": 2
+      }
+    });
+
+    // Main route line (red)
+    this.map.addLayer({
+      id: "route",
+      type: "line",
+      source: "route",
+      layout: {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      paint: {
+        "line-color": "#ff4403",
+        "line-width": 4,
+        "line-emissive-strength": 1
+      }
+    });
+
+    // Add a source for start and end points
+    this.map.addSource("path-points", {
+      type: "geojson",
+      data: {
+        type: "FeatureCollection",
+        features: [
+          {
+            type: "Feature",
+            geometry: {
+              type: "Point",
+              coordinates: startPoint
+            },
+            properties: {
+              color: "#00c951", // Green
+              description: "Start Point"
+            }
+          },
+          {
+            type: "Feature",
+            geometry: {
+              type: "Point",
+              coordinates: endPoint
+            },
+            properties: {
+              color: "#fb2c36", // Red
+              description: "End Point"
             }
           }
-        });
-        map.addLayer({
-          'id': 'route',
-          'type': 'line',
-          'source': 'route',
-          'layout': {
-            'line-join': 'round',
-            'line-cap': 'round'
-          },
-          'paint': {
-            'line-color': this.recording.boat.hull_color.toLowerCase() || 'white',
-            'line-width': 3
-          }
-        });
-        const bounds = path.reduce(function(bounds, coord) {
-          return bounds.extend(coord);
-        }, new mapboxgl.LngLatBounds(path[0], path[0]));
-
-        map.fitBounds(bounds, {
-          padding: 20
-        });
-      });
-    }
-  }
-
-  // Ramer-Douglas-Peucker Algorithm
-  simplifyPath(points, tolerance) {
-    if (points.length < 3) return points;
-
-    let dmax = 0;
-    let index = 0;
-    const end = points.length - 1;
-    for (let i = 1; i < end; i++) {
-      const d = this.perpendicularDistance(points[i], points[0], points[end]);
-      if (d > dmax) {
-        index = i;
-        dmax = d;
+        ]
       }
-    }
+    });
 
-    if (dmax > tolerance) {
-      const recResults1 = this.simplifyPath(points.slice(0, index + 1), tolerance);
-      const recResults2 = this.simplifyPath(points.slice(index, end + 1), tolerance);
+    // Draw circles for the start/end
+    this.map.addLayer({
+      id: "path-points",
+      type: "circle",
+      source: "path-points",
+      paint: {
+        "circle-color": ["get", "color"],
+        "circle-radius": 8,
+        "circle-stroke-width": 3,
+        "circle-stroke-color": "#FFFFFF",
+        "circle-opacity": 1,
+        "circle-emissive-strength": 1,
+        "circle-pitch-alignment": "map"
+      }
+    });
 
-      return [...recResults1.slice(0, recResults1.length - 1), ...recResults2];
-    } else {
-      return [points[0], points[end]];
-    }
-  }
-
-  perpendicularDistance(point, lineStart, lineEnd) {
-    // Convert points to radians
-    const lat1 = this.degreesToRadians(lineStart.adjusted_latitude || lineStart.latitude);
-    const lon1 = this.degreesToRadians(lineStart.adjusted_longitude || lineStart.longitude);
-    const lat2 = this.degreesToRadians(lineEnd.adjusted_latitude || lineEnd.latitude);
-    const lon2 = this.degreesToRadians(lineEnd.adjusted_longitude || lineEnd.longitude);
-    const lat3 = this.degreesToRadians(point.adjusted_latitude || point.latitude);
-    const lon3 = this.degreesToRadians(point.adjusted_longitude || point.longitude);
-
-    // Calculate the distances from point to line start/end
-    const distStartToPoint = this.haversineDistance(lat1, lon1, lat3, lon3);
-    const distEndPointToPoint = this.haversineDistance(lat2, lon2, lat3, lon3);
-
-    // Calculate the distance from line start to end
-    const distStartToEnd = this.haversineDistance(lat1, lon1, lat2, lon2);
-
-    // Calculate the area of the triangle formed by the three points
-    const semiPerimeter = (distStartToPoint + distEndPointToPoint + distStartToEnd) / 2;
-    const area = Math.sqrt(semiPerimeter * (semiPerimeter - distStartToPoint) * (semiPerimeter - distEndPointToPoint) * (semiPerimeter - distStartToEnd));
-
-    // Calculate the distance from the point to the line (perpendicular)
-    return (2 * area) / distStartToEnd;
-  }
-
-  haversineDistance(lat1, lon1, lat2, lon2) {
-    const R = 6371e3; // meters
-    const φ1 = lat1;
-    const φ2 = lat2;
-    const Δφ = lat2 - lat1;
-    const Δλ = lon2 - lon1;
-
-    const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
-              Math.cos(φ1) * Math.cos(φ2) *
-              Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-    return R * c; // Distance in meters
-  }
-
-  degreesToRadians(degrees) {
-    return degrees * (Math.PI / 180);
-  }
-
-  getSegmentColor(prevLocation, location) {
-    const speed = this.calculateSpeed(prevLocation, location);
-
-    if (speed > 1.5) return 'green';
-    if (speed > 1.25) return 'limegreen';
-    if (speed > 1) return 'yellowgreen';
-    if (speed > 0.75) return 'yellow';
-    if (speed > 0.5) return 'gold';
-    if (speed > 0.25) return 'orange';
-    return 'red';
-  }
-
-  calculateSpeed(prevLocation, location) {
-    const distance = this.calculateDistance(
-      prevLocation.adjusted_latitude || prevLocation.latitude, prevLocation.adjusted_longitude || prevLocation.longitude,
-      location.adjusted_latitude || location.latitude, location.adjusted_longitude || location.longitude
+    // Finally, fit the map’s bounds to our route
+    const bounds = coordinates.reduce(
+      (b, coord) => b.extend(coord),
+      new mapboxgl.LngLatBounds(startPoint, startPoint)
     );
-    const timeElapsed = (new Date(location.recorded_at) - new Date(prevLocation.recorded_at)) / 1000;
-
-    return distance / timeElapsed;
-  }
-
-  calculateDistance(lat1, lon1, lat2, lon2) {
-    const R = 6371e3;
-    const φ1 = lat1 * Math.PI / 180;
-    const φ2 = lat2 * Math.PI / 180;
-    const Δφ = (lat2 - lat1) * Math.PI / 180;
-    const Δλ = (lon2 - lon1) * Math.PI / 180;
-
-    const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
-              Math.cos(φ1) * Math.cos(φ2) *
-              Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-    return R * c;
-  }
-
-  goToReplay(event) {
-    event.preventDefault();
-    window.location.href = this.replayPathValue;
+    this.map.fitBounds(bounds, {
+      padding: 20,
+      bearing: this.map.getBearing(),
+      pitch: this.map.getPitch()
+    });
   }
 }

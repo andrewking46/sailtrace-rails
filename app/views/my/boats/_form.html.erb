@@ -1,0 +1,90 @@
+<%= form_with(model: [:my, boat], class: "full-width margin-block") do |form| %>
+  <% if boat.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(boat.errors.count, "error") %> prohibited this boat from being saved:</h2>
+
+      <ul>
+        <% boat.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <fieldset class="flex flex-column gap <%= "shake" if flash[:alert] %>">
+
+    <div class="input-group">
+      <div class="input-wrapper">
+        <%= form.label :name %>
+        <div class="input">
+          <%= form.text_field :name, required: true, autocomplete: :off, placeholder: "e.g. Odyssey" %>
+        </div>
+      </div>
+      <div class="input-wrapper">
+        <%= form.label :hull_color %>
+        <div class="input">
+          <%= form.select :hull_color, ["Red", "White", "Green", "Black", "Blue"].sort, required: true, placeholder: "e.g. Red" %>
+        </div>
+      </div>
+    </div>
+
+    <div class="input-group">
+      <div class="input-wrapper">
+        <%= form.label :boat_class_id %>
+        <div class="input">
+          <%= form.collection_select :boat_class_id, BoatClass.order(:name), :id, :name, autocomplete: :off, required: true %>
+        </div>
+      </div>
+      <div class="input-wrapper">
+        <%= form.label :registration_country %>
+        <div class="input">
+          <%= form.country_select :registration_country, priority_countries: ["US"], required: true, autocomplete: :off %>
+        </div>
+      </div>
+      <div class="input-wrapper">
+        <%= form.label :sail_number %>
+        <div class="input">
+          <%= form.number_field :sail_number, required: true, placeholder: "e.g. 220", autocomplete: :off %>
+        </div>
+      </div>
+    </div>
+
+    <div class="input-group">
+      <!-- Organization Type Select -->
+      <div class="input-wrapper">
+        <%= form.label :organization_type, "Boat Affiliation Type" %>
+        <div class="input">
+          <%= form.select :organization_type,
+            [
+              ["No affiliation", ""],
+              ["Yacht Club", "YachtClub"],
+              ["Sailing Team", "SailingTeam"]
+            ],
+            { include_blank: false },
+            { class: "form-select" }
+          %>
+        </div>
+      </div>
+
+      <!-- Organization Select (conditionally shows clubs or teams) -->
+      <div class="input-wrapper">
+        <%= form.label :organization_id, "Pick which Club or Team" %>
+        <div class="input">
+          <%= form.collection_select :organization_id,
+            @available_orgs, # We'll set this in the controller
+            :id, :name,
+            { prompt: "None" },
+            { class: "form-select" }
+          %>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <%= form.button class: "btn btn--reversed center txt-large", type: :submit do %>
+        <span class="for-screen-reader">Save</span>
+      <% end %>
+    </div>
+
+  </fieldset>
+<% end %>

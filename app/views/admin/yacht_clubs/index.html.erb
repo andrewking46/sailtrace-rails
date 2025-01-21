@@ -1,0 +1,18 @@
+<div class="container">
+  <h1 class="text-xx-large text-bold">Yacht Clubs</h1>
+
+  <div class="margin-block">
+    <% @yacht_clubs.each do |club| %>
+      <%= link_to admin_yacht_club_path(club), class: "panel margin-block flex" do %>
+        <div>
+          <p class="text-small text-muted margin-block-end-half">
+            <%= club.abbreviation %>
+          </p>
+          <p><%= club.name %></p>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+
+  <%= link_to "New Yacht Club", new_admin_yacht_club_path, class: "btn btn--reversed" %>
+</div>

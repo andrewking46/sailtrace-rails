@@ -129,6 +129,7 @@ GEM
       tzinfo
     faker (3.4.2)
       i18n (>= 1.8.11, < 2)
+    foreman (0.88.1)
     fugit (1.11.1)
       et-orbi (~> 1, >= 1.2.11)
       raabro (~> 1.4)
@@ -316,6 +317,14 @@ GEM
       railties (>= 6.0.0)
     stringio (3.1.1)
     strscan (3.1.0)
+    tailwindcss-rails (3.2.0)
+      railties (>= 7.0.0)
+      tailwindcss-ruby
+    tailwindcss-ruby (4.0.0.beta.9)
+    tailwindcss-ruby (4.0.0.beta.9-aarch64-linux-gnu)
+    tailwindcss-ruby (4.0.0.beta.9-arm64-darwin)
+    tailwindcss-ruby (4.0.0.beta.9-x86_64-darwin)
+    tailwindcss-ruby (4.0.0.beta.9-x86_64-linux-gnu)
     thor (1.3.1)
     timeout (0.4.1)
     turbo-rails (2.0.6)
@@ -362,6 +371,7 @@ DEPENDENCIES
   country_select (~> 8.0)
   debug
   faker
+  foreman
   geocoder
   importmap-rails
   jbuilder
@@ -379,6 +389,8 @@ DEPENDENCIES
   solid_queue
   stackprof
   stimulus-rails
+  tailwindcss-rails
+  tailwindcss-ruby (= 4.0.0.beta.9)
   turbo-rails
   tzinfo-data
   web-console

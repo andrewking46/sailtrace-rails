@@ -45,6 +45,8 @@ gem "rack-attack"
 gem "scout_apm"
 gem "solid_cache"
 gem "solid_queue"
+gem "tailwindcss-rails"
+gem "tailwindcss-ruby", "4.0.0.beta.9"
 
 # Reduces boot times through caching; required in config/boot.rb
 gem "bootsnap", require: false
@@ -66,6 +68,7 @@ group :development do
   gem "better_errors"
   gem "binding_of_caller"
   gem "bullet"
+  gem "foreman"
   gem "letter_opener"
   gem "memory_profiler"
   gem "rubocop-rails-omakase", require: false
