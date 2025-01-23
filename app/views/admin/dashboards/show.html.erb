@@ -1,0 +1,22 @@
+<div class="max-w-xl mx-auto p-4 sm:p-6 lg:p-8">
+  <h1 class="text-2xl/7 font-bold text-gray-900 dark:text-white sm:truncate sm:text-3xl sm:tracking-tight">Admin</h1>
+  <div class="overflow-hidden rounded-md border border-gray-300 dark:border-zinc-700 mt-8 mb-2">
+    <ul role="list" class="divide-y divide-gray-300 dark:divide-zinc-700">
+      <li>
+        <%= link_to "Boat Classes", admin_boat_classes_path, class: "block px-6 py-4 hover:bg-black/5 dark:hover:bg-white/5 transition-colors" %>
+      </li>
+      <li>
+        <%= link_to "Recordings", admin_recordings_path, class: "block px-6 py-4 hover:bg-black/5 dark:hover:bg-white/5 transition-colors" %>
+      </li>
+      <li>
+        <%= link_to "Sailing Teams", admin_sailing_teams_path, class: "block px-6 py-4 hover:bg-black/5 dark:hover:bg-white/5 transition-colors" %>
+      </li>
+      <li>
+        <%= link_to "Users", admin_users_path, class: "block px-6 py-4 hover:bg-black/5 dark:hover:bg-white/5 transition-colors" %>
+      </li>
+      <li>
+        <%= link_to "Yacht Clubs", admin_yacht_clubs_path, class: "block px-6 py-4 hover:bg-black/5 dark:hover:bg-white/5 transition-colors" %>
+      </li>
+    </ul>
+  </div>
+</div>

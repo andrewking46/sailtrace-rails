@@ -3,13 +3,18 @@ module Admin
     before_action :set_yacht_club, only: %i[show edit update destroy]
 
     def index
+      add_breadcrumb("Yacht clubs")
       @yacht_clubs = YachtClub.order(:name)
     end
 
     def show
+      add_breadcrumb("Yacht clubs", admin_yacht_clubs_path)
+      add_breadcrumb(@yacht_club.name)
     end
 
     def new
+      add_breadcrumb("Yacht clubs", admin_yacht_clubs_path)
+      add_breadcrumb("New")
       @yacht_club = YachtClub.new
     end
 
@@ -23,6 +28,9 @@ module Admin
     end
 
     def edit
+      add_breadcrumb("Yacht clubs", admin_yacht_clubs_path)
+      add_breadcrumb(@yacht_club.name, admin_yacht_club_path(@yacht_club))
+      add_breadcrumb("Edit")
     end
 
     def update

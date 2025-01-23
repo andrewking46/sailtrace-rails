@@ -46,7 +46,7 @@ gem "scout_apm"
 gem "solid_cache"
 gem "solid_queue"
 gem "tailwindcss-rails"
-gem "tailwindcss-ruby", "4.0.0.beta.9"
+gem "tailwindcss-ruby"
 
 # Reduces boot times through caching; required in config/boot.rb
 gem "bootsnap", require: false

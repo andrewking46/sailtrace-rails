@@ -3,6 +3,7 @@ module Admin
     before_action :set_sailing_team, only: %i[show edit update destroy]
 
     def index
+      add_breadcrumb("Sailing teams")
       @sailing_teams = SailingTeam.order(:name)
     end
 

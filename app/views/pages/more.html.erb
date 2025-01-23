@@ -1,21 +1,22 @@
-<% @show_app_navigation = true %>
-
-<div class="container">
-  <h1 class="text-xx-large text-bold">More</h1>
-
-  <section class="flex flex-column margin-block gap">
-    <%= link_to "Recordings", my_recordings_path %>
-    <%= link_to "Boats", my_boats_path %>
-    <% if can_administer? %>
-      <hr>
-      <div class="text-bold">Admin</div>
-      <%= link_to "Boat Classes", admin_boat_classes_path %>
-      <%= link_to "Recordings", admin_recordings_path %>
-      <%= link_to "Users", users_path %>
-    <% end %>
-  </section>
+<div class="max-w-xl mx-auto p-4 sm:p-6 lg:p-8">
+  <h1 class="text-2xl/7 font-bold text-gray-900 dark:text-white sm:truncate sm:text-3xl sm:tracking-tight">Menu</h1>
+  <div class="overflow-hidden rounded-md border border-gray-300 dark:border-zinc-700 mt-8 mb-3">
+    <ul role="list" class="divide-y divide-gray-300 dark:divide-zinc-700">
+      <li>
+        <%= link_to "Boats", my_boats_path, class: "block px-6 py-4 hover:bg-black/5 dark:hover:bg-white/5 transition-colors" %>
+      </li>
+      <li>
+        <%= link_to "Recordings", my_recordings_path, class: "block px-6 py-4 hover:bg-black/5 dark:hover:bg-white/5 transition-colors" %>
+      </li>
+      <% if can_administer? %>
+        <li>
+          <%= link_to "Admin", admin_dashboard_path, class: "block px-6 py-4 hover:bg-black/5 dark:hover:bg-white/5 transition-colors" %>
+        </li>
+      <% end %>
+    </ul>
+  </div>
 
   <%= form_with url: session_path, method: :delete, data: { controller: "sessions" } do %>
-    <button class="btn">Log out</button>
+    <button class="rounded-md px-3 py-2 font-medium text-gray-900 dark:text-white shadow-sm ring-1 dark:ring-0 ring-inset ring-gray-300 hover:bg-gray-50 dark:hover:bg-white/20 w-full dark:bg-white/10 cursor-pointer">Log out</button>
   <% end %>
 </div>

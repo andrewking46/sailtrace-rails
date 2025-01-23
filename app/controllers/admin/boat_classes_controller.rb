@@ -4,19 +4,29 @@ module Admin
 
     # GET /boat_classes or /boat_classes.json
     def index
+      add_breadcrumb("Boat classes")
       @boat_classes = BoatClass.all.order(:name)
     end
 
     # GET /boat_classes/1 or /boat_classes/1.json
-    def show; end
+    def show
+      add_breadcrumb("Boat classes", admin_boat_classes_path)
+      add_breadcrumb(@boat_class.name)
+    end
 
     # GET /boat_classes/new
     def new
+      add_breadcrumb("Boat classes", admin_boat_classes_path)
+      add_breadcrumb("New")
       @boat_class = BoatClass.new
     end
 
     # GET /boat_classes/1/edit
-    def edit; end
+    def edit
+      add_breadcrumb("Boat classes", admin_boat_classes_path)
+      add_breadcrumb(@boat_class.name, admin_boat_class_path(@boat_class))
+      add_breadcrumb("Edit")
+    end
 
     # POST /boat_classes or /boat_classes.json
     def create

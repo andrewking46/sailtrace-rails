@@ -21,8 +21,8 @@
         <section>
           <h2 class="text-xl font-semibold text-gray-900 dark:text-zinc-300 my-2"><%= localize(date, format: :long) %></h2>
 
-          <div class="overflow-hidden rounded-md border border-gray-300 bg-white">
-            <ul role="list" class="divide-y divide-gray-300">
+          <div class="overflow-hidden rounded-md border border-gray-300 dark:border-zinc-700">
+            <ul role="list" class="divide-y divide-gray-300 dark:divide-zinc-700">
               <% recordings_for_date.each do |recording| %>
                 <li>
                   <%= link_to my_recording_path(recording), class: "block relative group focus:outline-none focus:ring" do %>

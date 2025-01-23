@@ -3,6 +3,7 @@ module Admin
     before_action :set_recording, only: %i[show destroy]
 
     def index
+      add_breadcrumb("Recordings")
       @recordings = Recording.all.includes(:boat, :user).order(created_at: :desc)
     end
 

@@ -35,6 +35,7 @@ Rails.application.routes.draw do
 
   namespace :admin do
     resources :boat_classes
+    resource  :dashboard, only: :show
     resources :recordings, only: %i[index show destroy]
     resources :sailing_teams
     resources :users, only: %i[index show destroy]

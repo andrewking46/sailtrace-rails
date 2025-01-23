@@ -3,10 +3,14 @@ module My
     before_action :set_boat, only: %i[show edit update destroy]
 
     def index
+      add_breadcrumb("Boats")
       @boats = Current.user.boats.includes(:boat_class).order(:name)
     end
 
-    def show; end
+    def show
+      add_breadcrumb("Boats", my_boats_path)
+      add_breadcrumb(@boat.name)
+    end
 
     def new
       @boat = Boat.new
@@ -14,6 +18,9 @@ module My
     end
 
     def edit
+      add_breadcrumb("Boats", my_boats_path)
+      add_breadcrumb(@boat.name, my_boat_path(@boat))
+      add_breadcrumb("Edit")
       @available_orgs = (YachtClub.order(:name) + SailingTeam.order(:name))
     end
 
