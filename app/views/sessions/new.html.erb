@@ -2,28 +2,20 @@
   <section class="text-align-center">
     <%= image_tag "logos/logo-transparent.svg", role: "presentation", height: 24, class: "center margin-block" %>
     <h1 class="text-x-large text-bold margin-block">Welcome back</h1>
-    <%= form_with url: session_url, class: "center fit-content margin-block" do |form| %>
-      <fieldset class="flex flex-column gap <%= "shake" if flash[:alert] %>">
 
-        <div class="input-group">
-          <div class="input-wrapper">
-            <%= form.label :email_address %>
-            <div class="input">
-              <%= form.email_field :email_address, required: true, autofocus: true, autocomplete: "email" %>
-            </div>
-          </div>
-          <div class="input-wrapper">
-            <%= form.label :password %>
-            <div class="input">
-              <%= form.password_field :password, required: true, autocomplete: "current-password", maxlength: 72 %>
-            </div>
-          </div>
-        </div>
+    <%= sailtrace_form_for :session, url: session_path do |f| %>
+      <%= f.input :email_address,
+                  as: :email,
+                  label: "Email",
+                  input_html: { placeholder: "you@example.com", autocomplete: "email", required: true, autofocus: true } %>
 
-        <%= form.button class: "btn btn--reversed center", type: :submit do %>
-          <span class="for-screen-reader">Log in</span>
-        <% end %>
-      </fieldset>
+      <%= f.input :password,
+                  as: :password,
+                  label: "Password",
+                  input_html: { placeholder: "Enter password", autocomplete: "current-password", required: true, maxlength: 72 } %>
+
+      <%= f.submit "Log In",
+                   class: "mt-4 w-full inline-flex justify-center rounded-md bg-gray-900 px-4 py-2 text-white hover:bg-gray-800" %>
     <% end %>
 
     <div class="flex gap justify-center">

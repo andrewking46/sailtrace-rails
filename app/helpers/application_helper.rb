@@ -1,4 +1,5 @@
 module ApplicationHelper
+  include SailtraceForms::FormHelper
   include MetaTags::BaseHelper
   include MetaTags::SchemaOrgHelper
   include MetaTags::RaceHelper

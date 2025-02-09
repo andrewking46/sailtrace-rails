@@ -2,12 +2,14 @@
   <div class="flex-item-justify-start"><%= link_back %></div>
 <% end %>
 
-<div class="container">
-  <h1 class="text-xx-large text-bold">New boat</h1>
+<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+  <div class="mx-auto max-w-3xl">
+    <h1 class="text-xx-large text-bold">New boat</h1>
 
-  <%= render "form", boat: @boat %>
+    <%= render "form", boat: @boat %>
 
-  <div>
-    <%= link_to "Back to boats", my_boats_path %>
+    <div>
+      <%= link_to "Back to boats", my_boats_path %>
+    </div>
   </div>
 </div>

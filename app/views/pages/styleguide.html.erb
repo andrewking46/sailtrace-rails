@@ -1,109 +1,118 @@
-<div class="container">
-  <h1 class="text-xx-large text-bold margin-block">Style guide</h1>
+<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+  <div class="mx-auto max-w-3xl">
+    <%= sailtrace_form_for :model, url: "#" do |f| %>
+      <h1 class="text-2xl font-bold mb-4">SailTrace Form Style Guide</h1>
 
-  <h2 class="text-x-large text-semibold margin-block">Forms</h2>
+      <!-- Text input with prepend -->
+      <%= f.input :username,
+                  as: :text,
+                  label: "Username",
+                  prepend: "@",
+                  input_html: { placeholder: "Enter your username", autofocus: true, value: "testuser" },
+                  hint: "This is your public handle." %>
 
-  <%= form_with(model: @user, class: "center") do |form| %>
-    <fieldset class="flex flex-column gap <%= "shake" if flash[:alert] %>">
+      <!-- Email input with error state -->
+      <%= f.input :email,
+                  as: :email,
+                  label: "Email address",
+                  input_html: { autocomplete: "email", value: "testuser@example" },
+                  error: "Invalid email address" %>
 
-      <div class="input-group">
-        <div class="input-wrapper">
-          <label>Text</label>
-          <div class="input">
-            <input type="text" required="true" placeholder="e.g. Placeholder"/>
-          </div>
-        </div>
-        <div class="input-wrapper">
-          <label>Text</label>
-          <div class="input">
-            <input type="text" required="true" placeholder="e.g. Placeholder"/>
-          </div>
-        </div>
+      <!-- Password input -->
+      <%= f.input :password,
+                  as: :password,
+                  label: "Password",
+                  input_html: { placeholder: "Enter your password", autocomplete: "new-password", value: "secret123" } %>
+
+      <!-- Telephone input -->
+      <%= f.input :phone,
+                  as: :tel,
+                  label: "Phone Number",
+                  input_html: { placeholder: "+1 (555) 123-4567", value: "555-123-4567" } %>
+
+      <!-- URL input -->
+      <%= f.input :website,
+                  as: :url,
+                  label: "Website",
+                  input_html: { placeholder: "https://example.com", value: "https://example.com" } %>
+
+      <!-- Number input -->
+      <%= f.input :age,
+                  as: :number,
+                  label: "Age",
+                  input_html: { min: 0, max: 120, value: 30 } %>
+
+      <!-- Date input -->
+      <%= f.input :birthdate,
+                  as: :date,
+                  label: "Birthdate",
+                  input_html: { value: "2000-01-01" } %>
+
+      <!-- Textarea -->
+      <%= f.textarea_input :bio,
+                           label: "Bio",
+                           input_html: { placeholder: "Tell us about yourself...", rows: 4, value: "Lorem ipsum dolor sit amet, consectetur adipiscing elit." } %>
+
+      <!-- Select input (array of strings) with a disabled prompt -->
+      <%= f.input :favorite_color,
+                  as: :select,
+                  label: "Favorite Color",
+                  prompt: "Select your favorite color",
+                  collection: ["Red", "Green", "Blue"] %>
+
+      <!-- Select input (key/value pairs + priority) -->
+      <%= f.input :country,
+                  as: :select,
+                  label: "Country",
+                  collection: [["USA", "US"], ["Canada", "CA"], ["Mexico", "MX"]],
+                  priority_options: ["USA"],
+                  selected: "CA" %>
+
+      <!-- Radio group (with per–option description) -->
+      <%= f.radio_group_input :notification_method,
+                              collection: [
+                                ["Email", "email", "Get notified via email."],
+                                ["SMS", "sms", "Get notified via SMS."],
+                                ["Push", "push", "Get notified via push notifications."]
+                              ],
+                              legend: "Notification Method",
+                              description: "Choose your preferred notification method.",
+                              selected: "sms" %>
+
+      <!-- Checkbox group (with per–option description and default selections) -->
+      <%= f.checkbox_group_input :subscribe_options,
+                                 collection: [
+                                   ["Comments", "comments", "Get notified when someone comments."],
+                                   ["Candidates", "candidates", "Get notified when a candidate applies."],
+                                   ["Offers", "offers", "Get notified when a candidate accepts or rejects an offer."]
+                                 ],
+                                 legend: "Subscribe to Notifications",
+                                 description: "Select which notifications you wish to receive.",
+                                 selected: ["offers", "comments"] %>
+
+      <!-- Single checkbox (pre-checked for testing) -->
+      <%= f.check_box_input :subscribe,
+                            label: "Subscribe to newsletter",
+                            description: "Receive updates and news.",
+                            checked: true %>
+
+      <!-- Combobox (with filtering and custom caret) -->
+      <%= f.combobox_input :assigned_to,
+                           label: "Assigned To",
+                           hint: "Select a team member",
+                           collection: ["Alice", "Bob", "Charlie", "Diana"],
+                           input_html: { value: "Bob" } %>
+
+      <!-- File upload -->
+      <%= f.file_upload_input :avatar,
+                              label: "Upload Avatar",
+                              hint: "PNG, JPG, GIF up to 10MB" %>
+
+      <!-- Submit button -->
+      <div class="mt-6">
+        <%= f.submit "Submit",
+                     class: "w-full rounded-md bg-gray-900 dark:bg-white px-4 py-2 text-white dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-200" %>
       </div>
-
-      <div class="input-group">
-        <div class="input-wrapper">
-          <label>Prepend</label>
-          <div class="input-prepend">sailtrace.app/</div>
-          <div class="input">
-            <input type="text" required="true" placeholder="e.g. string" autocomplete="off" minlength="3"/>
-          </div>
-        </div>
-      </div>
-
-      <div class="input-group">
-        <div class="input-wrapper">
-          <label>Select</label>
-          <div class="input">
-            <select>
-              <option value=""></option>
-              <option value="USA">United States</option>
-              <option value="CAN">Canada</option>
-            </select>
-          </div>
-        </div>
-        <div class="input-wrapper">
-          <label>Phone number</label>
-          <div class="input">
-            <input type="tel" required="true" placeholder="e.g. 1(234) 567-8901"/>
-          </div>
-        </div>
-      </div>
-
-      <div class="input-group">
-        <div class="input-wrapper">
-          <label>Date</label>
-          <div class="input">
-            <input type="date" required="true" autocomplete="off"/>
-          </div>
-        </div>
-      </div>
-
-      <div class="input-group">
-        <div class="input-wrapper">
-          <label>Number</label>
-          <div class="input">
-            <input type="number" required="true"/>
-          </div>
-        </div>
-      </div>
-
-      <div class="input-group">
-        <div class="input-wrapper">
-          <label>Email</label>
-          <div class="input">
-            <input type="email" required="true" placeholder="e.g. andrewking@email.com" autocomplete="email"/>
-          </div>
-        </div>
-        <div class="input-wrapper">
-          <label>Password</label>
-          <div class="input">
-            <input type="password" required="true" maxlength="72"/>
-          </div>
-        </div>
-      </div>
-
-      <div class="input-group">
-        <div class="input-wrapper">
-          <label>Textarea</label>
-          <div class="input">
-            <textarea rows="5" required="true" placeholder="Type the message here..."></textarea>
-          </div>
-        </div>
-      </div>
-
-      <div class="input-group">
-        <div class="input-wrapper">
-          <div class="input">
-            <%= form.check_box :checkbox %>
-            <%= form.label :checkbox, "I agree that this is the label for the checkbox" %>
-          </div>
-        </div>
-      </div>
-
-      <%= form.button class: "btn btn--reversed min-content txt-large", type: :submit do %>
-        <span class="for-screen-reader">Save</span>
-      <% end %>
-    </fieldset>
-  <% end %>
+    <% end %>
+  </div>
 </div>

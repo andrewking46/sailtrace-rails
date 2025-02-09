@@ -44,7 +44,7 @@ gem "geocoder"
 gem "rack-attack"
 gem "scout_apm"
 gem "solid_cache"
-gem "solid_queue"
+gem "solid_queue", "0.6.0"
 gem "tailwindcss-rails"
 gem "tailwindcss-ruby"
 
@@ -59,6 +59,7 @@ group :development, :test do
   gem "brakeman", require: false
   gem "debug", platforms: %i[mri windows]
   gem "faker", require: false
+  gem 'rubocop', require: false
 end
 
 group :development do

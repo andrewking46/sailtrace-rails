@@ -1,3 +1,29 @@
+<%= sailtrace_form_for [:my, boat] do |f| %>
+  <%= f.input :name,
+              as: :text,
+              label: "Name",
+              input_html: { placeholder: "Enter the boat's name", autocomplete: :off, required: true, spellcheck: false } %>
+
+  <%= f.input :hull_color,
+              as: :select,
+              label: "Hull color",
+              input_html: { placeholder: "Select the boat's hull color", autocomplete: :off, required: true } %>
+
+  <%= f.input :boat_class_id,
+              as: :select,
+              label: "Class",
+              collection: BoatClass.order(:name).select(:id, :name),
+              input_html: { placeholder: "Select the boat's class", autocomplete: :off, required: true } %>
+
+  <%= f.input :sail_number,
+              as: :number,
+              label: "Sail number",
+              input_html: { placeholder: "Enter the sail number", autocomplete: :off, required: true, spellcheck: false } %>
+
+  <%= f.submit "Save",
+               class: "mt-4 w-full inline-flex justify-center rounded-md bg-gray-900 px-4 py-2 text-white hover:bg-gray-800" %>
+<% end %>
+
 <%= form_with(model: [:my, boat], class: "full-width margin-block") do |form| %>
   <% if boat.errors.any? %>
     <div style="color: red">
