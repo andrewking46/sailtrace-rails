@@ -1,0 +1,7 @@
+@import "tailwindcss";
+
+@config '../../../config/tailwind.config.js';
+
+@theme {
+  --color-primary: #ff4403;
+}

@@ -1,22 +1,22 @@
-<div class="container">
-  <section class="text-align-center">
-    <%= image_tag "logos/logo-transparent.svg", role: "presentation", height: 24, class: "center margin-block" %>
-    <h1 class="text-x-large text-bold margin-block">Reset password</h1>
-    <%= form_with url: password_resets_path, class: "center fit-content margin-block" do |form| %>
-      <fieldset class="flex flex-column gap <%= "shake" if flash[:alert] %>">
-        <div class="input-group">
-          <div class="input-wrapper">
-            <%= form.label :email_address %>
-            <div class="input">
-              <%= form.email_field :email_address, required: true, autofocus: true, autocomplete: "email" %>
-            </div>
-          </div>
-        </div>
-        <%= form.button class: "btn btn--reversed center", type: :submit do %>
-          <span class="for-screen-reader">Reset</span>
-        <% end %>
-      </fieldset>
+<div class="flex min-h-full flex-col justify-center px-4 py-12 sm:px-6 lg:px-8">
+  <div class="sm:mx-auto sm:w-full sm:max-w-sm">
+    <h1 class="text-2xl/8 font-semibold text-gray-950 sm:text-xl/8 dark:text-white text-center">Reset password</h1>
+  </div>
+
+  <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+    <%= sailtrace_form_for :password_reset, url: password_resets_path do |f| %>
+      <%= f.input :email_address,
+                  as: :email,
+                  label: "Email address",
+                  hint: "The email address associated with your SailTrace account.",
+                  input_html: { autocomplete: :email, autocorrect: :off, required: true, autofocus: true, autocapitalize: :off, enterkeyhint: :next, spellcheck: false, title: "Enter the email address associated with your SailTrace account" } %>
+
+      <%= f.submit "Send reset instructions",
+                   class: "mt-4 w-full inline-flex justify-center rounded-md bg-gray-900 dark:bg-white px-4 py-3 text-white dark:text-gray-950 hover:bg-gray-800 dark:hover:bg-white/95 cursor-pointer" %>
     <% end %>
-    <%= link_to "Back to log in", new_session_path %>
-  </section>
+
+    <p class="mt-10 text-center text-sm/6 text-gray-500 dark:text-white/60">
+      <%= link_to "Back to log in", new_session_path %>
+    </p>
+  </div>
 </div>

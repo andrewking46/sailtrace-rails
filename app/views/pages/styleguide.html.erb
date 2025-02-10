@@ -1,7 +1,13 @@
-<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
   <div class="mx-auto max-w-3xl">
     <%= sailtrace_form_for :model, url: "#" do |f| %>
-      <h1 class="text-2xl font-bold mb-4">SailTrace Form Style Guide</h1>
+      <h1 class="text-2xl/8 font-semibold text-gray-950 sm:text-xl/8 dark:text-white mb-10">SailTrace Form Style Guide</h1>
+
+      <!-- Text input -->
+      <%= f.input :first_name,
+                  as: :text,
+                  label: "First name",
+                  input_html: { autocomplete: "given-name", autocorrect: :off, required: true, autofocus: true, autocapitalize: :words, enterkeyhint: :next, spellcheck: false, title: "Enter your first name" } %>
 
       <!-- Text input with prepend -->
       <%= f.input :username,
@@ -15,7 +21,7 @@
       <%= f.input :email,
                   as: :email,
                   label: "Email address",
-                  input_html: { autocomplete: "email", value: "testuser@example" },
+                  input_html: { value: "testuser@example", autocomplete: :email, autocorrect: :off, required: true, autofocus: true, autocapitalize: :off, enterkeyhint: :next, spellcheck: false, title: "Enter your email address" },
                   error: "Invalid email address" %>
 
       <!-- Password input -->
@@ -27,7 +33,7 @@
       <!-- Telephone input -->
       <%= f.input :phone,
                   as: :tel,
-                  label: "Phone Number",
+                  label: "Phone number",
                   input_html: { placeholder: "+1 (555) 123-4567", value: "555-123-4567" } %>
 
       <!-- URL input -->
@@ -56,7 +62,7 @@
       <!-- Select input (array of strings) with a disabled prompt -->
       <%= f.input :favorite_color,
                   as: :select,
-                  label: "Favorite Color",
+                  label: "Favorite color",
                   prompt: "Select your favorite color",
                   collection: ["Red", "Green", "Blue"] %>
 
@@ -68,6 +74,8 @@
                   priority_options: ["USA"],
                   selected: "CA" %>
 
+      <hr role="presentation" class="my-10 w-full border-t border-gray-950/15 dark:border-white/10">
+
       <!-- Radio group (with per–option description) -->
       <%= f.radio_group_input :notification_method,
                               collection: [
@@ -75,7 +83,7 @@
                                 ["SMS", "sms", "Get notified via SMS."],
                                 ["Push", "push", "Get notified via push notifications."]
                               ],
-                              legend: "Notification Method",
+                              legend: "Notification method",
                               description: "Choose your preferred notification method.",
                               selected: "sms" %>
 
@@ -86,7 +94,7 @@
                                    ["Candidates", "candidates", "Get notified when a candidate applies."],
                                    ["Offers", "offers", "Get notified when a candidate accepts or rejects an offer."]
                                  ],
-                                 legend: "Subscribe to Notifications",
+                                 legend: "Subscribe to notifications",
                                  description: "Select which notifications you wish to receive.",
                                  selected: ["offers", "comments"] %>
 
@@ -96,16 +104,15 @@
                             description: "Receive updates and news.",
                             checked: true %>
 
-      <!-- Combobox (with filtering and custom caret) -->
+      <!-- Combobox with key/value pairs -->
       <%= f.combobox_input :assigned_to,
-                           label: "Assigned To",
+                           label: "Assigned to",
                            hint: "Select a team member",
-                           collection: ["Alice", "Bob", "Charlie", "Diana"],
-                           input_html: { value: "Bob" } %>
+                           collection: [["Alice", 1], ["Bob", 2], ["Charlie", 3], ["Diana", 4]] %>
 
       <!-- File upload -->
       <%= f.file_upload_input :avatar,
-                              label: "Upload Avatar",
+                              label: "Upload avatar",
                               hint: "PNG, JPG, GIF up to 10MB" %>
 
       <!-- Submit button -->

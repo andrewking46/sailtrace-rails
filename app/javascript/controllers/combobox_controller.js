@@ -1,16 +1,7 @@
-// app/javascript/controllers/combobox_controller.js
-//
-// This Stimulus controller powers the combobox input.
-// It toggles the dropdown, filters options as the user types, and handles selection.
-//
-// Enhancements:
-// - Detailed comments to explain each method for future developers.
-// - ARIA attributes are set on the input for better accessibility.
-// - Listens for outside clicks to automatically hide the dropdown.
 import { Controller } from "@hotwired/stimulus";
 
 export default class extends Controller {
-    static targets = ["input", "dropdown"];
+    static targets = ["input", "dropdown", "hidden"];
 
     connect() {
         // Track whether the dropdown is currently visible.
@@ -69,8 +60,10 @@ export default class extends Controller {
     // Handle selection of an option from the dropdown.
     selectOption(event) {
         const selectedValue = event.currentTarget.getAttribute("data-value");
-        // Set the input's value to the text content of the clicked option.
+        // Update the visible input with the option's text.
         this.inputTarget.value = event.currentTarget.textContent.trim();
+        // Update the hidden field with the underlying value.
+        this.hiddenTarget.value = selectedValue;
         this.hideDropdown();
     }
 

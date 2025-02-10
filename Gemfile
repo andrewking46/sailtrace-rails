@@ -9,7 +9,7 @@ gem "rails", "~> 7.2"
 gem "propshaft"
 
 # Use postgresql as the database for Active Record
-gem "pg", "~> 1.5"
+gem "pg"
 
 # Use the Puma web server [https://github.com/puma/puma]
 gem "puma", "~> 6.4"
@@ -39,12 +39,12 @@ gem "bcrypt"
 gem "tzinfo-data", platforms: %i[windows jruby]
 
 gem "active_model_serializers"
-gem "country_select", "~> 8.0"
+gem "countries"
 gem "geocoder"
 gem "rack-attack"
 gem "scout_apm"
 gem "solid_cache"
-gem "solid_queue", "0.6.0"
+gem "solid_queue"
 gem "tailwindcss-rails"
 gem "tailwindcss-ruby"
 

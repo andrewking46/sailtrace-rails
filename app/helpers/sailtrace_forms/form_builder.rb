@@ -21,18 +21,26 @@ module SailtraceForms
 
     # Container for the entire input (includes borders, outlines, etc.)
     INPUT_CONTAINER_BASE_CLASSES = [
+      "relative",
       "flex",
       "rounded-md",
       "bg-white",
-      "dark:bg-gray-800",
+      "dark:bg-white/5",
       "outline-1",
       "-outline-offset-1",
-      "outline-gray-300",
-      "dark:outline-gray-600",
+      "outline-gray-950/15",
+      "dark:outline-white/20",
       "focus-within:outline-2",
       "focus-within:-outline-offset-2",
       "focus-within:outline-gray-800",
-      "focus:outline-none"
+      "dark:focus-within:outline-white",
+      "focus:outline-none",
+      "before:absolute",
+      "before:pointer-events-none",
+      "before:inset-px",
+      "before:rounded-md",
+      "before:shadow-sm",
+      "dark:before:hidden"
     ].freeze
 
     # Default classes for the bare input elements
@@ -45,7 +53,6 @@ module SailtraceForms
       "text-base",
       "text-gray-900",
       "dark:text-white",
-      "placeholder:text-gray-400",
       "focus:outline-none"
     ].freeze
 
@@ -53,13 +60,13 @@ module SailtraceForms
     SELECT_INPUT_EXTRA_CLASSES = ["appearance-none"].freeze
 
     # Classes for left/right inline add–ons (icons, prepended text, etc.)
-    INLINE_ADDON_CLASSES = "flex-shrink-0 inline-flex items-center text-gray-500 dark:text-gray-400 text-base".freeze
+    INLINE_ADDON_CLASSES = "flex-shrink-0 inline-flex items-center text-gray-500 dark:text-white/60 text-base".freeze
 
     # Classes for field headers (labels)
     HEADER_LABEL_CLASSES = "block text-sm font-medium text-gray-900 dark:text-white".freeze
 
     # Classes for descriptions, hints, errors, and wrapper container
-    DESCRIPTION_CLASSES = "mt-1 text-sm text-gray-500 dark:text-gray-400".freeze
+    DESCRIPTION_CLASSES = "mt-1 text-sm text-gray-500 dark:text-white/60".freeze
     HINT_CLASSES = DESCRIPTION_CLASSES
     ERROR_CLASSES = "mt-2 text-sm text-red-600"
     FIELD_WRAPPER_BASE_CLASSES = "mb-8".freeze
@@ -118,11 +125,11 @@ module SailtraceForms
       # Build the buffer using safe_join to join the different parts.
       parts = []
       if left.present?
-        parts << @template.content_tag(:div, left.to_s, class: "#{INLINE_ADDON_CLASSES} pl-4")
+        parts << @template.content_tag(:div, left.to_s, class: "#{INLINE_ADDON_CLASSES} pl-4 -mr-2")
       end
       parts << main_input
       if right.present?
-        parts << @template.content_tag(:div, right.to_s, class: "#{INLINE_ADDON_CLASSES} pr-4")
+        parts << @template.content_tag(:div, right.to_s, class: "#{INLINE_ADDON_CLASSES} pr-4 -ml-2")
       end
       if caret
         # Render the caret icon. For combobox fields, the button is clickable and triggers the Stimulus action.
@@ -296,16 +303,12 @@ module SailtraceForms
               object.send(method).to_s.presence
             end
 
-          # If prompt is provided and no explicit selected value exists, force prompt.
-          selected_value = nil if prompt_option.present? && !options.key?(:selected)
-
-          # Build prompt option HTML
-          prompt_html = if prompt_option.present?
-                          @template.content_tag(:option, prompt_option,
-                                                value: "", disabled: true, selected: selected_value.nil? ? "selected" : nil)
-                        else
-                          selected_value.nil? ? @template.content_tag(:option, "", value: "", selected: "selected") : ""
-                        end
+          # Pass the prompt through to Rails’ built–in functionality.
+          if prompt_option.present?
+            options[:prompt] = prompt_option
+          elsif selected_value.nil?
+            options[:include_blank] = true
+          end
 
           if priority.present?
             priority_options = process_collection(priority, option_text_method, option_value_method)
@@ -318,9 +321,9 @@ module SailtraceForms
                                        (main_options.any? ? @template.content_tag(:option, "---------------", disabled: true) : nil),
                                        (main_options.any? ? @template.options_for_select(main_options, selected_value) : nil)
                                      ].compact, "\n")
-            final_options = (prompt_html + options_html).html_safe
+            final_options = options_html.html_safe
           else
-            final_options = (prompt_html + @template.options_for_select(all_options, selected_value)).html_safe
+            final_options = @template.options_for_select(all_options, selected_value)
           end
 
           field_input_html = @template.select(object_name, method, final_options, options, input_html)
@@ -374,7 +377,7 @@ module SailtraceForms
         input_part = @template.content_tag(:div, checkbox, class: "flex h-6 shrink-0 items-center")
         label_part = @template.content_tag(:div, class: "text-base") do
           lbl = @template.label_tag(checkbox_id, label_text, class: "text-gray-900 dark:text-white")
-          lbl += @template.content_tag(:p, description, class: "text-gray-500 text-sm/6") if description.present?
+          lbl += @template.content_tag(:p, description, class: "text-gray-500 dark:text-white/60 text-sm/6") if description.present?
           lbl
         end
         input_part + label_part
@@ -398,20 +401,20 @@ module SailtraceForms
         label_text, value, opt_description = option
         radio_id = "#{object_name}_#{method}_#{value}"
         is_checked = (selected.to_s == value.to_s)
-        @template.content_tag(:div, class: "flex gap-3") do
+        @template.content_tag(:div, class: "flex gap-3 px-4 py-3") do
           input_part = @template.content_tag(:div, class: "flex h-6 shrink-0 items-center") do
             radio_button(method, value, id: radio_id, checked: is_checked)
           end
           label_part = @template.content_tag(:div, class: "text-base") do
             label_tag = @template.label_tag(radio_id, label_text, class: "text-gray-900 dark:text-white")
-            desc_part = opt_description.present? ? @template.content_tag(:p, opt_description, class: "text-gray-500 text-sm/6") : ""
+            desc_part = opt_description.present? ? @template.content_tag(:p, opt_description, class: "text-gray-500 dark:text-white/60 text-sm/6") : ""
             label_tag + desc_part
           end
           input_part + label_part
         end
       end
 
-      fieldset_parts << @template.content_tag(:div, safe_join(radios, "\n"), class: "mt-4 space-y-4")
+      fieldset_parts << @template.content_tag(:div, safe_join(radios, "\n"), class: "relative mt-4 rounded-md bg-white dark:bg-white/5 outline-1 -outline-offset-1 outline-gray-950/15 dark:outline-white/20 divide-y divide-gray-950/15 dark:divide-white/20 before:absolute before:pointer-events-none before:inset-px before:rounded-md before:shadow-sm dark:before:hidden")
       @template.content_tag(:fieldset, safe_join(fieldset_parts, "\n"), class: FIELD_WRAPPER_BASE_CLASSES)
     end
 
@@ -433,20 +436,20 @@ module SailtraceForms
         label_text, value, opt_description = option
         checkbox_id = "#{object_name}_#{method}_#{value}"
         is_checked = selected.include?(value.to_s)
-        @template.content_tag(:div, class: "flex gap-3") do
+        @template.content_tag(:div, class: "flex gap-3 px-4 py-3") do
           input_part = @template.content_tag(:div, class: "flex h-6 shrink-0 items-center") do
             check_box(method, { id: checkbox_id, checked: is_checked }, value, nil)
           end
           label_part = @template.content_tag(:div, class: "text-base") do
             label_tag = @template.label_tag(checkbox_id, label_text, class: "text-gray-900 dark:text-white")
-            desc_part = opt_description.present? ? @template.content_tag(:p, opt_description, class: "text-gray-500 text-sm/6") : ""
+            desc_part = opt_description.present? ? @template.content_tag(:p, opt_description, class: "text-gray-500 dark:text-white/60 text-sm/6") : ""
             label_tag + desc_part
           end
           input_part + label_part
         end
       end
 
-      fieldset_parts << @template.content_tag(:div, safe_join(checkboxes, "\n"), class: "mt-4 space-y-4")
+      fieldset_parts << @template.content_tag(:div, safe_join(checkboxes, "\n"), class: "relative mt-4 rounded-md bg-white dark:bg-white/5 outline-1 -outline-offset-1 outline-gray-950/15 dark:outline-white/20 divide-y divide-gray-950/15 dark:divide-white/20 before:absolute before:pointer-events-none before:inset-px before:rounded-md before:shadow-sm dark:before:hidden")
       @template.content_tag(:fieldset, safe_join(fieldset_parts, "\n"), class: FIELD_WRAPPER_BASE_CLASSES)
     end
 
@@ -478,14 +481,27 @@ module SailtraceForms
       errors = object.respond_to?(:errors) ? object.errors[method] : []
       error_message = options.delete(:error) || (errors.present? ? errors.join(', ') : nil)
 
-      # Process collection items for the dropdown list
+      # Process the collection into [display, value, description] tuples.
       opts = process_collection(collection, option_text_method, option_value_method)
 
-      # Ensure data attribute for Stimulus target is set
+      # Determine the underlying selected value from the model.
+      selected_value = object.respond_to?(method) ? object.send(method).to_s : ""
+      # Look up the display text matching the underlying value.
+      display_value = ""
+      opts.each do |text, value, _|
+        if value.to_s == selected_value.to_s
+          display_value = text
+          break
+        end
+      end
+      # Allow an override if input_html contains a preset display value.
+      display_value = input_html.delete(:value) if input_html[:value].present?
+
+      # Ensure the visible text field has the proper Stimulus target.
       input_html[:data] ||= {}
       input_html[:data].merge!({ combobox_target: "input" })
 
-      # Build default CSS classes and merge with any custom classes.
+      # Build default CSS classes for the visible text field.
       input_classes = DEFAULT_INPUT_CLASSES.dup
       input_classes << "appearance-none"
       if disabled
@@ -497,38 +513,51 @@ module SailtraceForms
       input_html[:class] = input_classes.join(" ")
       input_html[:disabled] = "disabled" if disabled
 
+      # Build the hidden field for storing the underlying value.
+      hidden_field_html = self.hidden_field(method, value: selected_value, data: { combobox_target: "hidden" }, id: "#{object_name}_#{method}_hidden", class: "hidden")
+
+      # Build the visible text field for display and filtering.
+      # Remove the "name" attribute so it is not submitted.
+      visible_input_html = input_html.dup
+      visible_input_html[:id] = "#{object_name}_#{method}"
+      visible_input_html.delete(:name)
+      visible_input_html[:value] = display_value
+      # Use text_field_tag (which lets us omit the name) so the form submission relies on the hidden field.
+      visible_field = @template.text_field_tag(nil, display_value, visible_input_html)
+
+      # Build the dropdown list; each option carries its underlying value.
+      dropdown = @template.content_tag(:ul,
+                                       safe_join(
+                                         opts.map do |display, value, _desc|
+                                           @template.content_tag(:li, display,
+                                                                 class: "cursor-pointer select-none py-3 px-3 rounded-sm hover:bg-gray-100 dark:hover:bg-white/10",
+                                                                 data: { action: "click->combobox#selectOption", value: value })
+                                         end, "\n"
+                                       ),
+                                       class: "absolute z-10 top-full w-full mt-1 max-h-60 overflow-auto rounded-md bg-white dark:bg-zinc-800 p-1 text-base text-gray-900 dark:text-white shadow-lg ring-1 ring-black/5 dark:ring-white/10 hidden",
+                                       data: { combobox_target: "dropdown" }
+      )
+
+      # Compose the overall combobox field with the hidden field, visible field, and dropdown.
+      combobox_field = @template.content_tag(:div, class: "relative flex w-full") do
+        safe_join([
+                    hidden_field_html,
+                    visible_field,
+                    dropdown
+                  ], "\n")
+      end
+
+      # Render the combobox container with a caret (and attach the Stimulus controller).
+      container_html = build_input_container(combobox_field,
+                                             field_type: :combobox,
+                                             caret: true,
+                                             controller: "combobox")
       header = ActiveSupport::SafeBuffer.new
       if label_text != false
         label_text ||= method.to_s.humanize
         header << @template.label(object_name, method, label_text, class: HEADER_LABEL_CLASSES)
       end
 
-      # Build the combobox field:
-      # It consists of a text input and an associated dropdown list wrapped in a relative container.
-      combobox_field = @template.content_tag(:div, class: "relative w-full") do
-        safe_join([
-                    self.text_field(method, input_html),
-                    @template.content_tag(:ul,
-                                          safe_join(
-                                            opts.map do |display, value, _desc|
-                                              # Each dropdown option is an <li> that triggers selection via Stimulus.
-                                              @template.content_tag(:li, display,
-                                                                    class: "cursor-pointer select-none py-3 pl-4 pr-9 rounded-sm hover:bg-gray-100 dark:hover:bg-gray-700",
-                                                                    data: { action: "click->combobox#selectOption", value: value })
-                                            end, "\n"
-                                          ),
-                                          class: "absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white dark:bg-gray-800 p-1 text-base text-gray-900 dark:text-white shadow-lg ring-1 ring-black/5 hidden",
-                                          data: { combobox_target: "dropdown" }
-                    )
-                  ], "\n")
-      end
-
-      # Pass the Stimulus controller name so that the caret rendered in build_input_container
-      # will have data-controller="combobox".
-      container_html = build_input_container(combobox_field,
-                                             field_type: :combobox,
-                                             caret: true,
-                                             controller: "combobox")
       build_field_container(
         header_html: header,
         description: description,

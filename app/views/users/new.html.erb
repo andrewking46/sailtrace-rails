@@ -1,8 +1,15 @@
-<div class="container">
-  <section class="text-align-center">
-    <%= image_tag "logos/logo-transparent.svg", role: "presentation", height: 24, class: "center margin-block" %>
-    <h1 class="text-x-large text-bold margin-block">Welcome to SailTrace</h1>
+<div class="flex min-h-full flex-col justify-center px-4 py-12 sm:px-6 lg:px-8">
+  <div class="sm:mx-auto sm:w-full sm:max-w-sm">
+    <h1 class="text-2xl/8 font-semibold text-gray-950 sm:text-xl/8 dark:text-white text-center">Welcome to SailTrace</h1>
+  </div>
+
+  <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
     <%= render "form", user: @user %>
-    <%= link_to "Log in", new_session_path %>
-  </section>
+
+
+    <p class="mt-10 text-center text-sm/6 text-gray-500 dark:text-white/60">
+      Already have a SailTrace account?
+      <%= link_to "Log in", new_session_path %>
+    </p>
+  </div>
 </div>
