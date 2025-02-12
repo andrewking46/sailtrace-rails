@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en" itemscope itemtype="http://schema.org/WebSite">
+  <head>
+    <meta charset="utf-8">
+    <%= page_title_tag %>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="SailTrace">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta itemprop="name" content="SailTrace">
+    <%= yield :meta_tags %>
+
+    <link rel="manifest" href="/manifest.json">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "https://api.mapbox.com/mapbox-gl-js/v3.2.0/mapbox-gl.css", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="overscroll-y-none bg-gray-100 dark:bg-zinc-950">
+    <%= render "shared/flash" %>
+
+    <header role="banner">
+      <%= render "shared/navigation_bar" %>
+    </header>
+
+    <%= yield %>
+  </body>
+</html>

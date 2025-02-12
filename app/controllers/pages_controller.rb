@@ -1,4 +1,6 @@
 class PagesController < ApplicationController
+  layout "marketing", only: [:index, :privacy]
+
   require_unauthenticated_access only: [ :index ]
   allow_unauthenticated_access only: [ :privacy ]
 

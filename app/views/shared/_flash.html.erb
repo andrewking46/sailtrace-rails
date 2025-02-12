@@ -1,0 +1,14 @@
+<div data-controller="flash" class="fixed top-5 right-5 z-50 space-y-4" aria-live="assertive" aria-atomic="true">
+  <% flash.each do |type, message| %>
+    <%# Map flash types to Tailwind backgrounds (notice = green, alert = red, info = blue, etc.) %>
+    <% bg_class = case type.to_sym
+                  when :notice then "bg-green-500"
+                  when :alert  then "bg-red-500"
+                  else "bg-blue-500"
+                  end %>
+    <div data-flash-target="message" data-action="animationend->flash#remove"
+         class="p-4 rounded-lg shadow-lg text-white transition transform duration-500 ease-out hover:scale-105">
+      <p class="text-sm"><%= message %></p>
+    </div>
+  <% end %>
+</div>

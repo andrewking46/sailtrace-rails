@@ -5,6 +5,8 @@ class ApplicationController < ActionController::Base
 
   before_action :set_default_breadcrumb
 
+  layout "application"
+
   private
 
   def set_default_breadcrumb
