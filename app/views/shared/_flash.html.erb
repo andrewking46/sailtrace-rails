@@ -1,14 +1,22 @@
-<div data-controller="flash" class="fixed top-5 right-5 z-50 space-y-4" aria-live="assertive" aria-atomic="true">
-  <% flash.each do |type, message| %>
-    <%# Map flash types to Tailwind backgrounds (notice = green, alert = red, info = blue, etc.) %>
-    <% bg_class = case type.to_sym
-                  when :notice then "bg-green-500"
-                  when :alert  then "bg-red-500"
-                  else "bg-blue-500"
-                  end %>
-    <div data-flash-target="message" data-action="animationend->flash#remove"
-         class="p-4 rounded-lg shadow-lg text-white transition transform duration-500 ease-out hover:scale-105">
-      <p class="text-sm"><%= message %></p>
-    </div>
-  <% end %>
+<div data-controller="flash" aria-live="assertive" aria-atomic="true" class="pointer-events-none fixed z-50 inset-0 flex items-end p-4 sm:p-2 sm:items-start">
+  <div class="flex w-full flex-col items-center space-y-4 sm:items-end">
+    <% flash.each do |type, message| %>
+      <div role="alert" data-flash-target="message" data-action="transitionend->flash#remove"
+           class="pointer-events-auto w-full sm:max-w-sm overflow-hidden px-4 py-3 rounded-md ring-1 shadow-lg ring-black/5 dark:ring-white/20 bg-white dark:bg-zinc-800 transition transform duration-500 ease-in-out">
+        <div class="flex items-start">
+          <div class="w-0 flex-1">
+            <p class="text-sm <%= type.to_sym == :alert ? 'text-red-500' : 'text-gray-900 dark:text-white' %>"><%= message %></p>
+          </div>
+          <div class="ml-4 flex shrink-0">
+            <button type="button" data-action="click->flash#dismiss" class="inline-flex text-gray-400 hover:text-gray-500 dark:text-gray-500 dark:hover:text-gray-400 focus:outline-none">
+              <span class="sr-only">Close</span>
+              <svg class="size-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+                <path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
 </div>

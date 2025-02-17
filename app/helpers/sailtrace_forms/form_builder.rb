@@ -273,7 +273,7 @@ module SailtraceForms
 
       # Set a default pattern for telephone inputs if not already provided.
       if [:tel, :telephone].include?(type) && !input_html.key?(:pattern)
-        input_html[:pattern] = "[0-9]{3}-[0-9]{3}-[0-9]{4}"
+        input_html[:pattern] = "[0-9]{10}"
       end
 
       # Build default CSS classes for the input element.
@@ -383,14 +383,19 @@ module SailtraceForms
         input_part + label_part
       end
 
-      @template.content_tag(:div, option_html, class: FIELD_WRAPPER_BASE_CLASSES)
+      wrapper_classes = [FIELD_WRAPPER_BASE_CLASSES]
+      if options[:wrapper_class].present?
+        wrapper_classes << options.delete(:wrapper_class)
+      end
+
+      @template.content_tag(:div, option_html, class: wrapper_classes.join(" "))
     end
 
     # radio_group_input(method, collection:, legend: nil, description: nil, selected: nil)
     #
     # Renders a radio button group wrapped in a fieldset. Each option may be a 2– or 3–element array:
     # [label, value, description?]. The selected value is determined either by the passed :selected option or by the model.
-    def radio_group_input(method, collection:, legend: nil, description: nil, selected: nil)
+    def radio_group_input(method, collection:, legend: nil, description: nil, selected: nil, options: {})
       selected ||= object.respond_to?(method) ? object.send(method).to_s : nil
       processed = process_collection(collection)
       fieldset_parts = []
@@ -415,14 +420,20 @@ module SailtraceForms
       end
 
       fieldset_parts << @template.content_tag(:div, safe_join(radios, "\n"), class: "relative mt-4 rounded-md bg-white dark:bg-white/5 outline-1 -outline-offset-1 outline-gray-950/15 dark:outline-white/20 divide-y divide-gray-950/15 dark:divide-white/20 before:absolute before:pointer-events-none before:inset-px before:rounded-md before:shadow-sm dark:before:hidden")
-      @template.content_tag(:fieldset, safe_join(fieldset_parts, "\n"), class: FIELD_WRAPPER_BASE_CLASSES)
+
+      wrapper_classes = [FIELD_WRAPPER_BASE_CLASSES]
+      if options[:wrapper_class].present?
+        wrapper_classes << options.delete(:wrapper_class)
+      end
+
+      @template.content_tag(:fieldset, safe_join(fieldset_parts, "\n"), class: wrapper_classes.join(" "))
     end
 
     # checkbox_group_input(method, collection:, legend: nil, description: nil, selected: [])
     #
     # Renders a group of checkboxes wrapped in a fieldset. Each option is a 2– or 3–element array.
     # The :selected option should be an array (even if it contains a single value).
-    def checkbox_group_input(method, collection:, legend: nil, description: nil, selected: [])
+    def checkbox_group_input(method, collection:, legend: nil, description: nil, selected: [], options: {})
       selected = Array(selected).map(&:to_s)
       if selected.empty? && object.respond_to?(method)
         selected = Array(object.send(method)).map(&:to_s)
@@ -450,7 +461,13 @@ module SailtraceForms
       end
 
       fieldset_parts << @template.content_tag(:div, safe_join(checkboxes, "\n"), class: "relative mt-4 rounded-md bg-white dark:bg-white/5 outline-1 -outline-offset-1 outline-gray-950/15 dark:outline-white/20 divide-y divide-gray-950/15 dark:divide-white/20 before:absolute before:pointer-events-none before:inset-px before:rounded-md before:shadow-sm dark:before:hidden")
-      @template.content_tag(:fieldset, safe_join(fieldset_parts, "\n"), class: FIELD_WRAPPER_BASE_CLASSES)
+
+      wrapper_classes = [FIELD_WRAPPER_BASE_CLASSES]
+      if options[:wrapper_class].present?
+        wrapper_classes << options.delete(:wrapper_class)
+      end
+
+      @template.content_tag(:fieldset, safe_join(fieldset_parts, "\n"), class: wrapper_classes.join(" "))
     end
 
     # textarea_input(method, options = {})

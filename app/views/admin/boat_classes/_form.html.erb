@@ -1,7 +1,7 @@
-<%= form_with(model: [:admin, boat_class], class: "full-width margin-block") do |form| %>
+<%= sailtrace_form_for [:admin, boat_class] do |f| %>
   <% if boat_class.errors.any? %>
-    <div style="color: red">
-      <h2><%= pluralize(boat_class.errors.count, "error") %> prohibited this boat_class from being saved:</h2>
+    <div class="text-red-600">
+      <h2><%= pluralize(boat_class.errors.count, "error") %> prohibited this class from being saved:</h2>
 
       <ul>
         <% boat_class.errors.each do |error| %>
@@ -11,28 +11,20 @@
     </div>
   <% end %>
 
-  <fieldset class="flex flex-column gap <%= "shake" if flash[:alert] %>">
+  <div class="grid grid-cols-1 gap-x-8 sm:grid-cols-6">
+    <%= f.input :name,
+                as: :text,
+                label: "Name",
+                wrapper_class: "sm:col-span-3",
+                input_html: { title: "Enter the class name", autofocus: !boat_class.persisted?, autocomplete: :off, autocorrect: :off, required: true, spellcheck: false, autocapitalize: :words, placeholder: "e.g. Etchells" } %>
+  </div>
 
-    <div class="input-group">
-      <div class="input-wrapper">
-        <%= form.label :name %>
-        <div class="input">
-          <%= form.text_field :name, required: true, autofocus: !boat_class.persisted?, autocomplete: :off, placeholder: "e.g. Etchells" %>
-        </div>
-      </div>
-    </div>
+  <div class="grid grid-cols-1">
+    <%= f.check_box_input :is_one_design,
+                          label: "One design",
+                          description: "Check this if this is a one design class." %>
+  </div>
 
-    <div class="input-group">
-      <div class="input-wrapper">
-        <div class="input">
-          <%= form.check_box :is_one_design %>
-          <%= form.label :is_one_design, "This is a one-design class" %>
-        </div>
-      </div>
-    </div>
-
-    <%= form.button class: "btn btn--reversed fit-content", type: :submit do %>
-      <span class="for-screen-reader">Save</span>
-    <% end %>
-  </fieldset>
+  <%= f.submit "Save",
+               class: "mt-4 w-full inline-flex justify-center rounded-md bg-gray-900 dark:bg-white px-4 py-3 text-white dark:text-gray-950 hover:bg-gray-800 dark:hover:bg-white/95 cursor-pointer" %>
 <% end %>

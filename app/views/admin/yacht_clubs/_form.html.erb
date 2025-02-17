@@ -1,4 +1,4 @@
-<%= form_with(model: [:admin, yacht_club], class: "full-width margin-block") do |form| %>
+<%= sailtrace_form_for [:admin, yacht_club] do |f| %>
   <% if yacht_club.errors.any? %>
     <div style="color: red">
       <h2><%= pluralize(yacht_club.errors.count, "error") %> prevented this Yacht Club from being saved:</h2>
@@ -10,106 +10,101 @@
     </div>
   <% end %>
 
-  <fieldset class="flex flex-column gap">
-    <div class="input-group">
-      <div class="input-wrapper">
-        <%= form.label :name %>
-        <div class="input">
-          <%= form.text_field :name, required: true %>
-        </div>
-      </div>
-      <div class="input-wrapper">
-        <%= form.label :abbreviation %>
-        <div class="input">
-          <%= form.text_field :abbreviation %>
-        </div>
-      </div>
-    </div>
+  <div class="grid grid-cols-1 gap-x-8 sm:grid-cols-6">
+    <%= f.input :name,
+                as: :text,
+                label: "Name",
+                wrapper_class: "sm:col-span-3",
+                input_html: { title: "Enter the yacht club name", autofocus: !yacht_club.persisted?, autocomplete: :off, autocorrect: :off, required: true, spellcheck: false, autocapitalize: :words } %>
 
-    <div class="input-group">
-      <div class="input-wrapper">
-        <%= form.label :street_address %>
-        <div class="input">
-          <%= form.text_field :street_address %>
-        </div>
-      </div>
-      <div class="input-wrapper">
-        <%= form.label :city %>
-        <div class="input">
-          <%= form.text_field :city %>
-        </div>
-      </div>
-      <div class="input-wrapper">
-        <%= form.label :subdivision %>
-        <div class="input">
-          <%= form.text_field :subdivision %>
-        </div>
-      </div>
-      <div class="input-wrapper">
-        <%= form.label :postal_code %>
-        <div class="input">
-          <%= form.text_field :postal_code %>
-        </div>
-      </div>
-    </div>
+    <%= f.input :abbreviation,
+                as: :text,
+                label: "Abbreviation",
+                wrapper_class: "sm:col-span-3",
+                input_html: { title: "Enter the yacht club's abbreviation", autocomplete: :off, autocorrect: :off, required: true, spellcheck: false, autocapitalize: :characters } %>
+  </div>
 
-    <div class="input-group">
-      <div class="input-wrapper">
-        <%= form.label :country %>
-        <div class="input">
-          <%= form.text_field :country %>
-        </div>
-      </div>
-      <div class="input-wrapper">
-        <%= form.label :time_zone %>
-        <div class="input">
-          <%= form.text_field :time_zone %>
-        </div>
-      </div>
-      <div class="input-wrapper">
-        <%= form.label :latitude %>
-        <div class="input">
-          <%= form.number_field :latitude, step: :any %>
-        </div>
-      </div>
-      <div class="input-wrapper">
-        <%= form.label :longitude %>
-        <div class="input">
-          <%= form.number_field :longitude, step: :any %>
-        </div>
-      </div>
-    </div>
+  <div class="grid grid-cols-1 gap-x-8 sm:grid-cols-6">
+    <%= f.file_upload_input :burgee,
+                            label: "Burgee",
+                            wrapper_class: "sm:col-span-3",
+                            hint: "PNG, JPG, SVG up to 10MB" %>
 
-    <div class="input-group">
-      <div class="input-wrapper">
-        <%= form.label :phone %>
-        <div class="input">
-          <%= form.telephone_field :phone %>
-        </div>
-      </div>
-      <div class="input-wrapper">
-        <%= form.label :email %>
-        <div class="input">
-          <%= form.email_field :email %>
-        </div>
-      </div>
-      <div class="input-wrapper">
-        <%= form.label :is_active %>
-        <div class="input">
-          <%= form.check_box :is_active %>
-        </div>
-      </div>
-    </div>
+    <%= f.check_box_input :is_active,
+                          label: "Active",
+                          wrapper_class: "sm:col-span-3",
+                          description: "Is this yacht club active on SailTrace?" %>
+  </div>
 
-    <div class="input-group">
-      <div class="input-wrapper">
-        <%= form.label :burgee, "Burgee Image" %>
-        <div class="input">
-          <%= form.file_field :burgee, direct_upload: true %>
-        </div>
-      </div>
-    </div>
+  <div class="grid grid-cols-1 gap-x-8 sm:grid-cols-6">
+    <%= f.input :street_address,
+                as: :text,
+                label: "Address",
+                wrapper_class: "sm:col-span-6",
+                input_html: { autocomplete: "street-address", autocorrect: :off, required: true, spellcheck: false, autocapitalize: :words } %>
 
-    <%= form.submit "Save Yacht Club", class: "btn btn--reversed fit-content" %>
-  </fieldset>
+    <%= f.input :city,
+                as: :text,
+                label: "City",
+                wrapper_class: "sm:col-span-2",
+                input_html: { autocomplete: "address-level2", autocorrect: :off, required: true, spellcheck: false, autocapitalize: :words } %>
+
+    <%= f.input :subdivision,
+                as: :text,
+                label: "State",
+                wrapper_class: "sm:col-span-2",
+                input_html: { autocomplete: "address-level1", autocorrect: :off, required: true, spellcheck: false, autocapitalize: :characters, maxlength: 3 } %>
+
+    <%= f.input :postal_code,
+                as: :text,
+                label: "Postal code",
+                wrapper_class: "sm:col-span-2",
+                input_html: { autocomplete: "postal-code", autocorrect: :off, required: true, spellcheck: false, autocapitalize: :characters } %>
+  </div>
+
+  <div class="grid grid-cols-1 gap-x-8 sm:grid-cols-6">
+    <%= f.input :country,
+                as: :select,
+                label: "Country",
+                collection: ISO3166::Country.pluck(:iso_short_name, :alpha2).sort_by { |data| data.first },
+                priority_options: [["United States of America","US"]],
+                wrapper_class: "sm:col-span-3",
+                input_html: { title: "Select the country where this yacht club is located", autocomplete: :off, required: true } %>
+
+    <%= f.input :time_zone,
+                as: :select,
+                label: "Time zone",
+                collection: ActiveSupport::TimeZone.all.map { |tz| [tz.to_s, tz.tzinfo.identifier] },
+                wrapper_class: "sm:col-span-3",
+                input_html: { title: "Select the time zone where this yacht club is located", autocomplete: :off, required: true } %>
+
+    <%= f.input :latitude,
+                as: :number,
+                label: "Latitude",
+                wrapper_class: "sm:col-span-3",
+                input_html: { autocomplete: :off, autocorrect: :off, spellcheck: false, step: :any } %>
+
+    <%= f.input :longitude,
+                as: :number,
+                label: "Longitude",
+                wrapper_class: "sm:col-span-3",
+                input_html: { autocomplete: :off, autocorrect: :off, spellcheck: false, step: :any } %>
+  </div>
+
+  <div class="grid grid-cols-1 gap-x-8 sm:grid-cols-6">
+    <%= f.input :email,
+                as: :email,
+                label: "Email address",
+                wrapper_class: "sm:col-span-3",
+                input_html: { autocomplete: :off, autocorrect: :off, required: true, autocapitalize: :off, spellcheck: false, title: "Enter the contact email address for the yacht club" } %>
+
+    <%= f.input :phone,
+                as: :tel,
+                label: "Phone number",
+                wrapper_class: "sm:col-span-3",
+                input_html: { autocomplete: :off, autocorrect: :off, autocapitalize: :off, spellcheck: false, title: "Enter the primary phone number for the yacht club" } %>
+  </div>
+
+  <%= f.submit "Save",
+               class: "mt-4 w-full inline-flex justify-center rounded-md bg-gray-900 dark:bg-white px-4 py-3 text-white dark:text-gray-950 hover:bg-gray-800 dark:hover:bg-white/95 cursor-pointer" %>
 <% end %>

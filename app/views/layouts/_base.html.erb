@@ -20,12 +20,12 @@
   </head>
 
   <body class="overscroll-y-none bg-gray-100 dark:bg-zinc-950">
-    <%= render "shared/flash" %>
-
     <header role="banner">
       <%= render "shared/navigation_bar" %>
     </header>
 
     <%= yield %>
+
+    <%= render "shared/flash" %>
   </body>
 </html>
