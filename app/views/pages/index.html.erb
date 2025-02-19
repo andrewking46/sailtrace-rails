@@ -1,22 +1,115 @@
-<div class="relative isolate pt-16 px-6 flex items-center justify-center w-full h-full overflow-hidden">
-  <div class="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80" aria-hidden="true">
-    <div class="relative left-[calc(50%-11rem)] aspect-1155/678 w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-linear-to-tr from-[#3b82f6] to-[#0ea5e9] opacity-30 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]" style="clip-path: polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)"></div>
-  </div>
-  <div class="mx-auto max-w-2xl">
-    <div class="hidden sm:mb-8 sm:flex sm:justify-center">
-      <div class="relative rounded-full px-3 py-1 text-sm/6 text-gray-600 ring-1 ring-gray-900/10 hover:ring-gray-900/20">
-        Join the waitlist. <a href="#" class="font-semibold text-primary"><span class="absolute inset-0" aria-hidden="true"></span>Read more <span aria-hidden="true">&rarr;</span></a>
+<section class="min-h-full p-4 sm:p-6 lg:p-8 flex justify-center items-center">
+  <div class="flex-auto sm:-mt-8 max-w-4xl flex justify-center items-center gap-16 flex-wrap sm:flex-nowrap">
+    <div class="order-last sm:order-first basis-full sm:basis-1/2 flex justify-end">
+      <div class="w-full rounded-lg aspect-square bg-sky-200 flex justify-center items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" width="259" height="143" viewBox="0 0 259 143" fill="none">
+          <line x1="86.3467" y1="54.7071" x2="22.7071" y2="118.347" stroke="url(#paint0_linear_1_45)" stroke-width="2"/>
+          <line x1="193.707" y1="78.2929" x2="257.347" y2="141.932" stroke="url(#paint1_linear_1_45)" stroke-width="2"/>
+          <path d="M133.993 75.3535L70.3536 138.993" stroke="url(#paint2_linear_1_45)" stroke-width="2"/>
+          <path d="M85.8536 7.35355L1.00075 92.2064" stroke="#717172" stroke-opacity="0.2" stroke-dasharray="2 2"/>
+          <path d="M85.8536 6.64645L170.706 91.4993" stroke="#717172" stroke-opacity="0.2" stroke-dasharray="2 2"/>
+          <g filter="url(#filter0_d_1_45)">
+            <rect x="73" y="47" width="28" height="14" rx="7" fill="#FB2C36"/>
+          </g>
+          <g filter="url(#filter1_d_1_45)">
+            <rect x="179" y="72" width="28" height="14" rx="7" fill="#333333"/>
+          </g>
+          <g filter="url(#filter2_d_1_45)">
+            <rect x="121" y="68" width="28" height="14" rx="7" fill="white"/>
+          </g>
+          <path d="M78.1004 58V57.0483L80.6253 54.5732C80.8668 54.3293 81.068 54.1127 81.229 53.9233C81.39 53.7339 81.5107 53.5504 81.5912 53.3729C81.6717 53.1953 81.7119 53.0059 81.7119 52.8047C81.7119 52.575 81.6598 52.3786 81.5557 52.2152C81.4515 52.0495 81.3083 51.9216 81.126 51.8317C80.9437 51.7417 80.7365 51.6967 80.5045 51.6967C80.2654 51.6967 80.0559 51.7464 79.876 51.8459C79.6961 51.9429 79.5564 52.0814 79.457 52.2614C79.3599 52.4413 79.3114 52.6555 79.3114 52.9041H78.0578C78.0578 52.4425 78.1632 52.0412 78.3739 51.7003C78.5846 51.3594 78.8746 51.0954 79.2439 50.9084C79.6156 50.7214 80.0417 50.6278 80.5223 50.6278C81.01 50.6278 81.4385 50.719 81.8078 50.9013C82.1771 51.0836 82.4636 51.3333 82.6672 51.6506C82.8731 51.9678 82.9761 52.33 82.9761 52.7372C82.9761 53.0095 82.924 53.277 82.8199 53.5398C82.7157 53.8026 82.5322 54.0937 82.2695 54.4134C82.009 54.733 81.6433 55.12 81.1721 55.5746L79.9186 56.8494V56.8991H83.0862V58H78.1004ZM84.3114 58V57.0483L86.8362 54.5732C87.0777 54.3293 87.2789 54.1127 87.4399 53.9233C87.6009 53.7339 87.7216 53.5504 87.8021 53.3729C87.8826 53.1953 87.9229 53.0059 87.9229 52.8047C87.9229 52.575 87.8708 52.3786 87.7666 52.2152C87.6624 52.0495 87.5192 51.9216 87.3369 51.8317C87.1546 51.7417 86.9475 51.6967 86.7155 51.6967C86.4764 51.6967 86.2668 51.7464 86.0869 51.8459C85.907 51.9429 85.7673 52.0814 85.6679 52.2614C85.5708 52.4413 85.5223 52.6555 85.5223 52.9041H84.2687C84.2687 52.4425 84.3741 52.0412 84.5848 51.7003C84.7955 51.3594 85.0855 51.0954 85.4548 50.9084C85.8265 50.7214 86.2526 50.6278 86.7332 50.6278C87.2209 50.6278 87.6494 50.719 88.0187 50.9013C88.3881 51.0836 88.6745 51.3333 88.8781 51.6506C89.0841 51.9678 89.1871 52.33 89.1871 52.7372C89.1871 53.0095 89.135 53.277 89.0308 53.5398C88.9266 53.8026 88.7432 54.0937 88.4804 54.4134C88.22 54.733 87.8542 55.12 87.3831 55.5746L86.1295 56.8494V56.8991H89.2971V58H84.3114ZM93.2105 58.1385C92.6257 58.1385 92.1239 57.9905 91.7048 57.6946C91.2882 57.3963 90.9674 56.9666 90.7425 56.4055C90.5199 55.8421 90.4087 55.1638 90.4087 54.3707C90.411 53.5777 90.5235 52.9029 90.746 52.3466C90.9709 51.7879 91.2917 51.3617 91.7084 51.0682C92.1274 50.7746 92.6281 50.6278 93.2105 50.6278C93.7929 50.6278 94.2936 50.7746 94.7126 51.0682C95.1317 51.3617 95.4525 51.7879 95.675 52.3466C95.8999 52.9053 96.0123 53.58 96.0123 54.3707C96.0123 55.1662 95.8999 55.8456 95.675 56.4091C95.4525 56.9702 95.1317 57.3987 94.7126 57.6946C94.296 57.9905 93.7953 58.1385 93.2105 58.1385ZM93.2105 57.027C93.665 57.027 94.0237 56.8033 94.2865 56.3558C94.5516 55.906 94.6842 55.2443 94.6842 54.3707C94.6842 53.7931 94.6239 53.3078 94.5031 52.9148C94.3824 52.5218 94.2119 52.2259 93.9918 52.027C93.7716 51.8258 93.5112 51.7251 93.2105 51.7251C92.7583 51.7251 92.4008 51.95 92.1381 52.3999C91.8753 52.8473 91.7427 53.5043 91.7403 54.3707C91.738 54.9508 91.796 55.4384 91.9143 55.8338C92.0351 56.2292 92.2055 56.5275 92.4257 56.7287C92.6459 56.9276 92.9075 57.027 93.2105 57.027Z" fill="white"/>
+          <path d="M185.001 83V82.0483L187.526 79.5732C187.767 79.3293 187.968 79.1127 188.129 78.9233C188.29 78.7339 188.411 78.5504 188.492 78.3729C188.572 78.1953 188.612 78.0059 188.612 77.8047C188.612 77.575 188.56 77.3786 188.456 77.2152C188.352 77.0495 188.209 76.9216 188.026 76.8317C187.844 76.7417 187.637 76.6967 187.405 76.6967C187.166 76.6967 186.956 76.7464 186.776 76.8459C186.596 76.9429 186.457 77.0814 186.357 77.2614C186.26 77.4413 186.212 77.6555 186.212 77.9041H184.958C184.958 77.4425 185.064 77.0412 185.274 76.7003C185.485 76.3594 185.775 76.0954 186.144 75.9084C186.516 75.7214 186.942 75.6278 187.423 75.6278C187.91 75.6278 188.339 75.719 188.708 75.9013C189.078 76.0836 189.364 76.3333 189.568 76.6506C189.774 76.9678 189.877 77.33 189.877 77.7372C189.877 78.0095 189.824 78.277 189.72 78.5398C189.616 78.8026 189.433 79.0937 189.17 79.4134C188.909 79.733 188.544 80.12 188.073 80.5746L186.819 81.8494V81.8991H189.987V83H185.001ZM191.478 83L194.571 76.8778V76.8281H190.981V75.7273H195.935V76.853L192.845 83H191.478ZM197.081 83V82.0483L199.606 79.5732C199.847 79.3293 200.048 79.1127 200.209 78.9233C200.37 78.7339 200.491 78.5504 200.572 78.3729C200.652 78.1953 200.692 78.0059 200.692 77.8047C200.692 77.575 200.64 77.3786 200.536 77.2152C200.432 77.0495 200.289 76.9216 200.106 76.8317C199.924 76.7417 199.717 76.6967 199.485 76.6967C199.246 76.6967 199.036 76.7464 198.856 76.8459C198.677 76.9429 198.537 77.0814 198.437 77.2614C198.34 77.4413 198.292 77.6555 198.292 77.9041H197.038C197.038 77.4425 197.144 77.0412 197.354 76.7003C197.565 76.3594 197.855 76.0954 198.224 75.9084C198.596 75.7214 199.022 75.6278 199.503 75.6278C199.99 75.6278 200.419 75.719 200.788 75.9013C201.158 76.0836 201.444 76.3333 201.648 76.6506C201.854 76.9678 201.957 77.33 201.957 77.7372C201.957 78.0095 201.905 78.277 201.8 78.5398C201.696 78.8026 201.513 79.0937 201.25 79.4134C200.989 79.733 200.624 80.12 200.153 80.5746L198.899 81.8494V81.8991H202.067V83H197.081Z" fill="white"/>
+          <path d="M129.703 71.7273V79H128.386V73.0092H128.343L126.642 74.0959V72.8885L128.449 71.7273H129.703ZM134.238 79.1385C133.653 79.1385 133.151 78.9905 132.732 78.6946C132.315 78.3963 131.995 77.9666 131.77 77.4055C131.547 76.8421 131.436 76.1638 131.436 75.3707C131.438 74.5777 131.551 73.9029 131.773 73.3466C131.998 72.7879 132.319 72.3617 132.736 72.0682C133.155 71.7746 133.655 71.6278 134.238 71.6278C134.82 71.6278 135.321 71.7746 135.74 72.0682C136.159 72.3617 136.48 72.7879 136.702 73.3466C136.927 73.9053 137.04 74.58 137.04 75.3707C137.04 76.1662 136.927 76.8456 136.702 77.4091C136.48 77.9702 136.159 78.3987 135.74 78.6946C135.323 78.9905 134.823 79.1385 134.238 79.1385ZM134.238 78.027C134.692 78.027 135.051 77.8033 135.314 77.3558C135.579 76.906 135.712 76.2443 135.712 75.3707C135.712 74.7931 135.651 74.3078 135.53 73.9148C135.41 73.5218 135.239 73.2259 135.019 73.027C134.799 72.8258 134.539 72.7251 134.238 72.7251C133.786 72.7251 133.428 72.95 133.165 73.3999C132.903 73.8473 132.77 74.5043 132.768 75.3707C132.765 75.9508 132.823 76.4384 132.942 76.8338C133.062 77.2292 133.233 77.5275 133.453 77.7287C133.673 77.9276 133.935 78.027 134.238 78.027ZM140.748 79.0994C140.274 79.0994 139.851 79.0107 139.477 78.8331C139.103 78.6532 138.805 78.407 138.585 78.0945C138.368 77.782 138.252 77.4245 138.237 77.022H139.516C139.539 77.3203 139.668 77.5642 139.903 77.7536C140.137 77.9406 140.419 78.0341 140.748 78.0341C141.006 78.0341 141.236 77.9749 141.437 77.8565C141.638 77.7382 141.797 77.5736 141.913 77.3629C142.029 77.1522 142.086 76.9119 142.083 76.642C142.086 76.3674 142.028 76.1236 141.909 75.9105C141.791 75.6974 141.629 75.5305 141.423 75.4098C141.217 75.2867 140.98 75.2251 140.712 75.2251C140.495 75.2228 140.28 75.263 140.07 75.3459C139.859 75.4287 139.692 75.5376 139.569 75.6726L138.379 75.4773L138.759 71.7273H142.978V72.8281H139.85L139.64 74.7564H139.683C139.818 74.5978 140.008 74.4664 140.254 74.3622C140.501 74.2557 140.77 74.2024 141.064 74.2024C141.504 74.2024 141.897 74.3066 142.243 74.5149C142.589 74.7209 142.861 75.005 143.06 75.3672C143.259 75.7294 143.358 76.1437 143.358 76.6101C143.358 77.0907 143.247 77.5192 143.024 77.8956C142.804 78.2696 142.497 78.5644 142.104 78.7798C141.714 78.9929 141.262 79.0994 140.748 79.0994Z" fill="black"/>
+          <g filter="url(#filter3_d_1_45)">
+            <path d="M86 0L93.7942 13.5H78.2058L86 0Z" fill="#FF4403"/>
+          </g>
+          <defs>
+            <filter id="filter0_d_1_45" x="72" y="47" width="30" height="16" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+              <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+              <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+              <feOffset dy="1"/>
+              <feGaussianBlur stdDeviation="0.5"/>
+              <feComposite in2="hardAlpha" operator="out"/>
+              <feColorMatrix type="matrix" values="0 0 0 0 0.984314 0 0 0 0 0.172549 0 0 0 0 0.211765 0 0 0 0.1 0"/>
+              <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_1_45"/>
+              <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_1_45" result="shape"/>
+            </filter>
+            <filter id="filter1_d_1_45" x="178" y="72" width="30" height="16" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+              <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+              <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+              <feOffset dy="1"/>
+              <feGaussianBlur stdDeviation="0.5"/>
+              <feComposite in2="hardAlpha" operator="out"/>
+              <feColorMatrix type="matrix" values="0 0 0 0 0.2 0 0 0 0 0.2 0 0 0 0 0.2 0 0 0 0.1 0"/>
+              <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_1_45"/>
+              <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_1_45" result="shape"/>
+            </filter>
+            <filter id="filter2_d_1_45" x="120" y="68" width="30" height="16" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+              <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+              <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+              <feOffset dy="1"/>
+              <feGaussianBlur stdDeviation="0.5"/>
+              <feComposite in2="hardAlpha" operator="out"/>
+              <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.1 0"/>
+              <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_1_45"/>
+              <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_1_45" result="shape"/>
+            </filter>
+            <filter id="filter3_d_1_45" x="77.2058" y="0" width="17.5885" height="15.5" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+              <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+              <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+              <feOffset dy="1"/>
+              <feGaussianBlur stdDeviation="0.5"/>
+              <feComposite in2="hardAlpha" operator="out"/>
+              <feColorMatrix type="matrix" values="0 0 0 0 1 0 0 0 0 0.266667 0 0 0 0 0.0117647 0 0 0 0.1 0"/>
+              <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_1_45"/>
+              <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_1_45" result="shape"/>
+            </filter>
+            <linearGradient id="paint0_linear_1_45" x1="85.2861" y1="53.6464" x2="21.6465" y2="117.286" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#FB2C36"/>
+              <stop offset="1" stop-color="#FB2C36" stop-opacity="0"/>
+            </linearGradient>
+            <linearGradient id="paint1_linear_1_45" x1="192.646" y1="79.3536" x2="256.286" y2="142.993" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#333333"/>
+              <stop offset="1" stop-color="#333333" stop-opacity="0"/>
+            </linearGradient>
+            <linearGradient id="paint2_linear_1_45" x1="133.64" y1="75" x2="70" y2="138.64" gradientUnits="userSpaceOnUse">
+              <stop stop-color="white"/>
+              <stop offset="1" stop-color="white" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+        </svg>
       </div>
     </div>
-    <div class="text-center">
-      <h1 class="text-5xl font-semibold tracking-tight text-balance text-gray-900 dark:text-white sm:text-7xl">Record, replay, and analyze your races</h1>
-      <p class="mt-8 text-lg font-medium text-pretty text-gray-500 sm:text-xl/8">Join the waitlist today.</p>
-      <div class="mt-10 flex items-center justify-center gap-x-6">
-        <%= link_to "Get early access", new_user_path, class: "rounded-md bg-primary px-5 py-3 font-semibold text-white shadow-xs hover:bg-primary" %>
+    <div class="order-first sm:order-last basis-full sm:basis-1/2 text-gray-900 dark:text-white text-center sm:text-left">
+      <h1 class="text-3xl font-semibold text-balance sm:text-4xl">Record, replay, and analyze your races</h1>
+      <p class="mt-6 text-balance">Sailors nationwide are using SailTrace to track their races and improve their tactics</p>
+      <div class="mt-12 font-semibold">Download the app</div>
+      <div class="mt-4 flex justify-center sm:justify-start">
+        <div class="w-30 aspect-square p-2 rounded-md bg-white dark:bg-transparent border border-gray-300 dark:border-zinc-500 text-gray-800 dark:text-white">
+          <%= raw @app_store_qr_code.as_svg(
+            offset: 0,
+            color: :currentColor,
+            shape_rendering: 'crispEdges',
+            module_size: 4,
+            standalone: true,
+            viewbox: true
+          ) %>
+        </div>
       </div>
     </div>
   </div>
-  <div class="absolute inset-x-0 top-[calc(100%-13rem)] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[calc(100%-30rem)]" aria-hidden="true">
-    <div class="relative left-[calc(50%+3rem)] aspect-1155/678 w-[36.125rem] -translate-x-1/2 bg-linear-to-tr from-[#3b82f6] to-[#0ea5e9] opacity-30 sm:left-[calc(50%+36rem)] sm:w-[72.1875rem]" style="clip-path: polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)"></div>
+</section>
+
+<section class="p-4 sm:p-6 lg:p-8">
+  <div class="mx-auto max-w-4xl flex justify-between items-center flex-wrap sm:flex-nowrap gap-12 text-gray-500 dark:text-zinc-500 text-sm">
+    <div class="basis-full sm:basis-auto flex justify-center sm:justify-start items-center gap-8">
+      <div>Pricing</div>
+      <div>Contact</div>
+      <%= link_to "Privacy", privacy_path %>
+      <div>Terms</div>
+    </div>
+    <div class="basis-full sm:basis-auto flex justify-center sm:justify-end">
+      <div>© <%= Time.now.year %> FirstByte, LLC</div>
+    </div>
   </div>
-</div>
+</section>
